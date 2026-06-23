@@ -84,3 +84,28 @@ cloud/GUI evidence); a matrix requirement may only be marked `Done` once its
 proof exists and its validation has been run. **Consequences:** No
 "production-ready"/"fully implemented" language without evidence; the final gap
 audit checks claim→artifact links; partial work stays `In progress`.
+
+## ADR-0012 — Zero-based (row, col) internal coordinates
+**Context:** The engine needs one unambiguous internal coordinate convention.
+**Decision:** Use **zero-based `(row, col)`** internally, with `north` decreasing
+`row`; the eight compass directions map to fixed `(drow, dcol)` deltas.
+**Consequences:** Bounds checks are simple `0 <= v < size`; default 5×5 spans
+rows/cols `0…4`; any display or inter-group origin agreement is a presentation
+concern handled outside the engine (see `INTERGROUP_BONUS_PROTOCOL.md`).
+
+## ADR-0013 — Thief-first default turn order, sourced from config
+**Context:** A turn order must be fixed but remain configurable, not hardcoded in
+rule logic. **Decision:** Default turn order is **thief, then cop**, read from the
+config `turn_order` key; the engine derives whose turn it is from `move_count %
+len(turn_order)`. **Consequences:** Order is data, not code; `max_moves` counts
+each applied action (move or barrier) as one move; inter-group play can agree a
+different order by config without touching the engine.
+
+## ADR-0014 — Illegal actions return structured results, never raise
+**Context:** Agents (and later foreign agents) will attempt illegal actions in
+normal flow. **Decision:** `apply_action` **never raises** for an illegal action;
+it returns an `ActionResult` with `ok=False` and a `RuleViolation`, leaves state
+unchanged (no move/turn advance), and includes a log-ready `event` dict.
+**Consequences:** The engine is robust to bad input, disputes are reconstructable
+from events, and the turn does not advance on a rejected action — keeping the
+game deterministic.

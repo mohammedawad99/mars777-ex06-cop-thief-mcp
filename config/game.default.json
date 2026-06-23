@@ -18,6 +18,7 @@
     "NW"
   ],
   "allow_stay": false,
+  "turn_order": ["thief", "cop"],
   "scoring": {
     "cop_win": 20,
     "thief_win": 10,

@@ -8,12 +8,17 @@ a natural-language protocol, and the final results are reported via a Google
 (Gmail) report sender. Inter-group play is treated as in-scope (see
 `docs/PRD_bonus_intergroup.md`).
 
-## Status — Stage 0 (skeleton only)
+## Status — Stage 2 (pure game engine core)
 
-This repository is currently a **Stage 0 skeleton**: package structure,
-documentation scaffolding, configuration defaults, packaging, and quality
-gates. There is **no game engine, no MCP server, and no Gmail integration yet**.
-Placeholder code exists only so imports and tests pass.
+The **pure game engine core is implemented** and unit-tested: an authoritative,
+deterministic, config-driven grid game with 8-direction movement, Cop barriers,
+capture detection, scoring, and structured illegal-action results
+(`src/mars777_cop_thief/game/`, exercised by `tests/unit/game/`). It contacts no
+external service.
+
+There is still **no MCP server, no agent/LLM behaviour, no natural-language
+parsing, no Gmail/Google integration, no cloud deployment, and no inter-group
+networking** — those are later stages (see `docs/TODO.md`).
 
 See `docs/TODO.md` for the staged roadmap and `docs/FINAL_GAP_AUDIT.md` (not
 final yet) for the closing audit plan.
@@ -41,7 +46,9 @@ src/mars777_cop_thief/
   sdk/sdk.py          AssignmentSdk façade (stable entry point)
   shared/version.py   single source of version truth ("1.00")
   shared/config.py    safe JSON config loader + validator
+  game/               pure game engine: models, rules, state, engine, events
 tests/unit/           version, config, and SDK smoke tests
+tests/unit/game/      engine TDD suite (models, rules, engine, events, SDK)
 ```
 
 ## Requirements

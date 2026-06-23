@@ -60,5 +60,39 @@ server, agent, or Gmail implementation; no new dependencies; no commit.
 **Outcome:** Requirements hardening complete; baseline established for the
 engine stage. No implementation added; no commit made.
 
-> Subsequent stages will append their driving prompts here (engine, MCP,
-> protocol, agents, orchestrator, report sender, cloud, bonus, audit).
+## Stage 2 — Pure game engine core (2026-06-23)
+
+**Goal:** Implement the pure, deterministic, config-driven Cop-and-Thief game
+engine with TDD. Domain logic only — **no** MCP servers, HTTP, agents/LLM,
+natural-language parsing, Gmail/Google API, cloud, GUI, or bonus networking.
+
+**Key constraints captured from the prompt:**
+- Zero-based `(row, col)` coordinates; rectangular board (default 5×5 from config).
+- Eight-direction one-step movement; no stay in baseline.
+- Turn-based, **thief first then cop** by default (read from config `turn_order`).
+- Thief moves only; cop may move or place a barrier (≤ 5 per sub-game).
+- Barriers block both players and cannot sit out of bounds, on a player, or on an
+  existing barrier; moving out of bounds, into a barrier, more than one step, or
+  staying is illegal.
+- Capture when cop and thief share a cell after a legal move (either direction);
+  thief wins at `max_moves` without capture; scoring from config.
+- Illegal actions return a structured `ActionResult` (never crash); engine emits
+  log-ready event dicts but does no file logging yet.
+- No new external dependencies (standard library only); every source file under
+  150 non-empty/non-comment lines; coverage ≥ 85.
+
+**Artifacts produced:**
+- `src/mars777_cop_thief/game/` — `models.py`, `rules.py`, `state.py`,
+  `engine.py`, `events.py`, `__init__.py`.
+- SDK factory `AssignmentSdk.create_game_engine(path)` (entrypoint only).
+- `config/game.default.json` — added explicit `turn_order`.
+- `tests/unit/game/` — `test_models.py`, `test_rules.py`, `test_engine.py`,
+  `test_events.py`, `test_sdk_engine.py`, `conftest.py` (45 tests, 100% coverage).
+- Doc updates: `TODO.md`, `DECISIONS.md` (ADR-0012…ADR-0014),
+  `REQUIREMENTS_MATRIX.md`, `ACCEPTANCE_CRITERIA.md`, `README.md`.
+
+**Outcome:** Pure game engine core implemented; all quality gates pass (ruff
+clean, 45 tests, 100% coverage). No MCP/Gmail/LLM/cloud/bonus implementation.
+
+> Subsequent stages will append their driving prompts here (MCP, protocol,
+> agents, orchestrator, report sender, cloud, bonus, audit).

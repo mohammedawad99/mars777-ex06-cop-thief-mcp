@@ -11,17 +11,25 @@ non-trivial.
 
 ## 1. Local game engine
 
-- **AC-ENG-1** (R-011, R-017): Given a Cop and Thief on the same cell after a
-  turn, when the engine evaluates terminal state, then it reports `cop_win`.
-- **AC-ENG-2** (R-018): Given `max_moves` moves elapse with no capture, then the
-  engine reports `thief_win`.
-- **AC-ENG-3** (R-019, R-020): Each of the 8 compass moves from a non-edge cell is
-  accepted; a `stay` action is rejected when `allow_stay=false`.
-- **AC-ENG-4** (R-021–R-024): A Cop barrier counts as the Cop's turn; a 6th
-  barrier in a sub-game is rejected; a Thief barrier attempt is rejected; moving
-  into a barrier cell is rejected for both roles.
-- **AC-ENG-5** (R-014): The engine runs cleanly for grid sizes 2×2, 3×3, 4×4, and
-  5×5 driven by `sanity_grid_sizes` (parametrized test passes for all four).
+**Stage 2 status:** the pure engine core is implemented and unit-tested
+(`tests/unit/game/`, 45 tests, 100% coverage). AC-ENG-1…AC-ENG-5 are test-covered
+below; AC-ENG-6 has per-game scoring covered with the `[30,90]` aggregate pending
+the orchestrator; AC-ENG-7 holds for the engine (parameters read from config) with
+a full repo-wide grep audit ongoing; AC-ENG-8 (seeded determinism) lands with the
+orchestrator stage.
+
+- **AC-ENG-1** (R-011, R-017) — ✅ test-covered: Given a Cop and Thief on the same
+  cell after a turn, when the engine evaluates terminal state, then it reports
+  `cop_win` (either player moving onto the other).
+- **AC-ENG-2** (R-018) — ✅ test-covered: Given `max_moves` moves elapse with no
+  capture, then the engine reports `thief_win`.
+- **AC-ENG-3** (R-019, R-020) — ✅ test-covered: Each of the 8 compass moves from a
+  non-edge cell is accepted; a `stay` action is rejected when `allow_stay=false`.
+- **AC-ENG-4** (R-021–R-024) — ✅ test-covered: A Cop barrier counts as the Cop's
+  turn; placement beyond the barrier limit is rejected; a Thief barrier attempt is
+  rejected; moving into a barrier cell is rejected.
+- **AC-ENG-5** (R-014) — ✅ test-covered: The engine runs cleanly for grid sizes
+  2×2, 3×3, 4×4, and 5×5 (parametrized test passes for all four).
 - **AC-ENG-6** (R-027–R-030): Scoring matches config exactly; over 6 sub-games the
   team total is always within `[30, 90]`.
 - **AC-ENG-7** (R-013, R-055): No game parameter is a literal in engine code; all

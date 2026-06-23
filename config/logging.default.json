@@ -1,0 +1,13 @@
+{
+  "version": "1.00",
+  "level": "INFO",
+  "format": "%(asctime)s %(levelname)s %(name)s %(message)s",
+  "timezone": "Asia/Jerusalem",
+  "destinations": {
+    "console": true,
+    "file": false,
+    "file_path": "logs/mars777.log"
+  },
+  "redact_keys": ["token", "authorization", "password", "client_secret", "refresh_token"],
+  "notes": "Stage 0 logging defaults; file logging is opt-in and logs/ is git-ignored."
+}

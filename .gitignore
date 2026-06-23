@@ -1,0 +1,49 @@
+# --- Secrets & credentials (NEVER commit) ---
+.env
+.env.*
+!.env-example
+credentials.json
+token.json
+token.pickle
+client_secret*.json
+*_oauth*.json
+google_oauth*.json
+service_account*.json
+*.pem
+*.key
+*.p12
+secrets/
+private/
+
+# --- Python caches & build artifacts ---
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.eggs/
+
+# --- Test / coverage caches ---
+.pytest_cache/
+.coverage
+.coverage.*
+coverage.xml
+htmlcov/
+.ruff_cache/
+.mypy_cache/
+
+# --- Environments ---
+.venv/
+venv/
+env/
+
+# --- Local logs & runtime output ---
+logs/
+*.log
+results/local/
+
+# --- Editor / OS noise ---
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

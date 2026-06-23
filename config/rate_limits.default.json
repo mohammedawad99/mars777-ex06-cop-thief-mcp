@@ -1,0 +1,13 @@
+{
+  "version": "1.00",
+  "defaults": {
+    "llm_requests_per_minute": 20,
+    "llm_max_concurrent": 2,
+    "mcp_requests_per_minute": 60,
+    "mcp_max_concurrent": 4,
+    "gmail_sends_per_hour": 10,
+    "retry_max_attempts": 3,
+    "retry_backoff_seconds": 2
+  },
+  "notes": "Conservative placeholder limits for Stage 0; tune against measured costs later."
+}

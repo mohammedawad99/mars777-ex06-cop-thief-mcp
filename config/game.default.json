@@ -1,0 +1,30 @@
+{
+  "version": "1.00",
+  "group_code": "MaRs-777",
+  "group_slug": "mars777",
+  "grid_size": [5, 5],
+  "sanity_grid_sizes": [[2, 2], [3, 3], [4, 4], [5, 5]],
+  "max_moves": 25,
+  "num_sub_games": 6,
+  "max_barriers": 5,
+  "movement_directions": [
+    "N",
+    "NE",
+    "E",
+    "SE",
+    "S",
+    "SW",
+    "W",
+    "NW"
+  ],
+  "allow_stay": false,
+  "scoring": {
+    "cop_win": 20,
+    "thief_win": 10,
+    "cop_loss": 5,
+    "thief_loss": 5
+  },
+  "timezone": "Asia/Jerusalem",
+  "visibility_radius": 1,
+  "report_recipient": "REPLACE_WITH_RECIPIENT@example.com"
+}

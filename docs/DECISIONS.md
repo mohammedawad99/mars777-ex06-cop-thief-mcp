@@ -39,3 +39,48 @@ commit `credentials.json`, `token.json`, or any OAuth artifact; reference them
 via env vars and `.env`; provide placeholders in `.env-example`. **Consequences:**
 No secret leakage; clear revoke story in `SECURITY.md`; CI/tests never need
 credentials.
+
+## ADR-0007 — Requirements Matrix as the audit backbone
+**Context:** The assignment is graded strictly against professional practice, and
+prior feedback flagged weak, unevidenced requirement tracking. **Decision:**
+Maintain `docs/REQUIREMENTS_MATRIX.md` as the single audit backbone — every
+requirement carries an ID, source, priority, planned response, proof artifact,
+validation method, risk, and status. **Consequences:** Acceptance criteria and
+the risk register reference matrix IDs one-to-one; reviewers can trace any
+requirement to its evidence; "Status" is the only volatile column.
+
+## ADR-0008 — Bonus treated as architecture-mandatory scope
+**Context:** Inter-group play is officially a bonus but reshapes the network/auth
+boundary if added late. **Decision:** Treat the bonus as **mandatory for
+architecture and planning** (HTTP transport, token auth, config-driven foreign
+URLs designed up front), implemented after a stable in-group baseline.
+**Consequences:** No late re-architecture; reinforces ADR-0003/ADR-0005; the
+bonus report schema is planned alongside the internal report.
+
+## ADR-0009 — Free-language messages plus interpreted-action logs
+**Context:** Agents must communicate in free natural language, yet disputes need
+an unambiguous record of what actually happened. **Decision:** Agents exchange
+**free natural language**; a deterministic interpreter maps each message to a
+concrete engine action, and **both** the raw text and the `interpreted_action`
+are logged per turn. **Consequences:** Satisfies the NL requirement while keeping
+the engine authoritative; transcripts are sufficient to resolve invalid-move
+disputes; ambiguous messages are rejected/clarified, never silently defaulted.
+
+## ADR-0010 — Operational inter-group protocol separated from agent language
+**Context:** "Protocol" is ambiguous — it could mean a wire format between agents
+or coordination between teams. **Decision:** Keep
+`docs/INTERGROUP_BONUS_PROTOCOL.md` strictly **operational** (URL/token exchange,
+agreed board/origin/turn order, 3+3 role-swapped sub-games, report
+reconciliation, token revocation); it imposes **no** hardcoded message protocol
+on the agents, which still speak free natural language. **Consequences:** The
+bonus is reproducible and fair without compromising the NL requirement;
+infrastructure concerns are documented apart from game language.
+
+## ADR-0011 — Evidence-first submission strategy
+**Context:** Prior feedback flagged overclaiming and unevidenced claims.
+**Decision:** Every quality or capability claim must cite a concrete proof
+artifact (results JSON, transcript, validation output, or screenshot for
+cloud/GUI evidence); a matrix requirement may only be marked `Done` once its
+proof exists and its validation has been run. **Consequences:** No
+"production-ready"/"fully implemented" language without evidence; the final gap
+audit checks claim→artifact links; partial work stays `In progress`.

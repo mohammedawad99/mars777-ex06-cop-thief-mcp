@@ -18,6 +18,19 @@ Placeholder code exists only so imports and tests pass.
 See `docs/TODO.md` for the staged roadmap and `docs/FINAL_GAP_AUDIT.md` (not
 final yet) for the closing audit plan.
 
+### Planning & verification artifacts
+
+Requirements hardening (Stage 1) is captured in a set of audit documents:
+
+- `docs/REQUIREMENTS_MATRIX.md` — the audit backbone: every requirement
+  (R-001…R-070) with its planned response, proof artifact, validation method,
+  and status. A requirement is only `Done` when its evidence exists.
+- `docs/ACCEPTANCE_CRITERIA.md` — measurable pass/fail criteria per delivery area.
+- `docs/RISK_REGISTER.md` — delivery, correctness, and security risks with
+  mitigations and triggers.
+- `docs/INTERGROUP_BONUS_PROTOCOL.md` — operational coordination for the
+  (mandatory-scope) inter-group bonus; not a hardcoded agent message protocol.
+
 ## Repository layout
 
 ```

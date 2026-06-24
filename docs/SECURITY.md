@@ -57,6 +57,19 @@
   `results/evidence/*.example.json` files are tracked; all other run output under
   `results/` is git-ignored.
 
+### Gemini API key handling (Stage 10)
+
+- The optional Gemini provider reads its key from **`GEMINI_API_KEY`** (preferred)
+  or **`GOOGLE_API_KEY`** in the environment only. No key is committed; placeholders
+  live in `.env-example` (angle-bracket form), real values only in the untracked
+  `.env` or the shell.
+- The key is held in a private attribute and is **never logged, returned, or placed
+  in `LlmResponse.metadata`** (metadata is exactly `{"llm_mode", "usage_source"}`).
+  The live-smoke result and printed JSON never contain the key (asserted by tests).
+- The provider makes a single non-streaming text call with no tools; prompts carry
+  only the role-safe observation (no hidden coordinates). Unit tests mock the SDK
+  and make **no network calls**; the live path is gated behind `RUN_GEMINI_LIVE=1`.
+
 ### LLM prompts and responses (Stage 9)
 
 - Prompts are built only from the **role-safe observation** (`llm/prompts.py`).

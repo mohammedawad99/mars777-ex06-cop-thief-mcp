@@ -1,6 +1,6 @@
 # PLAN — Intended Architecture
 
-**Group:** MaRs-777 · **Status:** Stage 9 (prompted MCP agent layer, offline fake LLM)
+**Group:** MaRs-777 · **Status:** Stage 10 (optional Gemini provider, live-gated)
 
 ## Architecture overview
 
@@ -56,10 +56,9 @@
 SDK/shared (Stage 0 ✅) → requirements hardening (Stage 1 ✅) → game engine
 (Stage 2 ✅) → local self-play pipeline (Stage 3 ✅) → local
 partial-observability & dialogue (Stage 4 ✅) → local HTTP MCP servers (Stage 5
-✅) → local MCP client & HTTP E2E smoke (Stage 6 ✅) → MCP-backed local game orchestration (Stage 7 ✅) → official report schema, validation & evidence (Stage 8 ✅) → **prompted MCP
-agent layer (Stage 9 — current; offline fake LLM)** → real LLM provider (opt-in)
-→ orchestrator hardening → report sender → cloud/self-play → bonus inter-group →
-hardening & audit.
+✅) → local MCP client & HTTP E2E smoke (Stage 6 ✅) → MCP-backed local game orchestration (Stage 7 ✅) → official report schema, validation & evidence (Stage 8 ✅) → prompted MCP agent layer (Stage 9 ✅; offline fake LLM) → **optional Gemini
+provider (Stage 10 — current; live-gated)** → orchestrator hardening → report
+sender → cloud/self-play → bonus inter-group → hardening & audit.
 
 ## Pipeline progress (Stage 3)
 
@@ -215,6 +214,27 @@ deterministic:
 The report gains `llm_mode`/provider/token/cost/`parse_failures`/`fallbacks_used`
 fields. Real external LLM calls, cloud exposure, Gmail, and inter-group play
 remain out of Stage 9.
+
+## Pipeline progress (Stage 10)
+
+Stage 10 makes the provider layer **real-LLM-ready** with an **optional** Gemini
+adapter, without requiring or committing any key:
+
+- **`llm/gemini_provider.py`** — `GeminiProvider` over the official `google-genai`
+  SDK (single non-streaming `generate_content`, small output cap, no tools);
+  reports actual usage tokens when present, else the estimator; the key is held
+  privately and never logged/returned/in metadata (ADR-0033).
+- **`llm/config.py` + `llm/provider_factory.py`** — config holds only env-var
+  *names*; `create_provider_from_env` defaults to `fake_local` and selects Gemini
+  only when requested with a key, else raises a controlled error; no import-time
+  API calls (ADR-0034).
+- **`mcp_client/gemini_prompted_smoke.py`** — live-gated (`RUN_GEMINI_LIVE=1`),
+  skips cleanly by default, runs one short bounded sub-game when enabled, never
+  prints the key (ADR-0035). Unit tests mock the SDK; no live calls in pytest.
+
+`fake_local` stays the default deterministic path; the real Gemini smoke is
+opt-in, cost-bounded, and was not run here. Cloud exposure, Gmail, and
+inter-group play remain out of Stage 10.
 
 ## Verification artifacts (core)
 

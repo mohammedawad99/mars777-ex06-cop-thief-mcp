@@ -41,6 +41,15 @@ every gate below passes.
     tokens and cost, and tears the servers down. A one-sub-game variant runs as a
     default pytest integration test (same `RUN_MCP_E2E=0` skip).
 
+### Optional (not required for default validation)
+
+- **Live Gemini smoke** —
+  `uv run python -m mars777_cop_thief.mcp_client.gemini_prompted_smoke` must exit 0
+  in **skipped** mode (default; no key, no network). It is **opt-in** and **not
+  part of default validation**: it runs a real Gemini sub-game only when
+  `RUN_GEMINI_LIVE=1` and an API key are set in the local environment. Normal
+  `pytest`/coverage never require a key and never call the network.
+
 ## Staging discipline
 
 - **Never** run `git add .` — stage files explicitly and intentionally.

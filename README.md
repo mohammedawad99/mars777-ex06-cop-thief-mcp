@@ -8,6 +8,35 @@ a natural-language protocol, and the final results are reported via a Google
 (Gmail) report sender. Inter-group play is treated as in-scope (see
 `docs/PRD_bonus_intergroup.md`).
 
+## Status — Stage 10 (optional Google Gemini provider, live-gated)
+
+An **optional real Google Gemini provider adapter** is implemented behind the
+existing LLM provider interface (`llm/gemini_provider.py`, official `google-genai`
+SDK). It is **opt-in**: the default provider stays `fake_local`, and **normal
+validation and all tests pass with no API key**. A provider factory
+(`create_provider_from_env`) returns `fake_local` unless `LLM_PROVIDER=gemini`
+with `GEMINI_API_KEY` (or `GOOGLE_API_KEY`) present; a missing key raises a
+controlled error. The key is read from the environment only and is **never
+logged, returned, or placed in metadata**; hidden opponent coordinates are never
+sent in prompts.
+
+`fake_local` remains the **deterministic, grading-safe mode** (use
+`prompted_game_smoke` for reproducible proof). The real Gemini path has a
+**live-gated smoke**: by default it skips (exit 0, no network); it runs a single
+short bounded sub-game only when explicitly enabled:
+
+```bash
+# Skips cleanly by default (no key, no network):
+uv run python -m mars777_cop_thief.mcp_client.gemini_prompted_smoke
+
+# Live (local only): requires RUN_GEMINI_LIVE=1 and a key set in your environment
+RUN_GEMINI_LIVE=1 GEMINI_API_KEY=... uv run python -m mars777_cop_thief.mcp_client.gemini_prompted_smoke
+```
+
+**No API key is committed or required for tests.** This stage is still
+local-only: **no cloud/public URLs**, **no Gmail/email sending**, and **no real
+inter-group bonus game** has been completed.
+
 ## Status — Stage 9 (prompted MCP agent layer, offline fake LLM)
 
 A **provider-agnostic LLM-agent layer** and a **prompted MCP-backed game** are
@@ -226,7 +255,7 @@ src/mars777_cop_thief/
   orchestration/      full-state and observed/dialogue runners, totals, report
   mcp_servers/        local HTTP MCP servers (Cop/Thief), auth guard, tools
   mcp_client/         local MCP client, server-pair lifecycle, E2E + game flow
-  llm/                provider interface, offline fake provider, prompts, parser, agent
+  llm/                provider interface, fake + optional Gemini provider, factory, prompts, parser, agent
   reporting/          official report schema, validation, evidence pack writer
 results/evidence/     sanitized, deterministic example artifacts (*.example.json)
 tests/unit/           version, config, and SDK smoke tests

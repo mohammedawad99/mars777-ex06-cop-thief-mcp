@@ -42,6 +42,20 @@ a measured figure once the relevant stage runs. Track per-run cost in
   a real external provider is added (opt-in, later stage), the rate and measured
   usage/cost from real responses replace the zero-rate model here.
 
+## Gemini cost measurement & live-smoke budget guard (Stage 10)
+
+- The optional Gemini provider reports **actual usage tokens** from
+  `usage_metadata` when available (else the estimator). `estimated_cost_usd` uses
+  a per-1k rate placeholder (`GEMINI_RATE_PER_1K = 0.0`); set it to your tier's
+  blended $/1k rate to price real runs — until then cost is reported as 0.0 and
+  **not claimed as a measured spend**.
+- **Live-smoke budget guard:** the real Gemini smoke is **gated**
+  (`RUN_GEMINI_LIVE=1`), runs only **one short bounded sub-game** on a 3×3 board
+  with `max_moves = 4` (a handful of calls), and caps output via
+  `GEMINI_MAX_OUTPUT_TOKENS` (default 120). It is **not** a full 6-sub-game game.
+- Measured real-Gemini token/cost figures are **TBD** — to be filled in only after
+  a local `RUN_GEMINI_LIVE=1` run with a real key; none was run for this stage.
+
 ## Dependency / hosting note (Stage 5)
 
 - Stage 5 added **FastMCP** (`fastmcp>=3.4.2,<4`, pinned in `uv.lock`) for the

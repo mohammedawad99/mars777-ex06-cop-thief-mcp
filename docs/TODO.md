@@ -13,8 +13,8 @@ Statuses: ✅ done · 🔄 in progress · ⏳ planned
 | 6 | Local MCP client & HTTP E2E smoke: subprocess server pair, FastMCP client, deterministic flow over HTTP | ✅ |
 | 7 | MCP-backed local game orchestration: real sub-games/full game where each turn calls the MCP servers over HTTP | ✅ |
 | 8 | Official report schema/validation + sanitized local evidence pack; bonus schema example | ✅ |
-| 9 | Prompted MCP agent layer: provider interface, offline fake LLM, prompts/parser/cost, prompted game runner | 🔄 |
-| 10 | Real external LLM provider behind the same interface (opt-in, keys via env) | ⏳ |
+| 9 | Prompted MCP agent layer: provider interface, offline fake LLM, prompts/parser/cost, prompted game runner | ✅ |
+| 10 | Optional Google Gemini provider adapter (google-genai), env config, provider factory, live-gated smoke | 🔄 |
 | 11 | Orchestrator hardening over MCP: seeds, aggregation, rate limits | ⏳ |
 | 12 | Google report sender (Gmail/OAuth) for final results, JSON-only email body | ⏳ |
 | 13 | Cloud/self-play through public, authenticated URLs | ⏳ |
@@ -224,7 +224,7 @@ Statuses: ✅ done · 🔄 in progress · ⏳ planned
 - **No** Gmail/email sending, cloud deployment, public URLs, external-LLM, GUI,
   production OAuth, or real inter-group remote play in this stage.
 
-## Stage 9 checklist (current — prompted MCP agent layer)
+## Stage 9 checklist (completed — prompted MCP agent layer)
 
 - [x] `llm/provider.py` — provider Protocol + `LlmResponse` (token/cost fields)
 - [x] `llm/fake_provider.py` — deterministic offline `fake_local` provider
@@ -245,7 +245,7 @@ Statuses: ✅ done · 🔄 in progress · ⏳ planned
       mars777_cop_thief.mcp_client.prompted_game_smoke` → exit 0, all checks true
       (24,762 prompt + 2,574 response tokens, cost 0.0, 0 parse failures/fallbacks)
 - [x] Tests under `tests/unit/llm/` + prompted flow/integration (229 total, 100%)
-- [ ] Reviewed and explicitly committed
+- [x] Reviewed and explicitly committed
 
 ### Stage 9 scope notes
 
@@ -258,8 +258,40 @@ Statuses: ✅ done · 🔄 in progress · ⏳ planned
 - **No** real external LLM API, API keys, cloud, public URLs, Gmail, GUI, or real
   inter-group remote play — only the offline `fake_local` provider.
 
-## Next up (Stage 10 — real external LLM provider, opt-in)
+## Stage 10 checklist (current — optional Gemini provider, live-gated)
 
-- [ ] Implement a real provider behind the same interface (keys via env only)
-- [ ] Keep `fake_local` as the default offline/test path; measure real cost
+- [x] `google-genai` added via uv and pinned (`google-genai>=2.10.0`; uv.lock exact)
+- [x] `config/llm.default.json` — provider/allowed_providers/env-var names/defaults
+      (no keys); `.env-example` Gemini placeholders only
+- [x] `llm/config.py` — load LLM config + `LlmConfigError`
+- [x] `llm/gemini_provider.py` — `GeminiProvider` over `google-genai`
+      (`generate_content`, no streaming/tools); actual usage tokens when present,
+      else estimator; key held privately, never logged/returned/in metadata
+- [x] `llm/provider_factory.py` — `create_provider_from_env` (default fake_local;
+      gemini only when requested + key present; controlled error otherwise);
+      no import-time API calls
+- [x] `mcp_client/gemini_prompted_smoke.py` — live-gated; skips (exit 0) unless
+      `RUN_GEMINI_LIVE=1`; controlled failure if enabled without a key; one short
+      bounded sub-game when enabled with a key; never prints the key
+- [x] Mocked unit tests (no network): factory, provider mapping/malformed/secrets,
+      smoke gate (245 total, 100% coverage)
+- [x] Live Gemini smoke **skipped by design** (no key, `RUN_GEMINI_LIVE` unset):
+      `uv run python -m mars777_cop_thief.mcp_client.gemini_prompted_smoke` → exit 0
+- [ ] Reviewed and explicitly committed
+
+### Stage 10 scope notes
+
+- Gemini is **opt-in**; `fake_local` remains the default and the deterministic,
+  grading-safe mode. Normal tests/validation require **no API key**.
+- The key is read from the environment only and is **never logged, returned, or
+  put in metadata**. The provider lives on the orchestrator side, never in the
+  servers; hidden coordinates are never sent in prompts.
+- **No** committed/required API key, cloud deployment, public URLs, Gmail/email,
+  GUI, or real inter-group remote play. The live Gemini smoke was **not run**
+  here (no key); it is available behind `RUN_GEMINI_LIVE=1`.
+
+## Next up (Stage 11 — orchestrator hardening over MCP)
+
+- [ ] Seeds, aggregation, and rate limits across runs
+- [ ] Measure real Gemini cost once a key is used locally (opt-in)
 - [ ] No change to the role-safe observation boundary or the parser contract

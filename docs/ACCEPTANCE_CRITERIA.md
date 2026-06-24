@@ -114,6 +114,13 @@ text. The MCP transport and model-driven interpretation are later stages.
   extracts the action; a parse/legality failure is recorded
   (`parse_failures`/`fallbacks_used`) and replaced by a deterministic legal
   fallback. Prompts/responses never contain hidden opponent coordinates.
+- **AC-NL-2c** (R-001, R-061) — ✅ test-covered (Stage 10): an **optional** real
+  Google Gemini provider implements the same interface behind a factory (default
+  `fake_local`; gemini opt-in via `LLM_PROVIDER=gemini` + an env key). Mocked
+  tests verify SDK→`LlmResponse` mapping (actual usage tokens when present),
+  malformed/empty handling, non-negative token/cost, and that the API key never
+  appears in the request/metadata. The live smoke is **gated** (`RUN_GEMINI_LIVE=1`)
+  and was **not run** here (no key); it skips cleanly by default.
 - **AC-NL-3** (R-003): An ambiguous or uninterpretable NL message is handled
   deterministically (rejected or clarified) and logged — later stage (model
   interpretation not yet implemented).

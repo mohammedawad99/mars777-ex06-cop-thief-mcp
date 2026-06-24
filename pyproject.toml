@@ -8,6 +8,7 @@ license = { text = "MIT" }
 authors = [{ name = "MaRs-777" }]
 dependencies = [
     "fastmcp>=3.4.2,<4",
+    "google-genai>=2.10.0,<3",
 ]
 
 [dependency-groups]

@@ -376,5 +376,44 @@ exit 0, all checks true; 24,762 prompt + 2,574 response tokens, cost 0.0, 0 pars
 failures/fallbacks). Ruff clean, 229 tests, 100% coverage. No real-LLM/cloud/
 Gmail/GUI/inter-group implementation added.
 
-> Subsequent stages will append their driving prompts here (real LLM provider,
-> orchestrator hardening, report sender, cloud, bonus, audit).
+## Stage 10 — Optional Google Gemini provider (live-gated) (2026-06-24)
+
+**Goal:** Add an **optional** real Google Gemini provider adapter behind the
+Stage 9 LLM interface and a **live-gated** smoke, **without committing or
+requiring secrets in tests**. **No** committed/required API key, cloud, public
+URLs, Gmail, GUI, or real inter-group remote play.
+
+**Key constraints captured from the prompt:**
+- Official **`google-genai`** SDK only (added via uv, pinned); not the deprecated
+  `google-generativeai`; no LangChain/CrewAI/AutoGen.
+- Inspected the installed SDK API first: `Client(api_key=...)` (offline
+  construction), `client.models.generate_content(model=, contents=, config=
+  GenerateContentConfig(max_output_tokens=, temperature=))`, response `.text` +
+  `.usage_metadata` (`prompt_token_count`/`candidates_token_count`).
+- Provider lives on the orchestrator side; reads `GEMINI_API_KEY`/`GOOGLE_API_KEY`,
+  `GEMINI_MODEL`, `GEMINI_MAX_OUTPUT_TOKENS`, `GEMINI_TEMPERATURE` from env; default
+  stays `fake_local`; key never logged/returned/in metadata; no hidden coordinates
+  in prompts; single non-streaming call, no tools; actual usage tokens when
+  available, else the estimator (documented fallback).
+- Factory: default fake_local; gemini only when `LLM_PROVIDER=gemini` **and** a key
+  is present; controlled `LlmConfigError` otherwise; no import-time API calls.
+- Live smoke: skips (exit 0) unless `RUN_GEMINI_LIVE=1`; controlled failure if
+  enabled without a key; one short bounded sub-game when enabled with a key.
+- Normal tests pass with no key; SDK calls are mocked; no live calls in pytest.
+
+**Artifacts produced:**
+- `src/mars777_cop_thief/llm/` — `config.py`, `gemini_provider.py`,
+  `provider_factory.py` (+ `__init__` exports).
+- `src/mars777_cop_thief/mcp_client/gemini_prompted_smoke.py`.
+- `config/llm.default.json`; `.env-example` Gemini placeholders; `pyproject.toml`
+  + `uv.lock` (`google-genai` pinned).
+- Tests under `tests/unit/llm/` and `tests/unit/mcp_client/` (245 tests, 100%).
+
+**Outcome:** Optional Gemini provider adapter implemented; all unit/mocked tests
+pass with **no API key** (245 tests, 100% coverage, ruff clean). The live Gemini
+smoke is **available but skipped** (no key; `RUN_GEMINI_LIVE` unset) — it exits 0
+in skipped mode and fails safely (exit 1) if enabled without a key. No
+real-Gemini call was made; no cloud/Gmail/GUI/inter-group implementation added.
+
+> Subsequent stages will append their driving prompts here (orchestrator
+> hardening, report sender, cloud, bonus, audit).

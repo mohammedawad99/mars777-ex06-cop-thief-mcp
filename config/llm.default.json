@@ -1,0 +1,16 @@
+{
+  "version": "1.00",
+  "provider": "fake_local",
+  "allowed_providers": ["fake_local", "gemini"],
+  "provider_env_var": "LLM_PROVIDER",
+  "gemini_api_key_env_var": "GEMINI_API_KEY",
+  "google_api_key_env_var": "GOOGLE_API_KEY",
+  "gemini_model_env_var": "GEMINI_MODEL",
+  "max_output_tokens_env_var": "GEMINI_MAX_OUTPUT_TOKENS",
+  "temperature_env_var": "GEMINI_TEMPERATURE",
+  "default_gemini_model": "gemini-2.5-flash",
+  "max_output_tokens": 120,
+  "temperature": 0.2,
+  "live_smoke_enabled_env_var": "RUN_GEMINI_LIVE",
+  "notes": "Default provider is fake_local (offline, deterministic). Gemini is opt-in via LLM_PROVIDER=gemini with an API key set outside the repo. No keys are stored here."
+}

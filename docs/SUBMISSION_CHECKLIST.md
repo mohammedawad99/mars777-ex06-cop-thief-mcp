@@ -36,6 +36,10 @@ Strict checklist for the final review. Boxes are checked only when verified.
 - [x] Bonus/inter-group schema example exists (no real run claimed; `bonus_claim=false`)
 - [x] Sanitized, deterministic evidence pack committed under
       `results/evidence/*.example.json` (no tokens, no full event logs)
+- [x] Optional real provider (Gemini) adapter implemented behind the LLM interface
+      (opt-in; no key required for tests)
+- [ ] Optional real-Gemini live smoke run locally with `RUN_GEMINI_LIVE=1` + key
+      (evidence of real integration; not run in default validation)
 - [ ] Real internal report emailed (Gmail sender — later stage)
 - [ ] Real inter-group bonus game played and reconciled (later stage)
 

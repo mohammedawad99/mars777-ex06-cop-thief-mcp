@@ -310,3 +310,35 @@ deterministic legal fallback** (`first_legal_action`). Parse failures and
 fallbacks are counted in the report. **Consequences:** A bad or adversarial
 response can never corrupt the game; runs always terminate; the report is honest
 about how often the model's action was unusable.
+
+## ADR-0033 — Optional Gemini provider via the official google-genai SDK
+**Context:** The assignment benefits from a real LLM, but tests must stay
+deterministic, offline, and key-free. **Decision:** Add an **opt-in** Gemini
+provider (`llm/gemini_provider.py`) using the official **`google-genai`** SDK
+(pinned via uv) behind the existing provider interface; a single non-streaming
+`generate_content` call with a small `max_output_tokens` and no tool calling.
+Actual usage tokens (`usage_metadata`) are reported when present, otherwise the
+existing estimator is used (documented fallback). **Consequences:** The
+architecture is real-LLM-ready without changing the engine, servers, or parser;
+`fake_local` stays the default and grading-safe path; the deprecated
+`google-generativeai` package is not used.
+
+## ADR-0034 — Provider factory: env-selected, default fake_local, no import calls
+**Context:** Provider selection must be configuration-driven and safe by default.
+**Decision:** `create_provider_from_env` returns **`fake_local` by default** and a
+Gemini provider **only** when `LLM_PROVIDER=gemini` **and** `GEMINI_API_KEY` (or
+`GOOGLE_API_KEY`) is present; a missing key raises a controlled
+`LlmConfigError`. The factory makes **no import-time API calls**, reads only env
+var *names* from `config/llm.default.json`, and accepts an injectable `env` for
+testing. **Consequences:** Misconfiguration fails loudly and safely; no secret is
+needed or committed for normal runs; selection is testable without a network.
+
+## ADR-0035 — Live Gemini smoke is gated; no live calls in tests
+**Context:** A real-provider smoke proves integration but must not run (or cost
+money) by default or in CI. **Decision:** `gemini_prompted_smoke` **skips** (exit
+0, no network) unless `RUN_GEMINI_LIVE=1`; if enabled without a key it returns a
+controlled failure (exit non-zero); when enabled with a key it runs **one short
+bounded sub-game** (3×3, few moves) and never prints the key. Unit tests **mock
+the SDK** and never call the network. **Consequences:** Deterministic proof comes
+from `fake_local`; the real path is evidence-of-integration, opt-in, and
+cost-bounded; the API key never appears in logs, results, or the repo.

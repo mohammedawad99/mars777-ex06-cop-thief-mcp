@@ -48,6 +48,13 @@ Strict checklist for the final review. Boxes are checked only when verified.
 - [x] Deterministic `run_id`/config fingerprint; failures classified; bounded retries
 - [x] Cloud deployment packaging + preflight ready (Dockerfile, role entrypoint,
       `deployment.preflight` → `status: ok`); no secrets in image
+- [x] Live-readiness preflight ready (`deployment.live_readiness` exits 0, lists
+      blockers; read-only — no live send, no deploy)
+- [x] Gmail OAuth files present **outside the repo** (manual smoke: draft + calendar
+      event OK); `gmail.preflight` → `status: ready` without reading file contents
+- [ ] Cloud live blockers cleared: `gcloud` installed + authenticated, project
+      `api-mars-777` active, **billing enabled**, region `me-west1` confirmed
+      (currently blocked: gcloud not installed on the dev machine)
 - [ ] Two MCP services deployed at public, authenticated URLs (manual gated deploy)
 - [ ] `cloud_status` flipped + real `cop_mcp_url`/`thief_mcp_url` recorded locally
 - [ ] Real internal report emailed via `RUN_GMAIL_LIVE=1` with external OAuth files

@@ -80,6 +80,13 @@ placeholder URLs). The criteria below that require *real* public URLs remain ope
 - **AC-CLOUD-0** (R-006) — ✅ test-covered: `deployment.preflight` validates the
   config, Dockerfile/.dockerignore, absence of secret files, placeholder URLs, and
   role/port resolution without starting a server → `status: ok`.
+- **AC-CLOUD-0b** (R-006, R-037) — ✅ test-covered (Stage 13B): `deployment.live_readiness`
+  combines a Gmail OAuth external-file check (paths/existence/outside-repo only, no
+  content read), read-only `gcloud`/Cloud Run checks (install, account, project vs
+  `api-mars-777`, region `me-west1`, best-effort billing), and the packaging
+  preflight into one JSON report. It exits `0` with blockers listed and performs
+  **no live send and no deploy**. Blockers/warnings never crash. Mocked/temp-file
+  tests make no network call.
 - **AC-CLOUD-1** (R-006, R-009) — ⏳ open: Both servers reachable at public Cop and
   Thief URLs; a match runs end-to-end against those URLs (requires live deploy).
 - **AC-CLOUD-2** (R-010) — ⏳ open: The public URLs reject unauthenticated requests
@@ -184,6 +191,12 @@ with no credentials and make no network call; the live send was not run.
 - **AC-MAIL-3** (R-036) — ✅ test-covered: OAuth credential/token paths come from
   env vars pointing outside the repo; config does not require the files at
   import/load; the loader/result never include secret content.
+- **AC-MAIL-4** (R-036, R-037) — ✅ test-covered (Stage 13B): `gmail.preflight`
+  confirms the external OAuth files **exist outside the repo** by path/stat only —
+  it never opens or prints their contents and reports `status: ready` with
+  `live_send_enabled=false` unless `RUN_GMAIL_LIVE=1`. The manual OAuth smoke
+  (Gmail draft + Calendar event) succeeded externally; **no live report send was
+  performed** in this stage and no OAuth file was copied into the repo.
 
 ## 8. Security
 

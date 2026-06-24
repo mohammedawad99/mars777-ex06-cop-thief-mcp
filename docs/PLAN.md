@@ -1,6 +1,6 @@
 # PLAN — Intended Architecture
 
-**Group:** MaRs-777 · **Status:** Stage 13A (cloud deployment packaging & preflight)
+**Group:** MaRs-777 · **Status:** Stage 13B (live-readiness preflight; no live send/deploy)
 
 ## Architecture overview
 
@@ -58,8 +58,9 @@ SDK/shared (Stage 0 ✅) → requirements hardening (Stage 1 ✅) → game engin
 partial-observability & dialogue (Stage 4 ✅) → local HTTP MCP servers (Stage 5
 ✅) → local MCP client & HTTP E2E smoke (Stage 6 ✅) → MCP-backed local game orchestration (Stage 7 ✅) → official report schema, validation & evidence (Stage 8 ✅) → prompted MCP agent layer (Stage 9 ✅; offline fake LLM) → optional Gemini
 provider (Stage 10 ✅; live-gated) → Gmail JSON report sender (Stage 11 ✅;
-dry-run + live-gated) → hardened run validation (Stage 12 ✅) → **cloud deployment
-packaging & preflight (Stage 13A — current)** → live cloud deploy (13B) → bonus
+dry-run + live-gated) → hardened run validation (Stage 12 ✅) → cloud deployment
+packaging & preflight (Stage 13A ✅) → **live-readiness preflight (Stage 13B —
+current; read-only, no live send/deploy)** → live cloud deploy (13C) → bonus
 inter-group → hardening & audit.
 
 ## Pipeline progress (Stage 3)
@@ -294,9 +295,29 @@ without performing it (`deployment/`, `Dockerfile`, `cloud_entrypoint.py`):
   **no cloud calls, no gcloud, no credentials**; the deploy script is an inert,
   `RUN_CLOUD_DEPLOY=1`-gated template with placeholders only.
 
-**No Cloud Run service was created and no public URL exists.** Stage 13B (a
-manual, gated live deploy) records real URLs locally and flips `cloud_status`;
-the hardened validation/manifest and the role-safe boundary carry over unchanged.
+**No Cloud Run service was created and no public URL exists.**
+
+## Pipeline progress (Stage 13B — live-readiness preflight)
+
+Stage 13B adds a **read-only bridge** from local implementation to live operations
+(`deployment/live_readiness.py`, `deployment/gcloud_checks.py`, `gmail/preflight.py`)
+— it deploys nothing and sends no live Gmail (ADR-0045/0046):
+
+- **Gmail OAuth readiness** — checks `GOOGLE_OAUTH_CLIENT_SECRETS` /
+  `GOOGLE_OAUTH_TOKEN_PATH` paths exist **outside** the repo by stat only; never
+  reads contents; `live_send_enabled=false` unless `RUN_GMAIL_LIVE=1`. The external
+  OAuth files are present (manual smoke succeeded) and stay out of Git.
+- **Read-only cloud checks** — `gcloud` install, active account presence, active
+  project vs `api-mars-777`, intended region (`CLOUD_RUN_REGION`, recommended
+  `me-west1`), best-effort billing; missing gcloud / no auth / project mismatch /
+  billing-disabled are **blockers**, billing-unknown a **warning** — never a crash.
+  No `deploy`/`build`/`create`/`enable` command is ever run.
+- **Combined readiness** — folds in the packaging preflight and lists the exact
+  remaining manual actions; exits `0` once checks complete even with blockers.
+
+The **next** stage (manual, gated live deploy) records real URLs locally and flips
+`cloud_status`; the hardened validation/manifest and the role-safe boundary carry
+over unchanged.
 
 ## Verification artifacts (core)
 

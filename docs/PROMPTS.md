@@ -528,5 +528,26 @@ Ruff clean, 321 tests, 100% coverage. **No real cloud deployment was attempted**
 no Cloud Run service was created, no public URL exists, and no credentials/secrets
 were committed.
 
+## Stage 13B — live-readiness preflight (no live send/deploy)
+
+**Prompt summary:** Add a live-readiness preflight that bridges local work to live
+operations *without* doing any live Gmail send or cloud deployment. Implement a
+Gmail OAuth external-file check (read `GOOGLE_OAUTH_CLIENT_SECRETS` /
+`GOOGLE_OAUTH_TOKEN_PATH` paths only, verify existence + outside-repo location,
+never read contents), read-only `gcloud`/Cloud Run checks (install, active account
+presence, active project vs `api-mars-777`, region `me-west1`, best-effort
+billing — blockers/warnings, never crashes), and a combined
+`deployment.live_readiness` command that prints structured JSON and exits 0 even
+with blockers. Forbidden: live send, deploy/build/enable, public URL creation,
+copying credentials/token into the repo, committing secrets.
+
+**Outcome:** `gmail/preflight.py`, `deployment/gcloud_checks.py`,
+`deployment/live_readiness.py` added with 19 new tests (340 total, 100% coverage);
+ruff clean, format check passed. `uv run python -m
+mars777_cop_thief.deployment.live_readiness` exits 0 and lists blockers. On this
+machine: Gmail OAuth files present outside the repo; `gcloud` not installed (cloud
+blocked). **No live Gmail send and no cloud deployment were performed**, no public
+URL exists, and no credentials/token/secret contents were read or committed.
+
 > Subsequent stages will append their driving prompts here (live cloud deploy,
 > bonus, audit).

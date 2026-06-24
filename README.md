@@ -8,6 +8,31 @@ a natural-language protocol, and the final results are reported via a Google
 (Gmail) report sender. Inter-group play is treated as in-scope (see
 `docs/PRD_bonus_intergroup.md`).
 
+## Status — Stage 13B (live-readiness preflight)
+
+**A live-readiness preflight is implemented** — a safe bridge from the local
+implementation to live operations. It combines a Gmail OAuth external-file check,
+read-only Cloud Run / `gcloud` checks, and the existing packaging preflight into
+one JSON report that makes every remaining blocker explicit. **It deploys nothing
+and sends no live Gmail**: it only inspects existence, location, and read-only
+state, then lists the exact manual actions left before a live deploy or live send.
+
+```bash
+uv run python -m mars777_cop_thief.deployment.live_readiness
+```
+
+The Gmail check reads only the *paths* in `GOOGLE_OAUTH_CLIENT_SECRETS` /
+`GOOGLE_OAUTH_TOKEN_PATH`, confirms the files exist **outside** the repo, and
+**never opens their contents**; `live_send_enabled` stays `false` unless
+`RUN_GMAIL_LIVE=1`. The cloud check uses only read-only commands (`gcloud version`,
+active account/project, best-effort billing) — it never runs deploy/build/enable
+and reports missing gcloud, no auth, project mismatch, or unknown billing as
+**blockers/warnings, not crashes**. The command exits `0` whenever the checks
+complete, even when blockers remain. **No live Gmail send and no cloud deployment
+occur**, and no credential/token contents appear in the output. The expected
+project is `api-mars-777`; the recommended region is `me-west1` (override with
+`CLOUD_RUN_REGION`).
+
 ## Status — Stage 13A (cloud deployment packaging & preflight)
 
 **Cloud deployment packaging and preflight are implemented** for two independent

@@ -85,6 +85,29 @@
   The deploy template is inert unless `RUN_CLOUD_DEPLOY=1`; preflight confirms no
   secret file is present before any deploy. See `docs/CLOUD_DEPLOYMENT.md`.
 
+### Live-readiness preflight — external OAuth paths, no content read (Stage 13B)
+
+- The Gmail readiness check (`gmail/preflight.py`) reads only the **paths** named by
+  `GOOGLE_OAUTH_CLIENT_SECRETS` / `GOOGLE_OAUTH_TOKEN_PATH`. It **stats** them for
+  existence, verifies they resolve **outside the repository root**, and warns on
+  unexpected filenames — it **never opens, reads, or prints the file contents**, and
+  its JSON result contains booleans/blockers/warnings only (no paths, no contents).
+  A unit test patches `Path.read_text`/`Path.open` for the OAuth files to assert the
+  preflight never reads them. `live_send_enabled` is `false` unless `RUN_GMAIL_LIVE=1`,
+  and the preflight itself sends nothing.
+- The cloud readiness check (`deployment/gcloud_checks.py`) runs only **read-only**
+  `gcloud` commands (version/account/project/billing-describe) through a **bounded,
+  injectable** runner and **never** runs `deploy`/`build`/`create`/`enable`. The
+  active-account value is reduced to a **boolean presence** flag — the email is not
+  emitted. Missing gcloud, no auth, project mismatch, and disabled billing are
+  reported as blockers; unknown billing as a warning; none raises. The combined
+  `deployment.live_readiness` output is asserted by tests to contain no secret-like
+  content (no credential/token contents, no account email, no file names).
+- **Manual OAuth smoke** was performed by the user **outside the repo**
+  (`/…/private/…`, never committed): credentials/token created there, a Gmail draft
+  and a Calendar event succeeded. Those files are referenced only by env-var path at
+  command runtime and are excluded by `.gitignore`/`.dockerignore`.
+
 ### Run manifests and results (Stage 12)
 
 - Run manifests and the hardened-smoke summary contain **no secrets**: identity,

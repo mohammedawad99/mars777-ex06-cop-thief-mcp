@@ -17,8 +17,9 @@ Statuses: ✅ done · 🔄 in progress · ⏳ planned
 | 10 | Optional Google Gemini provider adapter (google-genai), env config, provider factory, live-gated smoke | ✅ |
 | 11 | Gmail JSON report sender: dry-run default + live-gated sending, JSON-only body, external OAuth files | ✅ |
 | 12 | Hardened run validation: deterministic identity/manifest, failure classes, retry/timeout, aggregate validation | ✅ |
-| 13A | Cloud deployment packaging & preflight (Dockerfile, role entrypoint, cloud config, preflight) — no live deploy | 🔄 |
-| 13B | Cloud/self-play through public, authenticated URLs (live deploy, gated) | ⏳ |
+| 13A | Cloud deployment packaging & preflight (Dockerfile, role entrypoint, cloud config, preflight) — no live deploy | ✅ |
+| 13B | Live-readiness preflight: Gmail OAuth external-file check + read-only cloud/gcloud checks + combined readiness report — no live send/deploy | 🔄 |
+| 13C | Cloud/self-play through public, authenticated URLs (live deploy, gated) | ⏳ |
 | 14 | Bonus inter-group play against another group's server (mandatory scope) | ⏳ |
 | 15 | Hardening: cost/measurement tracking, logging, security review | ⏳ |
 | 16 | Final gap audit + submission checklist closure | ⏳ |
@@ -383,7 +384,32 @@ Statuses: ✅ done · 🔄 in progress · ⏳ planned
   prints a token value.
 - Local mode still binds `127.0.0.1`; cloud mode binds `0.0.0.0` and reads `PORT`.
 
-## Next up (Stage 13B — live cloud deploy of public authenticated URLs)
+## Stage 13B — live-readiness preflight (this stage)
+
+- [x] `gmail/preflight.py` — external OAuth file readiness (paths only; no content
+      read); returns `status`/`credentials_file_exists`/`token_file_exists`/
+      `outside_repo`/`live_send_enabled`/`blockers`/`warnings`
+- [x] `deployment/gcloud_checks.py` — read-only gcloud checks (install, active
+      account presence, active project vs `api-mars-777`, region, best-effort
+      billing); missing/blocked states never crash
+- [x] `deployment/live_readiness.py` — combined Gmail + cloud + packaging report;
+      `uv run python -m mars777_cop_thief.deployment.live_readiness` exits 0 with
+      blockers listed; sends no live Gmail, deploys nothing
+- [x] Tests under `tests/unit/gmail/` + `tests/unit/deployment/` (340 total, 100%)
+- [x] Manual OAuth smoke succeeded externally (Gmail draft + Calendar event);
+      OAuth files stay outside the repo and are never committed/printed
+- [ ] Reviewed and explicitly committed
+
+### Stage 13B scope notes
+
+- **No live Gmail send and no cloud deployment were performed.** The preflight is
+  read-only: existence/location and read-only `gcloud` state only.
+- Known blockers on this machine: `gcloud` not installed (so account/project/
+  billing are unknown). Gmail OAuth files are present outside the repo.
+- Expected project `api-mars-777`; recommended region `me-west1`. Real absolute
+  OAuth paths are used only at command runtime, never committed to config/docs.
+
+## Next up (Stage 13C — live cloud deploy of public authenticated URLs)
 
 - [ ] Manually deploy the two MCP services (gated by `RUN_CLOUD_DEPLOY=1`)
 - [ ] Record real public URLs in local `.env` (never commit); flip `cloud_status`

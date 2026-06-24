@@ -26,12 +26,44 @@ binds `0.0.0.0`, reads `PORT` (injected by the platform), and **fails fast** if
 the role's token env var is missing. The token value is never logged. The LLM
 stays outside the servers; tools remain role-safe (no hidden-state leakage).
 
+## Stage 13B — live-readiness preflight (run this first)
+
+Before any deploy, run the **combined live-readiness preflight**. It is read-only:
+it makes no cloud calls that change state and sends no Gmail.
+
+```bash
+uv run python -m mars777_cop_thief.deployment.live_readiness
+```
+
+It reports three groups and the remaining manual blockers:
+
+- **Gmail OAuth files** — checks that `GOOGLE_OAUTH_CLIENT_SECRETS` /
+  `GOOGLE_OAUTH_TOKEN_PATH` point at existing files **outside** the repo. It only
+  stats paths; it never reads contents. `live_send_enabled` is `false` unless
+  `RUN_GMAIL_LIVE=1`. Your real paths stay outside Git (use placeholders in docs).
+- **Cloud / gcloud (read-only)** — whether `gcloud` is installed, whether an
+  account is active, the active project vs the expected **`api-mars-777`**, the
+  intended **region** (`CLOUD_RUN_REGION`, recommended `me-west1`), and a
+  best-effort billing read. **Billing disabled** is a blocker; **billing unknown**
+  is a warning. Missing gcloud / no auth are blockers, never crashes. It runs no
+  `deploy`/`build`/`create`/`enable` command.
+- **Packaging** — folds in the Stage 13A packaging preflight status.
+
+The command exits `0` once the checks complete even if blockers remain; resolve
+every listed blocker before continuing. Typical first-time blockers: install
+gcloud, `gcloud auth login`, select `api-mars-777`, **enable billing**, confirm
+the `me-west1` region. No public MCP URLs exist yet at this point.
+
 ## Steps (run yourself; placeholders only)
 
 1. **Preflight** (safe, local): `uv run python -m mars777_cop_thief.deployment.preflight`
-   → must report `status: ok` before going further.
-2. **Authenticate yourself** (not run here): `gcloud auth login`; select/create
-   `<GOOGLE_CLOUD_PROJECT_ID>`; enable Cloud Run + Secret Manager + Artifact Registry.
+   then `uv run python -m mars777_cop_thief.deployment.live_readiness`
+   → packaging must report `status: ok` and the live-readiness blockers list must
+   be empty before going further.
+2. **Authenticate yourself** (not run here): `gcloud auth login`; select
+   `<GOOGLE_CLOUD_PROJECT_ID>` (this project: `api-mars-777`); **enable billing**;
+   enable Cloud Run + Secret Manager + Artifact Registry. Choose region
+   `<REGION>` (recommended `me-west1`).
 3. **Create secrets** (never commit tokens): store strong random values as
    `<SECRET_NAME>` for `COP_MCP_TOKEN` and `THIEF_MCP_TOKEN` in Secret Manager.
 4. **Build & push the image**: `gcloud builds submit --tag <IMAGE>` (one image,

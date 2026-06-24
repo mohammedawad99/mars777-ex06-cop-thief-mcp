@@ -59,6 +59,22 @@ every gate below passes.
     secret files, role/port resolve without a server, smoke commands documented).
     It makes **no cloud calls** and needs neither gcloud nor credentials.
 
+### Operational preflight (env-specific; not a pure unit gate)
+
+- **Live-readiness preflight** —
+  `uv run python -m mars777_cop_thief.deployment.live_readiness` must exit 0 and
+  print structured JSON combining Gmail OAuth readiness, read-only cloud/`gcloud`
+  readiness, and the packaging preflight, with all blockers listed. It is **read-only**:
+  it never sends live Gmail and never deploys/builds/enables anything. Its *result*
+  depends on the local environment (OAuth file paths, whether `gcloud` is installed/
+  authenticated, billing), so it is an **operational** check, not part of the pure
+  unit gate. The underlying logic is fully unit-tested with mocks/temp files
+  (`tests/unit/gmail/`, `tests/unit/deployment/`) and those tests **are** in the
+  default suite and make no network call. Run with the documented env vars
+  (`GOOGLE_OAUTH_CLIENT_SECRETS`, `GOOGLE_OAUTH_TOKEN_PATH`, `GOOGLE_CLOUD_PROJECT`,
+  `CLOUD_RUN_REGION`, `RUN_GMAIL_LIVE=0`, `RUN_CLOUD_DEPLOY=0`); real paths stay
+  outside Git.
+
 ### Optional (not required for default validation)
 
 - **Live Gmail send** —

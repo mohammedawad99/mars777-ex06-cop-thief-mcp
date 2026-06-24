@@ -25,7 +25,7 @@ remaining gap with a disposition (fixed / accepted / deferred).
 | Security / secrets | per SECURITY | — | — | — |
 | Costs measured | per COSTS | — | — | — |
 
-## Current status (through Stage 13A)
+## Current status (through Stage 13B)
 
 The local pipeline is implemented, tested (100% coverage), and hardened
 (deterministic run identity/manifest, classified failures, bounded
@@ -35,8 +35,11 @@ known open gaps**, deferred to later stages — none is claimed as done:
 | Gap | Status | Disposition |
 |-----|--------|-------------|
 | Cloud deployment packaging & preflight | **present** — Dockerfile, role entrypoint, cloud config, preflight (`status: ok`) | Done (Stage 13A) |
-| Real deployed public URLs | **still missing** — `cloud_status: not_deployed`, placeholder URLs; no Cloud Run service created | Deferred (Stage 13B, gated) |
-| Live Gmail send | **not sent** — dry-run only; live is opt-in (`RUN_GMAIL_LIVE=1`) with external OAuth files | Deferred (opt-in local) |
+| Live-readiness preflight | **present** — `deployment.live_readiness` combines Gmail OAuth + read-only cloud/gcloud + packaging; exits 0, lists blockers; no live send/deploy | Done (Stage 13B) |
+| Gmail OAuth files (external) | **present outside the repo** — manual smoke succeeded (Gmail draft + Calendar event); `gmail.preflight` → `ready` (no content read); never committed | Done (manual, external) |
+| Cloud live deployment | **still blocked** — needs `gcloud` installed + authenticated, project `api-mars-777`, **billing enabled**, region `me-west1`, then deploy; `gcloud` not installed on dev machine | Deferred (Stage 13C, gated) |
+| Real deployed public URLs | **still missing** — `cloud_status: not_deployed`, placeholder URLs; no Cloud Run service created | Deferred (Stage 13C, gated) |
+| Live Gmail send | **not sent** — dry-run only; live is opt-in (`RUN_GMAIL_LIVE=1`) with external OAuth files (which now exist) | Deferred (opt-in local) |
 | Live Gemini provider run | **not run** — offline `fake_local` default; live is opt-in (`RUN_GEMINI_LIVE=1`) with a key | Deferred (opt-in local) |
 | Real inter-group bonus game | **not completed** — bonus schema/protocol exist; no real cross-group match played | Deferred (Stage 14) |
 | Final Moodle submission PDF | **not prepared yet** | Deferred (near submission) |
@@ -46,6 +49,9 @@ Already in place and evidenced: game engine + rules, partial observability,
 local MCP over HTTP with token auth, fake-local prompted MCP full game over HTTP,
 official validated JSON report + sanitized evidence pack, Gmail JSON-only sender
 (dry-run), optional Gemini adapter (gated), the Stage 12 hardened run manifest +
-aggregate validation, and Stage 13A cloud deployment **packaging + preflight** (no
-live deploy). The dimension table below is finalized near submission once the
-deferred items are addressed or formally accepted.
+aggregate validation, Stage 13A cloud deployment **packaging + preflight** (no
+live deploy), and Stage 13B **live-readiness preflight** (read-only Gmail OAuth +
+cloud/gcloud checks; no live send/deploy) with the external OAuth files present
+(manual smoke OK) but **no live Gmail send and no cloud deploy performed**. The
+dimension table below is finalized near submission once the deferred items are
+addressed or formally accepted.

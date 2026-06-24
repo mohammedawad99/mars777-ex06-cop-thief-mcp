@@ -440,3 +440,31 @@ come from the runtime env / secret manager — never image build args,
 template** gated by `RUN_CLOUD_DEPLOY=1` with placeholders only. **Consequences:**
 Packaging readiness is provable and CI-safe; a real deploy is a deliberate, manual,
 gated step; no secret can enter the image or the repo.
+
+## ADR-0045 — Live-readiness preflight before any live operation
+**Context:** Going from local implementation to live operations (live Gmail send,
+cloud deploy) has multiple external preconditions — OAuth files in place, gcloud
+installed/authenticated, the right project, billing enabled, a region chosen — and
+doing any of them by accident is costly or unsafe. **Decision:** Add a combined,
+**read-only** `deployment/live_readiness.py` command that folds the Gmail OAuth
+external-file check, the cloud/gcloud checks, and the packaging preflight into one
+JSON report, makes every remaining blocker explicit, and **exits 0 once the checks
+complete** (blockers do not fail the run). It triggers **no** live Gmail, live
+Gemini, or cloud deployment. **Consequences:** There is a single, safe "are we
+ready?" gate that lists the exact manual actions left; live steps stay deliberate
+and gated; the readiness check is deterministic and CI-safe (injectable CLI lookup
+and command runner, so tests never touch the network or a real CLI).
+
+## ADR-0046 — Read-only cloud checks; OAuth files inspected by path only
+**Context:** Readiness checks must not mutate cloud state, must not leak secrets,
+and must not read credential/token contents. **Decision:** The Gmail check reads
+only the **paths** named by `GOOGLE_OAUTH_CLIENT_SECRETS` / `GOOGLE_OAUTH_TOKEN_PATH`,
+verifies **existence and outside-repo location**, and **never opens the files**;
+its result carries booleans/blockers/warnings only — no paths or contents. The
+cloud check runs **only read-only** commands (`gcloud version`, active account,
+active project, best-effort billing describe) via a **bounded, injectable** runner
+and **never** runs `deploy`/`build`/`create`/`enable`. Missing gcloud, no auth,
+project mismatch, and **billing disabled** are **blockers**; **billing unknown** is
+a **warning** — none crashes. **Consequences:** No cloud resource is created or
+changed; no secret value or file content is read, printed, or committed; readiness
+honestly reflects state without ever claiming billing/auth that wasn't proven.

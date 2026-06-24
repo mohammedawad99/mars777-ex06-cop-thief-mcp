@@ -40,7 +40,11 @@ Strict checklist for the final review. Boxes are checked only when verified.
       (opt-in; no key required for tests)
 - [ ] Optional real-Gemini live smoke run locally with `RUN_GEMINI_LIVE=1` + key
       (evidence of real integration; not run in default validation)
-- [ ] Real internal report emailed (Gmail sender — later stage)
+- [x] Gmail JSON report sender implemented; dry-run validates + builds JSON-only
+      body without sending (`uv run python -m mars777_cop_thief.gmail.send_report`)
+- [x] Email body proven JSON-only (decodes/parses back to the report object)
+- [ ] Real internal report emailed via `RUN_GMAIL_LIVE=1` with external OAuth files
+      (optional live send; not run in default validation)
 - [ ] Real inter-group bonus game played and reconciled (later stage)
 
 ## Documentation & measurement

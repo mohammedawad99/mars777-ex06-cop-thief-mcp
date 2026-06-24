@@ -41,8 +41,18 @@ every gate below passes.
     tokens and cost, and tears the servers down. A one-sub-game variant runs as a
     default pytest integration test (same `RUN_MCP_E2E=0` skip).
 
+13. **Gmail report dry-run** —
+    `uv run python -m mars777_cop_thief.gmail.send_report` must exit 0 with
+    `status: dry_run` and `body_json_valid: true`. It validates the official
+    report and builds the JSON-only MIME message **without calling Gmail** and
+    without requiring credentials/token.
+
 ### Optional (not required for default validation)
 
+- **Live Gmail send** —
+  `RUN_GMAIL_LIVE=1 uv run python -m mars777_cop_thief.gmail.send_report` actually
+  sends via the Gmail API. It is **opt-in** and requires OAuth credentials/token
+  files outside the repo; normal validation never sends or needs credentials.
 - **Live Gemini smoke** —
   `uv run python -m mars777_cop_thief.mcp_client.gemini_prompted_smoke` must exit 0
   in **skipped** mode (default; no key, no network). It is **opt-in** and **not

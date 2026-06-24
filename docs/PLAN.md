@@ -1,6 +1,6 @@
 # PLAN — Intended Architecture
 
-**Group:** MaRs-777 · **Status:** Stage 10 (optional Gemini provider, live-gated)
+**Group:** MaRs-777 · **Status:** Stage 11 (Gmail JSON report sender, dry-run + live-gated)
 
 ## Architecture overview
 
@@ -56,9 +56,10 @@
 SDK/shared (Stage 0 ✅) → requirements hardening (Stage 1 ✅) → game engine
 (Stage 2 ✅) → local self-play pipeline (Stage 3 ✅) → local
 partial-observability & dialogue (Stage 4 ✅) → local HTTP MCP servers (Stage 5
-✅) → local MCP client & HTTP E2E smoke (Stage 6 ✅) → MCP-backed local game orchestration (Stage 7 ✅) → official report schema, validation & evidence (Stage 8 ✅) → prompted MCP agent layer (Stage 9 ✅; offline fake LLM) → **optional Gemini
-provider (Stage 10 — current; live-gated)** → orchestrator hardening → report
-sender → cloud/self-play → bonus inter-group → hardening & audit.
+✅) → local MCP client & HTTP E2E smoke (Stage 6 ✅) → MCP-backed local game orchestration (Stage 7 ✅) → official report schema, validation & evidence (Stage 8 ✅) → prompted MCP agent layer (Stage 9 ✅; offline fake LLM) → optional Gemini
+provider (Stage 10 ✅; live-gated) → **Gmail JSON report sender (Stage 11 —
+current; dry-run + live-gated)** → orchestrator hardening → cloud/self-play →
+bonus inter-group → hardening & audit.
 
 ## Pipeline progress (Stage 3)
 
@@ -235,6 +236,26 @@ adapter, without requiring or committing any key:
 `fake_local` stays the default deterministic path; the real Gemini smoke is
 opt-in, cost-bounded, and was not run here. Cloud exposure, Gmail, and
 inter-group play remain out of Stage 10.
+
+## Pipeline progress (Stage 11)
+
+Stage 11 makes the validated official report **sendable by the Gmail API**,
+safely (`gmail/`):
+
+- **`mime_builder.py`** — the email **body is JSON only** (exactly
+  `json.dumps(report, ensure_ascii=False, indent=2)`); base64url raw message; a
+  test decodes it and asserts the body parses back to the report (ADR-0037).
+- **`config.py` / `auth.py`** — config holds only env-var *names*; OAuth
+  credential/token paths come from the environment and live **outside the repo**;
+  the loader refreshes/flows lazily with injected deps and never logs secret
+  content; the minimal `gmail.send` scope is used (ADR-0038).
+- **`sender.py` / `send_report.py`** — dry-run by default (no API call); live
+  sending only when `RUN_GMAIL_LIVE=1`, with a controlled failure when
+  credentials are missing; `SendResult` is JSON-serializable and carries no
+  secrets (ADR-0036). The live Gmail send is opt-in and was not run here.
+
+The report is now both **email-body ready** (Stage 8) and **sendable** (Stage 11).
+Cloud exposure and a real inter-group bonus game remain out of Stage 11.
 
 ## Verification artifacts (core)
 

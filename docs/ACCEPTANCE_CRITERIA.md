@@ -160,13 +160,21 @@ Email sending itself is still a later stage.
 
 ## 7. Email sending
 
-- **AC-MAIL-1** (R-032): The email body sent to the instructor is structured JSON
-  only — no free-text prose (verified on the outbound payload fixture).
-- **AC-MAIL-2** (R-037): Sending uses the Gmail API (or a documented alternative)
-  through the API gatekeeper layer; a dry-run path exists for testing without
-  sending.
-- **AC-MAIL-3** (R-036): No OAuth credential or token is read from inside the repo
-  tree; all come from environment/external paths.
+**Stage 11 status:** a Gmail JSON report sender is implemented with a **dry-run
+default** and **live-gated** sending (`gmail/`, `tests/unit/gmail/`). Tests pass
+with no credentials and make no network call; the live send was not run.
+
+- **AC-MAIL-1** (R-032) — ✅ test-covered: the email body is **exactly**
+  `json.dumps(report, ensure_ascii=False, indent=2)` — no greeting/signature/
+  markdown/free text; a test decodes the raw message and asserts the body
+  **parses back to the original report object**.
+- **AC-MAIL-2** (R-037) — ◑ partially (dry-run + mocked): sending uses the Gmail
+  API client libraries; the **dry-run** path validates/builds without calling the
+  API, and a **mocked** live sender maps a success response to `gmail_message_id`.
+  Live sending is opt-in (`RUN_GMAIL_LIVE=1`) and was **not run** here.
+- **AC-MAIL-3** (R-036) — ✅ test-covered: OAuth credential/token paths come from
+  env vars pointing outside the repo; config does not require the files at
+  import/load; the loader/result never include secret content.
 
 ## 8. Security
 

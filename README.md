@@ -8,6 +8,35 @@ a natural-language protocol, and the final results are reported via a Google
 (Gmail) report sender. Inter-group play is treated as in-scope (see
 `docs/PRD_bonus_intergroup.md`).
 
+## Status — Stage 11 (Gmail JSON report sender, dry-run + live-gated)
+
+A **Gmail JSON report sender** is implemented with a **dry-run** default and
+**live-gated** sending (`src/mars777_cop_thief/gmail/`, official Google API
+client libraries). The email **body is the JSON report only** — exactly
+`json.dumps(report, ensure_ascii=False, indent=2)`, with no greeting, signature,
+markdown, or any non-JSON text (proven by a parse-back test). The subject is
+human-readable; the default recipient is `rmisegal+uoh26b@gmail.com`
+(configurable via `GMAIL_REPORT_RECIPIENT`).
+
+**Live sending is opt-in.** By default the CLI runs a dry-run (validates, builds
+the MIME/raw message, previews send metadata) **without calling Gmail**:
+
+```bash
+uv run python -m mars777_cop_thief.gmail.send_report   # dry-run, exit 0
+```
+
+Live sending requires `RUN_GMAIL_LIVE=1` **and** OAuth desktop credentials/token
+files stored **outside the repo** (`GOOGLE_OAUTH_CLIENT_SECRETS` /
+`GOOGLE_OAUTH_TOKEN_PATH`); a first-time token is created only with
+`RUN_GMAIL_AUTH=1`. The minimal `gmail.send` scope is used. **No credential or
+token is committed or required for tests**, and the key/token never appears in
+logs, headers, the report, or the result. Normal validation passes with no
+credentials.
+
+This stage remains local-only: **no cloud/public URLs** and **no real
+inter-group bonus game** has been completed; a **live Gmail email was not sent**
+here (`RUN_GMAIL_LIVE` not enabled).
+
 ## Status — Stage 10 (optional Google Gemini provider, live-gated)
 
 An **optional real Google Gemini provider adapter** is implemented behind the
@@ -257,6 +286,7 @@ src/mars777_cop_thief/
   mcp_client/         local MCP client, server-pair lifecycle, E2E + game flow
   llm/                provider interface, fake + optional Gemini provider, factory, prompts, parser, agent
   reporting/          official report schema, validation, evidence pack writer
+  gmail/              Gmail JSON report sender (dry-run + live-gated), MIME, auth
 results/evidence/     sanitized, deterministic example artifacts (*.example.json)
 tests/unit/           version, config, and SDK smoke tests
 tests/unit/game/      engine TDD suite (models, rules, engine, events, SDK)
@@ -269,6 +299,7 @@ tests/unit/mcp_client/     client URLs, lifecycle, in-memory flow, smoke entry
 tests/integration/mcp/     real HTTP end-to-end smoke (default-on)
 tests/unit/reporting/      schema validation, official report, evidence tests
 tests/unit/llm/            provider, prompt, parser, cost, agent tests
+tests/unit/gmail/          config, MIME (JSON-only), auth, sender, CLI/SDK tests
 ```
 
 ## Requirements

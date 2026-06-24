@@ -415,5 +415,44 @@ smoke is **available but skipped** (no key; `RUN_GEMINI_LIVE` unset) — it exit
 in skipped mode and fails safely (exit 1) if enabled without a key. No
 real-Gemini call was made; no cloud/Gmail/GUI/inter-group implementation added.
 
+## Stage 11 — Gmail JSON report sender (dry-run + live-gated) (2026-06-24)
+
+**Goal:** Make the official validated JSON report **sendable by the Gmail API**
+safely — JSON-only body, no secrets anywhere, live sending opt-in only. **No**
+committed credentials/token, no live send by default, no cloud, GUI, or real
+inter-group remote play.
+
+**Key constraints captured from the prompt:**
+- Official Google API client libraries via uv only
+  (`google-api-python-client`, `google-auth-oauthlib`, `google-auth-httplib2`);
+  inspected the installed API first (`Credentials.from_authorized_user_file`,
+  `InstalledAppFlow.from_client_secrets_file`/`run_local_server`,
+  `build("gmail","v1")`, `messages().send().execute()`).
+- Minimal `gmail.send` scope; OAuth desktop credentials/token files **outside the
+  repo**, paths from env-var names in config; never required at import/load.
+- Body is **exactly** `json.dumps(report, ensure_ascii=False, indent=2)` — no
+  greeting/signature/markdown/free text; subject human-readable; base64url raw.
+- Dry-run default; live only when `RUN_GMAIL_LIVE=1`; OAuth flow only when
+  `RUN_GMAIL_AUTH=1`; missing creds in live mode → controlled failure (exit ≠ 0).
+- No live calls in tests (SDK/Gmail mocked); the API key/token/credential content
+  never appears in body, headers, logs, result, or report.
+
+**Artifacts produced:**
+- `src/mars777_cop_thief/gmail/` — `config.py`, `mime_builder.py`, `auth.py`,
+  `sender.py`, `send_report.py`, `__init__`.
+- `config/gmail.default.json`; `.env-example` Gmail placeholders; SDK
+  `build_gmail_report_message`/`dry_run_gmail_report`/`validate_gmail_message_body`.
+- `pyproject.toml` + `uv.lock` (Gmail deps pinned).
+- Tests under `tests/unit/gmail/` (271 tests, 100% coverage) — body parses back to
+  the original report (JSON-only proven), auth branches via injected deps, mocked
+  live sender maps `gmail_message_id`, dry-run/live-no-creds CLI paths.
+
+**Outcome:** Gmail JSON report sender implemented with dry-run and live-gated mode;
+all tests pass with **no credentials/token** (271 tests, 100% coverage, ruff
+clean). The dry-run CLI returns `status: dry_run`, `body_json_valid: true`, exit
+0; live mode without credentials returns a controlled failure (exit 1). A **live
+Gmail email was not sent** (`RUN_GMAIL_LIVE` not enabled). No
+credentials/cloud/GUI/inter-group implementation added.
+
 > Subsequent stages will append their driving prompts here (orchestrator
-> hardening, report sender, cloud, bonus, audit).
+> hardening, cloud, bonus, audit).

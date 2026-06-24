@@ -1,0 +1,14 @@
+{
+  "version": "1.00",
+  "recipient": "rmisegal+uoh26b@gmail.com",
+  "recipient_env_var": "GMAIL_REPORT_RECIPIENT",
+  "subject_template": "MaRs-777 Cop-and-Thief {report_type} report",
+  "send_scope": "https://www.googleapis.com/auth/gmail.send",
+  "credentials_path_env_var": "GOOGLE_OAUTH_CLIENT_SECRETS",
+  "token_path_env_var": "GOOGLE_OAUTH_TOKEN_PATH",
+  "run_live_env_var": "RUN_GMAIL_LIVE",
+  "run_auth_env_var": "RUN_GMAIL_AUTH",
+  "default_mode": "dry_run",
+  "body_format": "json_only",
+  "notes": "Email body is JSON only. Live sending is opt-in via RUN_GMAIL_LIVE=1 with OAuth desktop credentials/token files stored OUTSIDE the repo. No secrets are stored here."
+}

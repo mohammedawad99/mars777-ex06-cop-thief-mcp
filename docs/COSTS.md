@@ -56,6 +56,17 @@ a measured figure once the relevant stage runs. Track per-run cost in
 - Measured real-Gemini token/cost figures are **TBD** — to be filled in only after
   a local `RUN_GEMINI_LIVE=1` run with a real key; none was run for this stage.
 
+## Gmail API cost/resource note (Stage 11)
+
+- The Gmail report sender uses the **Gmail API** with the minimal `gmail.send`
+  scope. Sending a few report emails per submission is **within the free Gmail API
+  quota** — effectively **~$0**.
+- The default mode is **dry-run** (no API call, no network); a live send happens
+  only with `RUN_GMAIL_LIVE=1`. No email was sent in this stage, so there is no
+  measured send count/cost yet (free-tier; TBD if a live send is performed).
+- Resource impact is negligible (one local OAuth flow once, then a cached token
+  outside the repo).
+
 ## Dependency / hosting note (Stage 5)
 
 - Stage 5 added **FastMCP** (`fastmcp>=3.4.2,<4`, pinned in `uv.lock`) for the

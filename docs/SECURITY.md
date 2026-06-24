@@ -97,6 +97,21 @@
 - `.gitignore` blocks `credentials.json`, `token.json`, `client_secret*.json`,
   `*_oauth*.json`, `service_account*.json`, and key files.
 
+### Gmail sender OAuth (Stage 11)
+
+- The Gmail sender (`gmail/`) requests the **minimal `gmail.send` scope** only.
+  Credential/token **paths** come from `GOOGLE_OAUTH_CLIENT_SECRETS` /
+  `GOOGLE_OAUTH_TOKEN_PATH` and point **outside the repo**; config never requires
+  the files at import/load time.
+- The auth loader (`gmail/auth.py`) loads/refreshes the token lazily and starts an
+  OAuth flow **only** when `RUN_GMAIL_AUTH=1`; otherwise it fails with a controlled
+  error and instructions. It **never logs or returns** credential/token content,
+  and `SendResult` contains no secret (no token, credential path, or API content).
+- **No credentials/token are committed or required for tests.** Live sending is
+  opt-in (`RUN_GMAIL_LIVE=1`); the default is dry-run with no network call. If an
+  earlier token was created with a broader scope, regenerate it **outside the
+  repo**; the revoke story below applies.
+
 ## Revoke story
 
 If a credential is ever exposed:

@@ -342,3 +342,34 @@ bounded sub-game** (3×3, few moves) and never prints the key. Unit tests **mock
 the SDK** and never call the network. **Consequences:** Deterministic proof comes
 from `fake_local`; the real path is evidence-of-integration, opt-in, and
 cost-bounded; the API key never appears in logs, results, or the repo.
+
+## ADR-0036 — Gmail sender: dry-run default, live sending opt-in
+**Context:** The report must be sendable by Gmail, but sending must never happen
+by accident, in tests, or in CI. **Decision:** The sender **defaults to dry-run**
+(validate + build the MIME/raw message, preview metadata, **no API call**); live
+sending happens only when `RUN_GMAIL_LIVE=1`, and a first-time OAuth token is
+created only when `RUN_GMAIL_AUTH=1`. Missing credentials in live mode returns a
+**controlled failure** (exit non-zero); the Gmail service is injectable so unit
+tests mock it. **Consequences:** Default validation needs no credentials and makes
+no network call; the live path is explicit, gated, and evidence-of-integration;
+the API is exercised only when deliberately enabled locally.
+
+## ADR-0037 — JSON-only email body
+**Context:** The instructor email body must contain only structured JSON.
+**Decision:** The body is **exactly** `json.dumps(report, ensure_ascii=False,
+indent=2)` — no greeting, signature, markdown, logs, or any non-JSON text; the
+subject may be human-readable. A test decodes the raw message and asserts the body
+**parses back to the original report object**. **Consequences:** The email is
+machine-parseable and unambiguous; no prose can sneak into the body; the report's
+own validation (token-safety, schema) gates what may be sent.
+
+## ADR-0038 — OAuth credentials/token live outside the repo
+**Context:** Gmail OAuth uses a client-secrets file and an issued token that must
+never be committed. **Decision:** Credential and token **paths come from env
+vars** (`GOOGLE_OAUTH_CLIENT_SECRETS`, `GOOGLE_OAUTH_TOKEN_PATH`) pointing
+**outside the repo**; the minimal `gmail.send` scope is used; `.gitignore` blocks
+`credentials.json`/`token.json`/`client_secret*.json`; the loader never logs or
+returns secret content and `SendResult` carries no secrets. **Consequences:** No
+secret is committed or required for tests; if earlier credentials used a broader
+scope, the token may need regenerating outside the repo; the revoke story in
+`SECURITY.md` applies.

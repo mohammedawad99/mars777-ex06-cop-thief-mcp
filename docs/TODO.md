@@ -14,9 +14,9 @@ Statuses: ✅ done · 🔄 in progress · ⏳ planned
 | 7 | MCP-backed local game orchestration: real sub-games/full game where each turn calls the MCP servers over HTTP | ✅ |
 | 8 | Official report schema/validation + sanitized local evidence pack; bonus schema example | ✅ |
 | 9 | Prompted MCP agent layer: provider interface, offline fake LLM, prompts/parser/cost, prompted game runner | ✅ |
-| 10 | Optional Google Gemini provider adapter (google-genai), env config, provider factory, live-gated smoke | 🔄 |
-| 11 | Orchestrator hardening over MCP: seeds, aggregation, rate limits | ⏳ |
-| 12 | Google report sender (Gmail/OAuth) for final results, JSON-only email body | ⏳ |
+| 10 | Optional Google Gemini provider adapter (google-genai), env config, provider factory, live-gated smoke | ✅ |
+| 11 | Gmail JSON report sender: dry-run default + live-gated sending, JSON-only body, external OAuth files | 🔄 |
+| 12 | Orchestrator hardening over MCP: seeds, aggregation, rate limits | ⏳ |
 | 13 | Cloud/self-play through public, authenticated URLs | ⏳ |
 | 14 | Bonus inter-group play against another group's server (mandatory scope) | ⏳ |
 | 15 | Hardening: cost/measurement tracking, logging, security review | ⏳ |
@@ -258,7 +258,7 @@ Statuses: ✅ done · 🔄 in progress · ⏳ planned
 - **No** real external LLM API, API keys, cloud, public URLs, Gmail, GUI, or real
   inter-group remote play — only the offline `fake_local` provider.
 
-## Stage 10 checklist (current — optional Gemini provider, live-gated)
+## Stage 10 checklist (completed — optional Gemini provider, live-gated)
 
 - [x] `google-genai` added via uv and pinned (`google-genai>=2.10.0`; uv.lock exact)
 - [x] `config/llm.default.json` — provider/allowed_providers/env-var names/defaults
@@ -277,7 +277,7 @@ Statuses: ✅ done · 🔄 in progress · ⏳ planned
       smoke gate (245 total, 100% coverage)
 - [x] Live Gemini smoke **skipped by design** (no key, `RUN_GEMINI_LIVE` unset):
       `uv run python -m mars777_cop_thief.mcp_client.gemini_prompted_smoke` → exit 0
-- [ ] Reviewed and explicitly committed
+- [x] Reviewed and explicitly committed
 
 ### Stage 10 scope notes
 
@@ -290,8 +290,43 @@ Statuses: ✅ done · 🔄 in progress · ⏳ planned
   GUI, or real inter-group remote play. The live Gemini smoke was **not run**
   here (no key); it is available behind `RUN_GEMINI_LIVE=1`.
 
-## Next up (Stage 11 — orchestrator hardening over MCP)
+## Stage 11 checklist (current — Gmail JSON report sender)
+
+- [x] `google-api-python-client`, `google-auth-oauthlib`, `google-auth-httplib2`
+      added via uv and pinned (uv.lock exact)
+- [x] `config/gmail.default.json` — recipient/subject/scope/env-var names/gates
+      (no secrets); `.env-example` Gmail placeholders + dry-run defaults
+- [x] `gmail/config.py` — load + validate config; resolve recipient/paths from env
+      (never requires OAuth files at import/load)
+- [x] `gmail/mime_builder.py` — JSON-only body (`json.dumps(...)`), base64url raw
+      message; decode/parse-back helpers (no greeting/signature)
+- [x] `gmail/auth.py` — lazy credential load/refresh/flow with injected deps;
+      controlled `GmailAuthError`; OAuth flow only when `RUN_GMAIL_AUTH=1`;
+      never logs secret content
+- [x] `gmail/sender.py` — `DryRunGmailSender` (no API call) + `GmailApiSender`
+      (mockable service); `SendResult` (no secrets, JSON-serializable)
+- [x] `gmail/send_report.py` — CLI: dry-run unless `RUN_GMAIL_LIVE=1`; controlled
+      failure (exit non-zero) when live without credentials; JSON result only
+- [x] SDK `build_gmail_report_message` / `dry_run_gmail_report` /
+      `validate_gmail_message_body`
+- [x] Mocked unit tests, no live calls (271 total, 100% coverage); body parses
+      back to the report object (JSON-only proven)
+- [x] Dry-run verified: `uv run python -m mars777_cop_thief.gmail.send_report` →
+      `status: dry_run`, `body_json_valid: true`, exit 0
+- [ ] Reviewed and explicitly committed
+
+### Stage 11 scope notes
+
+- Email **body is JSON only** — exactly `json.dumps(report, ensure_ascii=False,
+  indent=2)`; subject is human-readable. No tokens/secrets in body, headers,
+  logs, result, or report.
+- Live sending is **opt-in** (`RUN_GMAIL_LIVE=1`) with the minimal `gmail.send`
+  scope and OAuth files **outside the repo**; a **live email was not sent** here.
+- **No** `credentials.json`/`token.json`/`.env` committed, cloud deployment,
+  public URLs, GUI, or real inter-group remote play.
+
+## Next up (Stage 12 — orchestrator hardening over MCP)
 
 - [ ] Seeds, aggregation, and rate limits across runs
-- [ ] Measure real Gemini cost once a key is used locally (opt-in)
-- [ ] No change to the role-safe observation boundary or the parser contract
+- [ ] Measure real Gemini cost / real Gmail send once enabled locally (opt-in)
+- [ ] No change to the role-safe observation boundary or the JSON-only body rule

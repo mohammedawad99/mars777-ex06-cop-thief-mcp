@@ -8,10 +8,14 @@ and local self-play entrypoints; all logic lives in the ``game``/``agents``/
 
 from __future__ import annotations
 
+import os
 from pathlib import Path
 
 from mars777_cop_thief.agents import cop_policy, thief_policy
 from mars777_cop_thief.game import GameEngine
+from mars777_cop_thief.gmail.config import load_gmail_config, resolve_recipient
+from mars777_cop_thief.gmail.mime_builder import build_raw_message, extract_json_body
+from mars777_cop_thief.gmail.sender import DryRunGmailSender, build_subject
 from mars777_cop_thief.mcp_client.game_smoke import run_game_smoke
 from mars777_cop_thief.mcp_client.prompted_game_smoke import run_prompted_game_smoke
 from mars777_cop_thief.orchestration import (
@@ -97,3 +101,18 @@ class AssignmentSdk:
     def generate_local_evidence_pack(self, directory=None) -> dict:
         """Generate the sanitized local evidence pack; return a status dict."""
         return generate_evidence(directory=directory)
+
+    def build_gmail_report_message(self, report: dict, env=None) -> str:
+        """Build the base64url Gmail raw message (JSON-only body) for a report."""
+        env = env if env is not None else os.environ
+        config = load_gmail_config()
+        recipient = resolve_recipient(config, env)
+        return build_raw_message(recipient, build_subject(config, report), report)
+
+    def dry_run_gmail_report(self, report: dict, env=None) -> dict:
+        """Validate and preview a Gmail send without calling the API."""
+        return DryRunGmailSender(load_gmail_config()).send(report, env).to_dict()
+
+    def validate_gmail_message_body(self, raw_message: str) -> dict:
+        """Parse a built Gmail raw message body back into JSON (raises if invalid)."""
+        return extract_json_body(raw_message)

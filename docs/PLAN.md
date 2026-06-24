@@ -1,6 +1,6 @@
 # PLAN — Intended Architecture
 
-**Group:** MaRs-777 · **Status:** Stage 1 (requirements hardening)
+**Group:** MaRs-777 · **Status:** Stage 3 (local self-play pipeline)
 
 ## Architecture overview
 
@@ -53,9 +53,31 @@
 
 ## Build order
 
-SDK/shared (done in Stage 0) → requirements hardening (Stage 1) → game engine →
-MCP servers (HTTP) → natural-language protocol → agents → orchestrator → report
+SDK/shared (Stage 0 ✅) → requirements hardening (Stage 1 ✅) → game engine
+(Stage 2 ✅) → **local self-play pipeline (Stage 3 — current)** → MCP servers
+(HTTP) → natural-language protocol → LLM agents → orchestrator over MCP → report
 sender → cloud/self-play → bonus inter-group → hardening & audit.
+
+## Pipeline progress (Stage 3)
+
+The pure engine (Stage 2) is now driven by a **local deterministic self-play
+pipeline** that is the backbone later stages mirror:
+
+- **Baseline policies** (`agents/baseline.py`) — cop steps toward / thief steps
+  away, pure and reproducible (ADR-0015); these sit where LLM agents will later
+  plug in behind the same callable contract.
+- **Runners** (`orchestration/runner.py`) — `run_sub_game` enforces thief-first
+  turn order through the engine, stops on capture or `max_moves`, and records a
+  structured event transcript; `run_full_game` repeats for `num_sub_games`.
+- **Totals + report** (`orchestration/totals.py`, `report.py`) — an in-memory,
+  `json.dumps`-serializable report (ADR-0016), local-only and not emailed
+  (`mcp_status: not-deployed`).
+- **SDK entrypoints** — `run_local_sub_game` / `run_local_full_game` delegate to
+  orchestration; the SDK holds no game logic.
+
+The MCP layer (next) will expose the same engine actions over authenticated HTTP,
+and the natural-language layer will replace structured events with interpreted
+language while keeping the engine authoritative.
 
 ## Verification artifacts (core)
 

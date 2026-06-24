@@ -27,5 +27,6 @@
   },
   "timezone": "Asia/Jerusalem",
   "visibility_radius": 1,
+  "github_repo": "REPLACE_WITH_GITHUB_REPO_URL",
   "report_recipient": "REPLACE_WITH_RECIPIENT@example.com"
 }

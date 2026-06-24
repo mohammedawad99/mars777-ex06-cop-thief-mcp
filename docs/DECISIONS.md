@@ -109,3 +109,25 @@ unchanged (no move/turn advance), and includes a log-ready `event` dict.
 **Consequences:** The engine is robust to bad input, disputes are reconstructable
 from events, and the turn does not advance on a rejected action — keeping the
 game deterministic.
+
+## ADR-0015 — Deterministic baseline agents as the local backbone
+**Context:** Stage 3 needs autonomous play without LLMs or external services, and
+later MCP/NL stages must have a reference to call or mirror. **Decision:**
+Implement **deterministic** baseline policies — cop steps toward the thief, thief
+steps away — as pure functions of state, with a fixed canonical direction
+ordering for tie-breaking and fallback, and **no randomness**. A policy returns
+`None` only when the actor has no legal move. **Consequences:** Self-play is fully
+reproducible and unit-testable; the runner handles illegal/None policy outputs
+with a legal fallback (a fully stuck actor ends the sub-game as a thief survival);
+LLM/Q-learning strategies can later replace these policies behind the same
+callable contract without touching the engine or runner.
+
+## ADR-0016 — In-memory, report-first local pipeline (no I/O yet)
+**Context:** The final pipeline emails a JSON report, but Stage 3 is local-only
+and must not overclaim cloud/MCP/Gmail readiness. **Decision:** Build an
+**in-memory, `json.dumps`-serializable** report from structured `SubGameResult`
+records; write **no files** and send **no email**; mark `mcp_status` as
+`not-deployed` and tag the report `stage: local-self-play`. **Consequences:**
+The report schema and totals are validated now with zero external dependencies;
+file persistence, MCP URLs, cloud deployment, and Gmail sending are added in their
+own later stages without reworking the data model.

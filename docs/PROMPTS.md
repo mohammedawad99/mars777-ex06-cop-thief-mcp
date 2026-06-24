@@ -94,5 +94,44 @@ natural-language parsing, Gmail/Google API, cloud, GUI, or bonus networking.
 **Outcome:** Pure game engine core implemented; all quality gates pass (ruff
 clean, 45 tests, 100% coverage). No MCP/Gmail/LLM/cloud/bonus implementation.
 
+## Stage 3 — Local self-play pipeline (2026-06-24)
+
+**Goal:** Implement a local autonomous self-play pipeline on top of the Stage 2
+pure engine, as the deterministic backbone later MCP agents and natural-language
+orchestration will call or mirror. **No** MCP, HTTP, cloud, Gmail/Google, LLM,
+natural-language parsing, GUI, or inter-group networking.
+
+**Key constraints captured from the prompt:**
+- Deterministic baseline policies: cop steps toward the thief, thief steps away
+  from the cop; structured `Action` objects only; no external calls; first legal
+  fallback from a fixed canonical ordering; no randomness.
+- Sub-game runner: thief-first turn order via the engine, stops on capture or
+  `max_moves`, returns a structured `SubGameResult` (winner, scores, final
+  positions, move count, barriers, events); illegal policy actions recorded and
+  safely replaced by a legal fallback.
+- Full-game runner over `num_sub_games` (default 6); sanity sizes 2×2…5×5;
+  JSON-serializable in-memory report (group code/slug, github_repo placeholder,
+  timezone, config summary, sub_games, totals). Report is **not** emailed.
+- Structured (not free-text) events with actor, turn index, action type,
+  legal/illegal result, positions before/after, capture/winner.
+- No overclaiming cloud/MCP/Gmail readiness (`mcp_status: not-deployed`).
+- Standard library only; every file < 150 non-empty/non-comment lines; ≥ 85
+  coverage.
+
+**Artifacts produced:**
+- `src/mars777_cop_thief/agents/` — `baseline.py`, `__init__.py`.
+- `src/mars777_cop_thief/orchestration/` — `results.py`, `runner.py`,
+  `totals.py`, `report.py`, `__init__.py`.
+- SDK entrypoints `run_local_sub_game` / `run_local_full_game` (delegating).
+- `config/game.default.json` — added `github_repo` placeholder.
+- `tests/unit/agents/` and `tests/unit/orchestration/` plus a shared
+  `tests/unit/conftest.py` (71 tests total, 100% coverage).
+- Doc updates: `README.md`, `TODO.md`, `DECISIONS.md` (ADR-0015/ADR-0016),
+  `REQUIREMENTS_MATRIX.md`, `ACCEPTANCE_CRITERIA.md`, `PLAN.md`.
+
+**Outcome:** Local deterministic self-play pipeline implemented; all quality
+gates pass (ruff clean, 71 tests, 100% coverage). No MCP/Gmail/LLM/cloud/bonus
+implementation added.
+
 > Subsequent stages will append their driving prompts here (MCP, protocol,
 > agents, orchestrator, report sender, cloud, bonus, audit).

@@ -11,12 +11,14 @@ non-trivial.
 
 ## 1. Local game engine
 
-**Stage 2 status:** the pure engine core is implemented and unit-tested
-(`tests/unit/game/`, 45 tests, 100% coverage). AC-ENG-1…AC-ENG-5 are test-covered
-below; AC-ENG-6 has per-game scoring covered with the `[30,90]` aggregate pending
-the orchestrator; AC-ENG-7 holds for the engine (parameters read from config) with
-a full repo-wide grep audit ongoing; AC-ENG-8 (seeded determinism) lands with the
-orchestrator stage.
+**Stage 2–3 status:** the pure engine core is implemented and unit-tested
+(`tests/unit/game/`); Stage 3 adds a deterministic local self-play pipeline
+(`tests/unit/agents/`, `tests/unit/orchestration/`). AC-ENG-1…AC-ENG-5 are
+test-covered below; AC-ENG-6 has per-game scoring covered and a totals aggregator
+(`orchestration/totals.py`) with an explicit `[30,90]` property test still to be
+added; AC-ENG-7 holds for the engine and policies (parameters read from config)
+with a full repo-wide grep audit ongoing; AC-ENG-8 — baseline self-play is fully
+deterministic (no RNG), with seed hooks deferred until randomness is introduced.
 
 - **AC-ENG-1** (R-011, R-017) — ✅ test-covered: Given a Cop and Thief on the same
   cell after a turn, when the engine evaluates terminal state, then it reports
@@ -82,10 +84,18 @@ orchestrator stage.
 
 ## 6. JSON reports
 
-- **AC-RPT-1** (R-031): The final report is valid JSON and validates against the
-  documented schema.
-- **AC-RPT-2** (R-033): The internal report contains group name/code, students,
-  GitHub repo, Cop MCP URL, Thief MCP URL, timezone, sub_games, and totals.
+**Stage 3 status:** an in-memory, `json.dumps`-serializable local report builder
+is implemented and test-covered (`orchestration/report.py`,
+`tests/unit/orchestration/test_report.py`). It is local-only
+(`mcp_status: not-deployed`) and not emailed; schema validation, students, and
+MCP URLs are added in later stages.
+
+- **AC-RPT-1** (R-031) — ◑ partially covered: The local report is valid JSON
+  (`json.dumps` succeeds in tests); formal schema validation of the final
+  submission report is a later stage.
+- **AC-RPT-2** (R-033) — ◑ partially covered: The report carries group name/code,
+  GitHub repo (placeholder), timezone, sub_games, and totals; students and the
+  Cop/Thief MCP URLs are added with the MCP/cloud stages.
 - **AC-RPT-3** (R-066): All timestamps in reports are in `Asia/Jerusalem`.
 
 ## 7. Email sending

@@ -6,16 +6,17 @@ Statuses: ✅ done · 🔄 in progress · ⏳ planned
 |------|-----------|--------|
 | 0 | Repo skeleton: package layout, docs scaffolding, config defaults, packaging, quality gates | ✅ |
 | 1 | Requirements hardening & architecture planning: Requirements Matrix, acceptance criteria, risk register, inter-group protocol, plan/ADR updates | ✅ |
-| 2 | Game engine: grid, 8-dir movement, barriers, capture, scoring, deterministic stepping + unit tests | 🔄 |
-| 3 | MCP servers (HTTP, token auth): perception/action tools mapped to engine | ⏳ |
-| 4 | Natural-language protocol: agent↔server message interpretation + validator + interpreted-action logs | ⏳ |
-| 5 | Cop & Thief LLM agents wired through MCP | ⏳ |
-| 6 | Orchestrator: run num_sub_games, seeds, aggregation, rate limits | ⏳ |
-| 7 | Google report sender (Gmail/OAuth) for final results, JSON-only email body | ⏳ |
-| 8 | Cloud/self-play through public, authenticated URLs | ⏳ |
-| 9 | Bonus inter-group play against another group's server (mandatory scope) | ⏳ |
-| 10 | Hardening: cost/measurement tracking, logging, security review | ⏳ |
-| 11 | Final gap audit + submission checklist closure | ⏳ |
+| 2 | Game engine: grid, 8-dir movement, barriers, capture, scoring, deterministic stepping + unit tests | ✅ |
+| 3 | Local self-play pipeline: deterministic baseline policies, sub-game/full-game runners, transcripts, in-memory JSON report | 🔄 |
+| 4 | MCP servers (HTTP, token auth): perception/action tools mapped to engine | ⏳ |
+| 5 | Natural-language protocol: agent↔server message interpretation + validator + interpreted-action logs | ⏳ |
+| 6 | Cop & Thief LLM agents wired through MCP | ⏳ |
+| 7 | Orchestrator: run num_sub_games, seeds, aggregation, rate limits over MCP | ⏳ |
+| 8 | Google report sender (Gmail/OAuth) for final results, JSON-only email body | ⏳ |
+| 9 | Cloud/self-play through public, authenticated URLs | ⏳ |
+| 10 | Bonus inter-group play against another group's server (mandatory scope) | ⏳ |
+| 11 | Hardening: cost/measurement tracking, logging, security review | ⏳ |
+| 12 | Final gap audit + submission checklist closure | ⏳ |
 
 ## Stage 0 checklist (current)
 
@@ -39,7 +40,7 @@ Statuses: ✅ done · 🔄 in progress · ⏳ planned
 - [x] `docs/PROMPTS.md` — Stage 1 prompt summary appended
 - [x] Reviewed and explicitly committed
 
-## Stage 2 checklist (current — pure game engine core)
+## Stage 2 checklist (completed — pure game engine core)
 
 - [x] `game/models.py` — Position, PlayerRole, ActionType, Action, ActionResult,
       RuleViolation, 8-direction deltas
@@ -50,15 +51,33 @@ Statuses: ✅ done · 🔄 in progress · ⏳ planned
 - [x] SDK factory `create_game_engine(path)` (entrypoint only, no game logic)
 - [x] `config/game.default.json` — added explicit `turn_order` (thief first)
 - [x] TDD unit tests under `tests/unit/game/` (45 tests total, 100% coverage)
+- [x] Reviewed and explicitly committed
+
+## Stage 3 checklist (current — local self-play pipeline)
+
+- [x] `agents/baseline.py` — deterministic Cop (toward) / Thief (away) policies
+      with canonical-order fallback; `None` only when stuck
+- [x] `orchestration/results.py` — `SubGameResult` + structured event/transcript
+- [x] `orchestration/runner.py` — `run_sub_game` / `run_full_game`, illegal-action
+      handling with legal fallback
+- [x] `orchestration/totals.py` — score totals and win counts
+- [x] `orchestration/report.py` — in-memory JSON-serializable report builder
+      (local-only, `mcp_status: not-deployed`, not emailed)
+- [x] SDK entrypoints `run_local_sub_game` / `run_local_full_game` (delegating)
+- [x] `config/game.default.json` — added `github_repo` placeholder
+- [x] Tests under `tests/unit/agents/` and `tests/unit/orchestration/`
+      (71 tests total, 100% coverage)
 - [ ] Reviewed and explicitly committed
 
-### Stage 2 scope notes
+### Stage 3 scope notes
 
-- Pure domain only: **no** MCP, HTTP, agents/LLM, NL parsing, Gmail, cloud, GUI,
-  or bonus networking implemented in this stage.
-- `max_moves` counts each applied action (move or barrier) as one move.
+- Local backbone only: **no** MCP, HTTP, agents/LLM, NL parsing, Gmail, cloud,
+  GUI, or inter-group networking in this stage.
+- Baseline policies are deterministic (no RNG); baseline cop does not place
+  barriers. Start positions default to opposite corners each sub-game.
+- A stuck actor (no legal move) ends the sub-game as a thief survival.
 
-## Next up (Stage 3 — MCP servers over HTTP)
+## Next up (Stage 4 — MCP servers over HTTP)
 
 - [ ] Cop and Thief MCP servers (HTTP transport, token auth)
 - [ ] Perception (`look`) and action (`move`/`place_barrier`) tools over the engine

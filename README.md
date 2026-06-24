@@ -8,17 +8,28 @@ a natural-language protocol, and the final results are reported via a Google
 (Gmail) report sender. Inter-group play is treated as in-scope (see
 `docs/PRD_bonus_intergroup.md`).
 
-## Status — Stage 2 (pure game engine core)
+## Status — Stage 3 (local self-play pipeline)
 
-The **pure game engine core is implemented** and unit-tested: an authoritative,
-deterministic, config-driven grid game with 8-direction movement, Cop barriers,
-capture detection, scoring, and structured illegal-action results
-(`src/mars777_cop_thief/game/`, exercised by `tests/unit/game/`). It contacts no
-external service.
+The **local deterministic self-play pipeline is implemented** and unit-tested on
+top of the pure game engine: deterministic baseline Cop/Thief policies, a
+sub-game runner, a full-game runner for `num_sub_games`, structured in-memory
+transcripts/events, and a JSON-serializable in-memory report builder
+(`src/mars777_cop_thief/agents/` and `src/mars777_cop_thief/orchestration/`,
+exercised by `tests/unit/agents/` and `tests/unit/orchestration/`). Nothing
+contacts an external service.
 
-There is still **no MCP server, no agent/LLM behaviour, no natural-language
-parsing, no Gmail/Google integration, no cloud deployment, and no inter-group
-networking** — those are later stages (see `docs/TODO.md`).
+This is the **local backbone** that later MCP agents and natural-language
+orchestration will call or mirror. There is still **no MCP server, no
+agent/LLM behaviour, no natural-language parsing, no Gmail/Google integration, no
+cloud deployment, and no inter-group networking** — those are later stages (see
+`docs/TODO.md`). The Stage 3 report is local-only (`mcp_status: not-deployed`)
+and is **not emailed**.
+
+Run a local self-play game (prints the JSON report):
+
+```bash
+uv run python -c "import json; from pathlib import Path; from mars777_cop_thief.sdk import AssignmentSdk; print(json.dumps(AssignmentSdk().run_local_full_game(Path('config/game.default.json')), indent=2))"
+```
 
 See `docs/TODO.md` for the staged roadmap and `docs/FINAL_GAP_AUDIT.md` (not
 final yet) for the closing audit plan.
@@ -47,8 +58,12 @@ src/mars777_cop_thief/
   shared/version.py   single source of version truth ("1.00")
   shared/config.py    safe JSON config loader + validator
   game/               pure game engine: models, rules, state, engine, events
+  agents/             deterministic baseline Cop/Thief policies
+  orchestration/      sub-game/full-game runners, totals, in-memory report
 tests/unit/           version, config, and SDK smoke tests
 tests/unit/game/      engine TDD suite (models, rules, engine, events, SDK)
+tests/unit/agents/    baseline policy tests
+tests/unit/orchestration/  runner, report, and SDK self-play tests
 ```
 
 ## Requirements

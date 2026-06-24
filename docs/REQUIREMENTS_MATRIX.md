@@ -28,7 +28,7 @@ column expected to change frequently.
 | R-002 | Two MCP servers exist: one for Cop, one for Thief | MCP | Mandatory | One server package per role, separate processes/ports | `src/.../mcp/cop`, `src/.../mcp/thief` | Both servers start; health endpoints respond | Med | Planned |
 | R-003 | Communication uses free natural language, not a rigid numeric protocol | Protocol | Mandatory | Agents emit/parse NL intents; engine interprets to actions | `PRD_natural_language_protocol.md`, transcripts | Transcript review shows NL, not opcodes | High | Planned |
 | R-004 | MCP communication is HTTP-based from the beginning (not stdio-only) | MCP | Mandatory | HTTP transport chosen day one (ADR-0003) | `DECISIONS.md` ADR-0003, server code | curl/HTTP client reaches tools | Med | Planned |
-| R-005 | Baseline supports local self-play | Game | Mandatory | Orchestrator runs both local servers in one host | Local run logs, results JSON | `uv run` full local match completes | Med | Planned |
+| R-005 | Baseline supports local self-play | Game | Mandatory | Local self-play pipeline (deterministic baseline policies + runners); MCP-wired self-play later | `agents/baseline.py`, `orchestration/runner.py`, `tests/unit/orchestration/` | Full local game runs to 6 sub-games + report | Med | In progress |
 | R-006 | Submission supports cloud/self-play through public URLs | Cloud | Mandatory | Servers deployable behind public, authenticated URLs | Cloud run logs, URL screenshots | Remote run reaches both public URLs | High | Planned |
 | R-007 | Inter-group play with another team is supported | Bonus | Bonus-Mandatory | Config-driven foreign URLs; interop protocol doc | `INTERGROUP_BONUS_PROTOCOL.md`, bonus report | Live match vs. another group | High | Planned |
 | R-008 | Bonus is treated as mandatory architecture scope | Process | Bonus-Mandatory | Network/auth boundary designed up front | ADR-0005, this matrix | Architecture review | Low | Done |
@@ -52,11 +52,11 @@ column expected to change frequently.
 | R-026 | Logs are retained for disputes | Process | Mandatory | Per-turn structured transcript persisted | `logs/`, transcript files | Inspect transcript after a run | Med | Planned |
 | R-027 | Scoring — Cop win: Cop 20, Thief 5 | Game | Mandatory | `scoring.cop_win=20`, `cop_loss/thief_loss=5`; `score_state` | `config/game.default.json`, `game/engine.py`, `tests/unit/game/test_engine.py` | Unit test scoring on cop win | Low | Done |
 | R-028 | Scoring — Thief win: Thief 10, Cop 5 | Game | Mandatory | `scoring.thief_win=10`, `cop_loss=5`; `score_state` | `config/game.default.json`, `game/engine.py`, `tests/unit/game/test_engine.py` | Unit test scoring on thief win | Low | Done |
-| R-029 | Maximum team score over 6 sub-games is 90 | Game | Strong | 6 × 15-max-per-side invariant validated | Scoring tests | Property test: total ≤ 90 | Low | Planned |
-| R-030 | Minimum team score is 30 | Game | Strong | 6 × 5 floor when always losing | Scoring tests | Property test: total ≥ 30 | Low | Planned |
-| R-031 | Final report is JSON | Report | Mandatory | Report serializer emits validated JSON | Report module, schema | JSON schema validation passes | Med | Planned |
+| R-029 | Maximum team score over 6 sub-games is 90 | Game | Strong | 6 × 15-max-per-side invariant; totals aggregator | `orchestration/totals.py`, `tests/unit/orchestration/` | Property test: total ≤ 90 | Low | In progress |
+| R-030 | Minimum team score is 30 | Game | Strong | 6 × 5 floor; totals aggregator | `orchestration/totals.py`, `tests/unit/orchestration/` | Property test: total ≥ 30 | Low | In progress |
+| R-031 | Final report is JSON | Report | Mandatory | In-memory `json.dumps`-serializable report builder | `orchestration/report.py`, `tests/unit/orchestration/test_report.py` | `json.dumps(report)` succeeds | Med | In progress |
 | R-032 | Email body to instructor contains only structured JSON, no free text | Email | Mandatory | Sender uses JSON body only | Sent-message fixture | Inspect outbound body = JSON only | Med | Planned |
-| R-033 | Internal report includes group name/code, students, repo, Cop URL, Thief URL, timezone, sub_games, totals | Report | Mandatory | Internal report schema with all fields | Schema doc, sample report | Schema validation + field check | Med | Planned |
+| R-033 | Internal report includes group name/code, students, repo, Cop URL, Thief URL, timezone, sub_games, totals | Report | Mandatory | Report builder carries group/repo/timezone/sub_games/totals; students + MCP URLs added with later stages | `orchestration/report.py`, `tests/unit/orchestration/test_report.py` | Field check on built report | Med | In progress |
 | R-034 | Bonus report includes both group names, both repos, four URLs, students, sub_games, totals_by_group, bonus_claim, mutual_agreement | Bonus | Bonus-Mandatory | Bonus report schema with all fields | Bonus schema, sample | Schema validation + field check | High | Planned |
 | R-035 | If two groups disagree, bonus may be rejected | Bonus | Bonus-Mandatory | `mutual_agreement` flag gates bonus_claim | Protocol doc, bonus report | Disagreement path documented/tested | Med | Planned |
 | R-036 | Google OAuth credentials and token stay outside Git | Security | Mandatory | `.gitignore` excludes OAuth files; env refs | `.gitignore`, `.env-example` | git-ignored scan shows none tracked | High | In progress |
@@ -64,7 +64,7 @@ column expected to change frequently.
 | R-038 | README is scientific/professional and includes Dec-POMDP framing | Docs | Strong | README adds Dec-POMDP section | `README.md` | Doc review | Low | Planned |
 | R-039 | Formal Dec-POMDP tuple documented: ⟨n, S, {A_i}, P, R, {Ω_i}, O, γ⟩ | Docs | Strong | Tuple defined and mapped to engine | README / PRD section | Doc review against tuple | Low | Planned |
 | R-040 | Emphasis on orchestration/pipeline over optimal strategy | Process | Strong | Plan prioritizes pipeline robustness | `PLAN.md` | Plan review | Low | In progress |
-| R-041 | Q-learning / RL is optional creative, not required for baseline | Process | Optional | Strategy layer pluggable; baseline heuristic | `PLAN.md`, agent interface | Baseline works without RL | Low | Planned |
+| R-041 | Q-learning / RL is optional creative, not required for baseline | Process | Optional | Deterministic baseline policies play full games with no RL; callable contract is pluggable | `agents/baseline.py`, `tests/unit/agents/`, `tests/unit/orchestration/` | Baseline runs full game without RL | Low | Done |
 | R-042 | GUI is optional and must not risk core delivery | Process | Optional | No GUI on critical path; CLI/headless first | `PRD.md` non-scope | Core path runs headless | Low | Done |
 | R-043 | Professional software guidelines are mandatory evaluation basis | Quality | Mandatory | Quality gates enforced each stage | `QUALITY.md` | Gate run each stage | Med | In progress |
 | R-044 | README at repository root | Docs | Mandatory | `README.md` maintained at root | `README.md` | File exists, reviewed | Low | Done |
@@ -91,7 +91,7 @@ column expected to change frequently.
 | R-065 | Evidence-backed claims (no overclaiming) | Feedback | Mandatory | Every claim cites a proof artifact | This matrix, reports | Claim→artifact cross-check | Med | In progress |
 | R-066 | Timezone fixed to Asia/Jerusalem for timestamps/reports | Report | Strong | `timezone` config used by reporter | `config/game.default.json` | Report timestamps in TZ | Low | Done |
 | R-067 | Visibility radius is configurable (default 1) | Game | Strong | `visibility_radius` drives perception | Config, perception logic | Unit test perception window | Low | Done |
-| R-068 | Deterministic runs given a seed | Quality | Strong | RNG seeded by orchestrator | Orchestrator, results | Same seed → same transcript | Med | Planned |
+| R-068 | Deterministic runs given a seed | Quality | Strong | Baseline self-play is fully deterministic (no RNG); seed hooks added if randomness is introduced | `agents/baseline.py`, `orchestration/runner.py`, `tests/unit/orchestration/` | Repeated run → identical transcript | Med | In progress |
 | R-069 | Rate limiting / request budget enforced | Quality | Strong | `rate_limits.default.json` honored | Config, limiter | Limiter test rejects over-budget | Med | Planned |
 | R-070 | Auth tokens exchanged securely and revoked after bonus play | Security | Bonus-Mandatory | Out-of-band exchange; post-game revoke | `INTERGROUP_BONUS_PROTOCOL.md` | Revocation step logged | Med | Planned |
 

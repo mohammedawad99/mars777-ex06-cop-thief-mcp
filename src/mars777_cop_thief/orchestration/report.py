@@ -21,15 +21,18 @@ def _config_summary(config: dict) -> dict:
         "max_barriers": config["max_barriers"],
         "allow_stay": config["allow_stay"],
         "turn_order": config["turn_order"],
+        "visibility_radius": config.get("visibility_radius", 1),
         "scoring": config["scoring"],
     }
 
 
-def build_report(config: dict, results: list[SubGameResult]) -> dict:
+def build_report(
+    config: dict, results: list[SubGameResult], mode: str = "deterministic-baseline"
+) -> dict:
     """Assemble a JSON-serializable local self-play report dictionary."""
     return {
         "stage": "local-self-play",
-        "mode": "deterministic-baseline",
+        "mode": mode,
         "mcp_status": "not-deployed",
         "group_code": config["group_code"],
         "group_slug": config["group_slug"],

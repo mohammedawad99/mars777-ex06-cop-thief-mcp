@@ -75,12 +75,33 @@ deterministic (no RNG), with seed hooks deferred until randomness is introduced.
 
 ## 5. Natural-language protocol
 
-- **AC-NL-1** (R-003): Agent→server and server→agent messages are free natural
-  language; transcript inspection finds no fixed numeric/opcode protocol.
-- **AC-NL-2** (R-003, R-025): Each NL message is interpreted into a concrete
-  action and an `interpreted_action` record is logged alongside the raw text.
+**Stage 4 status:** a **local** partial-observability and free natural-language
+dialogue layer is implemented and test-covered (`observability/`, `dialogue/`,
+`orchestration/dialogue_runner.py`; `tests/unit/observability/`,
+`tests/unit/dialogue/`). Messages are plain English with qualitative relative
+direction and no coordinates; the opponent's position is hidden outside the
+visibility radius and never leaks; audit metadata is kept separate from message
+text. The MCP transport and model-driven interpretation are later stages.
+
+- **AC-NL-1** (R-003) — ✅ test-covered (local): Messages are free natural
+  language; tests assert plain strings (not JSON) and qualitative wording with no
+  numeric coordinates.
+- **AC-NL-2** (R-003, R-025) — ◑ partially: each turn records a structured event
+  and a transcript message with debug-only audit facts; model-driven
+  `interpreted_action` over MCP arrives in a later stage.
 - **AC-NL-3** (R-003): An ambiguous or uninterpretable NL message is handled
-  deterministically (rejected or clarified) and logged — never silently dropped.
+  deterministically (rejected or clarified) and logged — later stage (model
+  interpretation not yet implemented).
+
+### Partial observability (Stage 4, local)
+
+- **AC-PO-1** (R-067) — ✅ test-covered: the opponent is visible within
+  `visibility_radius` (Chebyshev) and hidden outside it.
+- **AC-PO-2** (R-067) — ✅ test-covered: a hidden opponent's coordinate is never
+  present in the observation (`opponent_position is None`; absent from `to_dict`).
+- **AC-PO-3** (R-067) — ✅ test-covered: observation-based policies decide from the
+  observation only (no hidden-state cheating), with deterministic patrol/explore
+  fallback when the opponent is hidden.
 
 ## 6. JSON reports
 

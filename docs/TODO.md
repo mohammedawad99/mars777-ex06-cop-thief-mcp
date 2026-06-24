@@ -7,16 +7,17 @@ Statuses: ✅ done · 🔄 in progress · ⏳ planned
 | 0 | Repo skeleton: package layout, docs scaffolding, config defaults, packaging, quality gates | ✅ |
 | 1 | Requirements hardening & architecture planning: Requirements Matrix, acceptance criteria, risk register, inter-group protocol, plan/ADR updates | ✅ |
 | 2 | Game engine: grid, 8-dir movement, barriers, capture, scoring, deterministic stepping + unit tests | ✅ |
-| 3 | Local self-play pipeline: deterministic baseline policies, sub-game/full-game runners, transcripts, in-memory JSON report | 🔄 |
-| 4 | MCP servers (HTTP, token auth): perception/action tools mapped to engine | ⏳ |
-| 5 | Natural-language protocol: agent↔server message interpretation + validator + interpreted-action logs | ⏳ |
-| 6 | Cop & Thief LLM agents wired through MCP | ⏳ |
-| 7 | Orchestrator: run num_sub_games, seeds, aggregation, rate limits over MCP | ⏳ |
-| 8 | Google report sender (Gmail/OAuth) for final results, JSON-only email body | ⏳ |
-| 9 | Cloud/self-play through public, authenticated URLs | ⏳ |
-| 10 | Bonus inter-group play against another group's server (mandatory scope) | ⏳ |
-| 11 | Hardening: cost/measurement tracking, logging, security review | ⏳ |
-| 12 | Final gap audit + submission checklist closure | ⏳ |
+| 3 | Local self-play pipeline: deterministic baseline policies, sub-game/full-game runners, transcripts, in-memory JSON report | ✅ |
+| 4 | Local partial-observability & natural-language dialogue: visibility-radius observations, free-text messages, observed runner | 🔄 |
+| 5 | MCP servers (HTTP, token auth): perception/action tools mapped to engine | ⏳ |
+| 6 | Natural-language protocol over MCP: message interpretation + validator + interpreted-action logs | ⏳ |
+| 7 | Cop & Thief LLM agents wired through MCP | ⏳ |
+| 8 | Orchestrator: run num_sub_games, seeds, aggregation, rate limits over MCP | ⏳ |
+| 9 | Google report sender (Gmail/OAuth) for final results, JSON-only email body | ⏳ |
+| 10 | Cloud/self-play through public, authenticated URLs | ⏳ |
+| 11 | Bonus inter-group play against another group's server (mandatory scope) | ⏳ |
+| 12 | Hardening: cost/measurement tracking, logging, security review | ⏳ |
+| 13 | Final gap audit + submission checklist closure | ⏳ |
 
 ## Stage 0 checklist (current)
 
@@ -53,7 +54,7 @@ Statuses: ✅ done · 🔄 in progress · ⏳ planned
 - [x] TDD unit tests under `tests/unit/game/` (45 tests total, 100% coverage)
 - [x] Reviewed and explicitly committed
 
-## Stage 3 checklist (current — local self-play pipeline)
+## Stage 3 checklist (completed — local self-play pipeline)
 
 - [x] `agents/baseline.py` — deterministic Cop (toward) / Thief (away) policies
       with canonical-order fallback; `None` only when stuck
@@ -67,7 +68,7 @@ Statuses: ✅ done · 🔄 in progress · ⏳ planned
 - [x] `config/game.default.json` — added `github_repo` placeholder
 - [x] Tests under `tests/unit/agents/` and `tests/unit/orchestration/`
       (71 tests total, 100% coverage)
-- [ ] Reviewed and explicitly committed
+- [x] Reviewed and explicitly committed
 
 ### Stage 3 scope notes
 
@@ -77,7 +78,34 @@ Statuses: ✅ done · 🔄 in progress · ⏳ planned
   barriers. Start positions default to opposite corners each sub-game.
 - A stuck actor (no legal move) ends the sub-game as a thief survival.
 
-## Next up (Stage 4 — MCP servers over HTTP)
+## Stage 4 checklist (current — local partial-observability & dialogue)
+
+- [x] `observability/visibility.py` — Chebyshev `is_visible` + `relative_direction`
+- [x] `observability/observation.py` — `Observation` + `observe`; hidden opponent
+      position is `None` (never stored)
+- [x] `dialogue/messages.py` — free natural-language messages (no JSON, no coords)
+- [x] `dialogue/transcript.py` — transcript records + debug-only `audit` facts
+- [x] `agents/observed.py` — observation-based cop/thief policies (patrol/explore
+      fallback when opponent hidden)
+- [x] `orchestration/dialogue_runner.py` — observed runner recording action events
+      and message transcript; Stage 3 full-state runner left intact
+- [x] `orchestration/results.py` — `SubGameResult` gains optional `transcript`
+- [x] `orchestration/report.py` — `mode` parameter + `visibility_radius` summary
+- [x] SDK `run_local_dialogue_sub_game` / `run_local_dialogue_full_game`
+- [x] Tests under `tests/unit/observability/`, `tests/unit/dialogue/`,
+      `tests/unit/agents/`, `tests/unit/orchestration/` (101 tests, 100% coverage)
+- [ ] Reviewed and explicitly committed
+
+### Stage 4 scope notes
+
+- Strict separation: trusted full engine state · per-agent observation · NL
+  message text · debug-only audit metadata (never consumed by the other agent).
+- Observation-based policies act only on what they can see; the engine remains
+  the authority and provides the runner's legal fallback (not an agent ability).
+- **No** MCP, HTTP, external LLM understanding, Gmail, cloud, GUI, or inter-group
+  networking in this stage; reports stay local-only and are not emailed.
+
+## Next up (Stage 5 — MCP servers over HTTP)
 
 - [ ] Cop and Thief MCP servers (HTTP transport, token auth)
 - [ ] Perception (`look`) and action (`move`/`place_barrier`) tools over the engine

@@ -133,5 +133,51 @@ natural-language parsing, GUI, or inter-group networking.
 gates pass (ruff clean, 71 tests, 100% coverage). No MCP/Gmail/LLM/cloud/bonus
 implementation added.
 
-> Subsequent stages will append their driving prompts here (MCP, protocol,
-> agents, orchestrator, report sender, cloud, bonus, audit).
+## Stage 4 — Local partial-observability & dialogue layer (2026-06-24)
+
+**Goal:** Add a local partial-observability and free natural-language dialogue
+layer on top of the Stage 3 self-play backbone. **No** MCP, HTTP endpoints,
+cloud, Gmail/Google, external-LLM understanding, GUI, or inter-group networking.
+
+**Key constraints captured from the prompt:**
+- Strict separation of four concerns: trusted full engine state · per-agent
+  observation · natural-language message text · debug-only audit metadata.
+- Partial observability via `visibility_radius` (default 1) and Chebyshev
+  distance; an agent always knows its own role/position, board size, move
+  counts, locally visible barriers, and (cop) its barrier budget; the opponent's
+  position is known **only when within the radius**, otherwise `None` — the
+  hidden coordinate is never stored or leaked (proven by tests).
+- Free natural-language messages (not JSON, not a numeric protocol); qualitative
+  relative-direction language when visible; no exact coordinates; "cannot see"
+  message when hidden. Transcript records carry sender, recipient, turn index,
+  message text, visibility flag, and audit facts used for evidence only — never
+  consumed by the other agent.
+- Observation-based policies decide from the observation only (cop toward visible
+  thief, else patrol toward centre; thief away from visible cop, else explore
+  toward edges); tests prove no hidden-state cheating. The engine stays
+  authoritative and provides the runner's legal fallback.
+- Stage 3 full-state runner preserved; standard library only; every file < 150
+  non-empty/non-comment lines; ≥ 85 coverage.
+
+**Artifacts produced:**
+- `src/mars777_cop_thief/observability/` — `visibility.py`, `observation.py`,
+  `__init__.py`.
+- `src/mars777_cop_thief/dialogue/` — `messages.py`, `transcript.py`,
+  `__init__.py`.
+- `src/mars777_cop_thief/agents/observed.py` + `agents/__init__.py` exports.
+- `src/mars777_cop_thief/orchestration/dialogue_runner.py`; `results.py`
+  (`transcript` field), `report.py` (`mode` + `visibility_radius`),
+  `__init__.py` exports.
+- SDK `run_local_dialogue_sub_game` / `run_local_dialogue_full_game`.
+- Tests under `tests/unit/observability/`, `tests/unit/dialogue/`, plus new
+  `tests/unit/agents/test_observed.py` and dialogue runner/SDK tests
+  (101 tests total, 100% coverage).
+- Doc updates: `README.md`, `TODO.md`, `DECISIONS.md` (ADR-0017…ADR-0019),
+  `REQUIREMENTS_MATRIX.md`, `ACCEPTANCE_CRITERIA.md`, `PLAN.md`.
+
+**Outcome:** Local partial-observability and natural-language dialogue layer
+implemented; all quality gates pass (ruff clean, 101 tests, 100% coverage). No
+MCP/HTTP/Gmail/external-LLM/cloud/inter-group implementation added.
+
+> Subsequent stages will append their driving prompts here (MCP, protocol over
+> MCP, LLM agents, orchestrator, report sender, cloud, bonus, audit).

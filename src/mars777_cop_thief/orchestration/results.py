@@ -7,7 +7,7 @@ the later natural-language transcript.
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 from mars777_cop_thief.game.models import Action, ActionResult, PlayerRole, Position
 from mars777_cop_thief.game.state import SubGameState
@@ -62,6 +62,7 @@ class SubGameResult:
     move_count: int
     barriers: list[Position]
     events: list[dict]
+    transcript: list[dict] = field(default_factory=list)
 
     def to_dict(self) -> dict:
         """Return a fully JSON-serializable view of this result."""
@@ -75,4 +76,5 @@ class SubGameResult:
             "move_count": self.move_count,
             "barriers": [cell(b) for b in self.barriers],
             "events": self.events,
+            "transcript": self.transcript,
         }

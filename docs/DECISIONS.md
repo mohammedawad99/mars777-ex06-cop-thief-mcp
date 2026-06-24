@@ -131,3 +131,37 @@ records; write **no files** and send **no email**; mark `mcp_status` as
 The report schema and totals are validated now with zero external dependencies;
 file persistence, MCP URLs, cloud deployment, and Gmail sending are added in their
 own later stages without reworking the data model.
+
+## ADR-0017 — Observation isolation under partial observability
+**Context:** Partial observability is only meaningful if an agent literally cannot
+read what it should not see. **Decision:** Build a per-agent `Observation` that
+carries only permitted facts (own role/position, board, move counts, locally
+visible barriers, cop barrier budget) and computes opponent visibility by
+Chebyshev distance against `visibility_radius`; when the opponent is out of range
+the observation stores `opponent_position = None` and **never** holds the hidden
+coordinate. Policies act on the `Observation`, not on full state.
+**Consequences:** Hidden positions cannot leak through the observation object
+(proven by tests asserting the hidden coordinate is absent); the engine remains
+the only holder of full state and the authority on legality; LLM/MCP agents can
+later consume the same observation contract.
+
+## ADR-0018 — Natural-language transcript with separated audit metadata
+**Context:** The course requires free natural-language messages and dispute-grade
+evidence, but evidence must not become a hidden side channel. **Decision:** Agents
+emit **free English** strings (never JSON/numeric protocol) describing qualitative
+relative spatial sense; a transcript record stores the message text plus a
+separate `audit` block of debug-only facts. The recipient may read only the
+`message`; the `audit` block is for human evidence/debugging and is **never**
+consumed by the other agent. **Consequences:** Satisfies the free-language
+requirement while keeping reconstructable evidence; tests assert audit content
+does not appear in the message text and carries no hidden opponent coordinates.
+
+## ADR-0019 — Qualitative spatial language, no exact coordinates by default
+**Context:** A visible opponent could be described precisely, but exact
+coordinates would weaken the natural-language framing and leak more than intended.
+**Decision:** Messages use **qualitative relative directions** (e.g.
+"south-east", "right on top of me") and never numeric coordinates; a hidden
+opponent yields a "cannot see" message. Any exact-coordinate debug mode would be
+an explicitly documented, negotiated future option. **Consequences:** Messages
+stay human and free-form; hidden coordinates are structurally impossible to emit
+(the sender's observation has none); tests assert messages contain no digits.

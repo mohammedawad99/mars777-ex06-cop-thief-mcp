@@ -21,6 +21,7 @@ def make_config():
             "max_barriers": 5,
             "allow_stay": False,
             "turn_order": ["thief", "cop"],
+            "visibility_radius": 1,
             "scoring": {"cop_win": 20, "thief_win": 10, "cop_loss": 5, "thief_loss": 5},
             "timezone": "Asia/Jerusalem",
         }

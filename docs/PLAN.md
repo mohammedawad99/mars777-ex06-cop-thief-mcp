@@ -1,6 +1,6 @@
 # PLAN — Intended Architecture
 
-**Group:** MaRs-777 · **Status:** Stage 3 (local self-play pipeline)
+**Group:** MaRs-777 · **Status:** Stage 4 (local partial-observability & dialogue)
 
 ## Architecture overview
 
@@ -54,8 +54,9 @@
 ## Build order
 
 SDK/shared (Stage 0 ✅) → requirements hardening (Stage 1 ✅) → game engine
-(Stage 2 ✅) → **local self-play pipeline (Stage 3 — current)** → MCP servers
-(HTTP) → natural-language protocol → LLM agents → orchestrator over MCP → report
+(Stage 2 ✅) → local self-play pipeline (Stage 3 ✅) → **local
+partial-observability & dialogue (Stage 4 — current)** → MCP servers (HTTP) →
+natural-language protocol over MCP → LLM agents → orchestrator over MCP → report
 sender → cloud/self-play → bonus inter-group → hardening & audit.
 
 ## Pipeline progress (Stage 3)
@@ -75,9 +76,32 @@ pipeline** that is the backbone later stages mirror:
 - **SDK entrypoints** — `run_local_sub_game` / `run_local_full_game` delegate to
   orchestration; the SDK holds no game logic.
 
-The MCP layer (next) will expose the same engine actions over authenticated HTTP,
-and the natural-language layer will replace structured events with interpreted
-language while keeping the engine authoritative.
+The MCP layer (later) will expose the same engine actions over authenticated
+HTTP, keeping the engine authoritative.
+
+## Pipeline progress (Stage 4)
+
+Stage 4 adds a **local partial-observability and natural-language dialogue**
+layer over the Stage 3 backbone, establishing the four-way separation that the
+MCP/LLM stages will preserve:
+
+- **Full state** — held only by the trusted engine (`game/`).
+- **Observation** (`observability/`) — each agent receives a visibility-radius
+  (Chebyshev) `Observation`; a hidden opponent's position is `None` and never
+  stored, so it cannot leak (ADR-0017).
+- **Message text** (`dialogue/messages.py`) — free English describing qualitative
+  relative direction; no JSON, no numeric protocol, no exact coordinates
+  (ADR-0019).
+- **Audit metadata** (`dialogue/transcript.py`) — debug-only evidence kept beside
+  the message and never consumed by the other agent (ADR-0018).
+
+The **observed runner** (`orchestration/dialogue_runner.py`) builds an
+observation, speaks a message, and acts from the observation only — the engine
+still enforces legality and supplies the runner's legal fallback. The Stage 3
+full-state runner is preserved for regression. When the LLM/MCP stages arrive,
+they consume this same observation contract and message channel; only the
+*source* of the message (a model instead of a template) and the *transport* (HTTP
+instead of in-process) change.
 
 ## Verification artifacts (core)
 

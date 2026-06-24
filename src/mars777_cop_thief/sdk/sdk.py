@@ -12,7 +12,13 @@ from pathlib import Path
 
 from mars777_cop_thief.agents import cop_policy, thief_policy
 from mars777_cop_thief.game import GameEngine
-from mars777_cop_thief.orchestration import build_report, run_full_game, run_sub_game
+from mars777_cop_thief.orchestration import (
+    build_report,
+    run_dialogue_full_game,
+    run_dialogue_sub_game,
+    run_full_game,
+    run_sub_game,
+)
 from mars777_cop_thief.orchestration.results import SubGameResult
 from mars777_cop_thief.shared.config import load_game_config
 from mars777_cop_thief.shared.version import __version__
@@ -49,3 +55,17 @@ class AssignmentSdk:
         engine = GameEngine(config)
         results = run_full_game(engine, config["num_sub_games"], cop_policy, thief_policy)
         return build_report(config, results)
+
+    def run_local_dialogue_sub_game(self, path: str | Path) -> SubGameResult:
+        """Run one observed/dialogue sub-game (partial observability) from config."""
+        config = self.load_game_config(path)
+        engine = GameEngine(config)
+        return run_dialogue_sub_game(engine, config.get("visibility_radius", 1))
+
+    def run_local_dialogue_full_game(self, path: str | Path) -> dict:
+        """Run a full observed/dialogue game and return its JSON-ready report."""
+        config = self.load_game_config(path)
+        engine = GameEngine(config)
+        radius = config.get("visibility_radius", 1)
+        results = run_dialogue_full_game(engine, config["num_sub_games"], radius)
+        return build_report(config, results, mode="observed-dialogue")

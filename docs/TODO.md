@@ -499,9 +499,30 @@ Statuses: ✅ done · 🔄 in progress · ⏳ planned
 > and no bonus game has been run. The Stage 14C draft remains a student-only preview,
 > not the official submission.
 
-## Next up (Stage 15B+ — run the bonus game + final live report)
+### Stage 15B — partner interop adapter prep (adapter ready; game not run)
 
-- [ ] Fill `.secrets/bonus_partner.local.json` and pass the partner compatibility smoke
+- [x] Adapter for partner group **orcai-mj**'s `setup`/`observe`/`my_move`/`state`
+      contract: pure module `src/mars777_cop_thief/bonus/partner_adapter.py`
+      (0-based `[row, col]`, thief-first, ≤25 moves, ≤5 cop barriers) + tests
+      (`tests/unit/bonus/test_partner_adapter.py`).
+- [x] Configurable board size **5x5 and 8x8** supported; official size **not frozen**.
+- [x] Our existing MCP interface unchanged; our engine already 0-based `[row, col]`.
+- [x] Readiness/smoke script `scripts/bonus_interop_smoke.py`: readiness mode now
+      (partner URLs/tokens pending), and the same script runs unauthorized +
+      authorized + role/tool + 5x5/8x8 warm-up smokes once the local partner file
+      is populated — never printing secrets.
+- [x] Sanitized evidence `results/evidence/bonus_interop_readiness.example.json`.
+- [ ] **Pending:** partner INTEROP doc is **not publicly reachable** — confirm exact
+      tool arg schemas against live endpoints; freeze official board size.
+
+> The partner repo `akariya-mohammed/orcai-mj-hw6` / its INTEROP doc could not be
+> fetched (404 / not public yet), so the adapter payload keys follow the agreed
+> contract and must be confirmed on the live endpoints before the official run.
+
+## Next up (Stage 15C+ — run the bonus game + final live report)
+
+- [ ] Receive partner ngrok `/mcp` URLs + tokens; fill `.secrets/bonus_partner.local.json`
+- [ ] Pass `bonus_interop_smoke` (unauthorized + authorized + warm-ups); freeze board size
 - [ ] Play the real inter-group match (6 sub-games) and produce a `bonus_game` report
 - [ ] Send the final official report **to the lecturer** via Gmail
       (`RUN_GMAIL_LIVE=1`, external OAuth) — still pending

@@ -657,5 +657,26 @@ partner Thief ×3, our Thief vs partner Cop ×3); Cop-win 20 > Thief-win 10; tur
 must be agreed (our default is thief-first); no guaranteed victory. Evidence is
 token-free and ID-free. **No partner smoke passed, no bonus game run, no live Gmail.**
 
+## Stage 15B — partner interop adapter prep (no official game)
+
+**Prompt summary:** Prepare adapter support for partner group orcai-mj's
+`setup`/`observe`/`my_move`/`state` MCP contract without running the official bonus
+game. Keep our MCP interface unchanged; support 0-based `[row, col]`, configurable
+board (5x5/8x8, official not chosen), thief-first; add a readiness mode that runs
+when partner URLs/tokens are still missing and reports blockers; once populated the
+same script runs unauthorized/authorized/role-tool/warm-up smokes without printing
+secrets. Sanitized evidence only; no Gmail; no tokens/IDs committed.
+
+**Outcome:** pure adapter `src/mars777_cop_thief/bonus/partner_adapter.py`
+(tool-name + board + cell validation, warm-up plan) with full unit coverage
+(`tests/unit/bonus/test_partner_adapter.py`); readiness/smoke script
+`scripts/bonus_interop_smoke.py`. Partner repo/INTEROP doc was **not publicly
+reachable** (404 / not in the owner's public repos), so payload keys follow the
+agreed contract and must be confirmed on the live endpoints. Readiness run:
+`adapter_ready: true`, `partner_contract_supported: true`,
+`official_board_size_selected: false`, `partner_urls_present/tokens_present: false`,
+`partner_smoke_status: unknown`, exit 0 with blockers. 352 tests, 100% coverage.
+**No bonus game run, no Gmail sent, no board size frozen.**
+
 > Subsequent stages will append their driving prompts here (run the bonus game,
 > final live report, audit).

@@ -95,6 +95,15 @@ every gate below passes.
   full bonus game, or prints tokens/IDs. The pure intake validation
   (`bonus/intake.py`) is in the **offline unit gate** (`tests/unit/bonus/`).
 
+- **Partner interop adapter readiness/smoke** —
+  `uv run python scripts/bonus_interop_smoke.py` must exit 0 and print safe flags. In
+  readiness mode (partner URLs/tokens still pending) it reports `partner_smoke_status:
+  unknown` with blockers; once the local partner file is populated the same script
+  runs unauthorized + authorized + role/tool + 5x5/8x8 warm-up smokes against the
+  partner endpoints — never printing secrets, never running the official bonus game.
+  The pure adapter (`bonus/partner_adapter.py`) is in the **offline unit gate**
+  (`tests/unit/bonus/test_partner_adapter.py`).
+
 ### Operational preflight (env-specific; not a pure unit gate)
 
 - **Live-readiness preflight** —

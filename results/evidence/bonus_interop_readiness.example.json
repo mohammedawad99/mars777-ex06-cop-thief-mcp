@@ -1,0 +1,32 @@
+{
+  "stage": "15B",
+  "artifact": "bonus_interop_readiness",
+  "partner_group_code": "orcai-mj",
+  "adapter_ready": true,
+  "partner_contract_supported": true,
+  "supported_partner_tools": [
+    "setup",
+    "observe",
+    "my_move",
+    "state"
+  ],
+  "supported_board_sizes": [
+    "5x5",
+    "8x8"
+  ],
+  "official_board_size_selected": false,
+  "partner_urls_present": false,
+  "partner_tokens_present": false,
+  "partner_smoke_status": "unknown",
+  "live_checks": {},
+  "bonus_game_run": false,
+  "live_gmail_sent": false,
+  "token_values_recorded": false,
+  "ids_redacted_in_tracked_evidence": true,
+  "blockers": [
+    "partner public Cop/Thief /mcp URLs not yet provided",
+    "partner tokens not yet provided",
+    "partner INTEROP doc not publicly reachable; confirm tool arg schemas on live endpoints",
+    "official board size (5x5 vs 8x8) not frozen"
+  ]
+}

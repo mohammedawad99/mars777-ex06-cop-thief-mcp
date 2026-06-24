@@ -57,7 +57,6 @@
   },
   "blockers": [
     "partner intake incomplete (placeholders): partner_group_code, partner_group_slug, partner_github_repo, partner_cop_mcp_url, partner_thief_mcp_url, agreement_channel",
-    "partner file created as placeholder; fill .secrets/bonus_partner.local.json",
     "partner compatibility smoke not passed (status: unknown)"
   ],
   "mutual_agreement_pending": true,

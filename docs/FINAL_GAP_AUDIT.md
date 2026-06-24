@@ -47,6 +47,7 @@ known open gaps**, deferred to later stages — none is claimed as done:
 | Final official report sent to lecturer via Gmail | **not sent** — only dry-run + a student-only draft preview done; live send to the lecturer is opt-in (`RUN_GMAIL_LIVE=1`) and still pending | Deferred (Stage 14D) |
 | Live Gemini provider run | **not run** — offline `fake_local` default; live is opt-in (`RUN_GEMINI_LIVE=1`) with a key | Deferred (opt-in local) |
 | Inter-group bonus readiness | **prepared** — readiness gate validates self cloud (ready) + partner intake/compat smoke; local partner file + strategy in place; `bonus_ready: false` pending real partner | Done (Stage 15A) |
+| Partner interop adapter (orcai-mj) | **prepared** — pure adapter for `setup`/`observe`/`my_move`/`state` (0-based `[row,col]`, 5x5/8x8, thief-first), tested; readiness/smoke script. Partner doc not public yet; arg schemas to confirm live; board size not frozen | Done (Stage 15B) |
 | Real inter-group bonus game | **not completed** — no partner smoke passed and no cross-group match played yet; `bonus_game` report not produced | Deferred (Stage 15B) |
 | Final Moodle submission PDF | **not prepared yet** | Deferred (near submission) |
 | Measured real LLM/Gmail cost | **TBD** — fake/dry-run only; real figures pending a live run | Deferred (after a live run) |

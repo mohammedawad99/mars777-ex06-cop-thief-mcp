@@ -8,8 +8,8 @@ Statuses: ✅ done · 🔄 in progress · ⏳ planned
 | 1 | Requirements hardening & architecture planning: Requirements Matrix, acceptance criteria, risk register, inter-group protocol, plan/ADR updates | ✅ |
 | 2 | Game engine: grid, 8-dir movement, barriers, capture, scoring, deterministic stepping + unit tests | ✅ |
 | 3 | Local self-play pipeline: deterministic baseline policies, sub-game/full-game runners, transcripts, in-memory JSON report | ✅ |
-| 4 | Local partial-observability & natural-language dialogue: visibility-radius observations, free-text messages, observed runner | 🔄 |
-| 5 | MCP servers (HTTP, token auth): perception/action tools mapped to engine | ⏳ |
+| 4 | Local partial-observability & natural-language dialogue: visibility-radius observations, free-text messages, observed runner | ✅ |
+| 5 | Local HTTP MCP servers (Cop & Thief): FastMCP, role-safe tools, token auth, run entrypoints | 🔄 |
 | 6 | Natural-language protocol over MCP: message interpretation + validator + interpreted-action logs | ⏳ |
 | 7 | Cop & Thief LLM agents wired through MCP | ⏳ |
 | 8 | Orchestrator: run num_sub_games, seeds, aggregation, rate limits over MCP | ⏳ |
@@ -78,7 +78,7 @@ Statuses: ✅ done · 🔄 in progress · ⏳ planned
   barriers. Start positions default to opposite corners each sub-game.
 - A stuck actor (no legal move) ends the sub-game as a thief survival.
 
-## Stage 4 checklist (current — local partial-observability & dialogue)
+## Stage 4 checklist (completed — local partial-observability & dialogue)
 
 - [x] `observability/visibility.py` — Chebyshev `is_visible` + `relative_direction`
 - [x] `observability/observation.py` — `Observation` + `observe`; hidden opponent
@@ -94,7 +94,7 @@ Statuses: ✅ done · 🔄 in progress · ⏳ planned
 - [x] SDK `run_local_dialogue_sub_game` / `run_local_dialogue_full_game`
 - [x] Tests under `tests/unit/observability/`, `tests/unit/dialogue/`,
       `tests/unit/agents/`, `tests/unit/orchestration/` (101 tests, 100% coverage)
-- [ ] Reviewed and explicitly committed
+- [x] Reviewed and explicitly committed
 
 ### Stage 4 scope notes
 
@@ -105,8 +105,36 @@ Statuses: ✅ done · 🔄 in progress · ⏳ planned
 - **No** MCP, HTTP, external LLM understanding, Gmail, cloud, GUI, or inter-group
   networking in this stage; reports stay local-only and are not emailed.
 
-## Next up (Stage 5 — MCP servers over HTTP)
+## Stage 5 checklist (current — local HTTP MCP servers)
 
-- [ ] Cop and Thief MCP servers (HTTP transport, token auth)
-- [ ] Perception (`look`) and action (`move`/`place_barrier`) tools over the engine
-- [ ] Unauthenticated requests rejected; integration test without external calls
+- [x] `mcp_servers/auth.py` — env-token guard; structured unauthorized result;
+      real token never logged/returned (`REDACTED`)
+- [x] `mcp_servers/common.py` — JSON↔domain helpers, HTTP settings reader
+- [x] `mcp_servers/tools.py` — pure role-safe adapters (role info, health,
+      observation, message, propose_action, barrier_candidate)
+- [x] `mcp_servers/cop_server.py` / `thief_server.py` — FastMCP builders;
+      thief omits barrier placement
+- [x] `mcp_servers/run_cop.py` / `run_thief.py` — HTTP entrypoints (`main()` only
+      starts a server; import is side-effect free)
+- [x] `config/mcp.local.default.json` — transport/ports/paths/token-env/local_only
+- [x] `.env-example` — `COP_MCP_TOKEN`/`THIEF_MCP_TOKEN`/`*_MCP_LOCAL_URL` placeholders
+- [x] FastMCP added via uv and pinned (`fastmcp>=3.4.2,<4`; uv.lock pins exact)
+- [x] Tests under `tests/unit/mcp_servers/` (127 tests total, 100% coverage)
+- [ ] Reviewed and explicitly committed
+
+### Stage 5 scope notes
+
+- The LLM lives in the future client, **not** in the MCP servers; servers only
+  expose tools that delegate to the domain packages (engine stays authoritative).
+- HTTP transport from the start (FastMCP `transport="http"`); two independent
+  servers on separate local ports (Cop 8001, Thief 8002).
+- Stage 5 auth is an explicit `auth_token` argument checked against an env var —
+  **local development auth**, to be upgraded for cloud.
+- **No** cloud deployment, public URLs, Gmail/email, external-LLM calls, GUI,
+  production OAuth, or inter-group remote play in this stage.
+
+## Next up (Stage 6 — natural-language protocol over MCP)
+
+- [ ] Message interpretation + validator wired through the MCP tools
+- [ ] Interpreted-action logs alongside raw NL over the transport
+- [ ] Integration test exercising the tool contract without external LLM calls

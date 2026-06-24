@@ -8,6 +8,40 @@ a natural-language protocol, and the final results are reported via a Google
 (Gmail) report sender. Inter-group play is treated as in-scope (see
 `docs/PRD_bonus_intergroup.md`).
 
+## Status — Stage 5 (local HTTP MCP servers)
+
+The **local HTTP MCP server layer is implemented** and unit-tested: two
+independent FastMCP servers (Cop and Thief) that expose role-safe tools
+delegating to the existing engine / observability / dialogue / policy code
+(`src/mars777_cop_thief/mcp_servers/`, exercised by `tests/unit/mcp_servers/`).
+The LLM does **not** live in the servers — they only expose tools/resources for a
+future client/orchestrator to call.
+
+- Tools (both roles): `get_role_info`, `health_check`, `get_observation`
+  (role-safe; hidden opponent never leaked), `compose_message` (free text),
+  `propose_action` (observation-based policy). **Cop-only:**
+  `place_barrier_candidate`. The **Thief server does not expose barrier
+  placement**.
+- Transport is **HTTP** (FastMCP `transport="http"`), runnable locally on
+  separate ports (Cop `8001`, Thief `8002`) — config in
+  `config/mcp.local.default.json`.
+- Protected tool calls require a token via an explicit `auth_token` argument
+  checked against an environment variable (`COP_MCP_TOKEN` / `THIEF_MCP_TOKEN`).
+  This is **local development auth**, to be upgraded for cloud. The real token is
+  never logged or returned.
+
+This stage is **local-only**: there are **no public URLs and no cloud deployment
+yet**, **no Gmail/email sending**, **no external-LLM calls**, **no GUI**, and **no
+inter-group remote play**. Those remain later stages (see `docs/TODO.md`).
+
+Run the local MCP servers (each in its own terminal, after setting tokens in
+`.env`):
+
+```bash
+uv run python -m mars777_cop_thief.mcp_servers.run_cop     # Cop server  → 127.0.0.1:8001/mcp
+uv run python -m mars777_cop_thief.mcp_servers.run_thief   # Thief server → 127.0.0.1:8002/mcp
+```
+
 ## Status — Stage 4 (local partial-observability & dialogue)
 
 The **local partial-observability and natural-language dialogue layer is
@@ -78,12 +112,14 @@ src/mars777_cop_thief/
   observability/      visibility helpers and per-agent partial observations
   dialogue/           natural-language message generation + transcript records
   orchestration/      full-state and observed/dialogue runners, totals, report
+  mcp_servers/        local HTTP MCP servers (Cop/Thief), auth guard, tools
 tests/unit/           version, config, and SDK smoke tests
 tests/unit/game/      engine TDD suite (models, rules, engine, events, SDK)
 tests/unit/agents/    baseline + observed policy tests
 tests/unit/observability/  visibility and observation tests
 tests/unit/dialogue/  message and transcript tests
 tests/unit/orchestration/  runner, dialogue runner, report, and SDK tests
+tests/unit/mcp_servers/    auth, tools, server-builder, run/config tests
 ```
 
 ## Requirements

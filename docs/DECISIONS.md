@@ -165,3 +165,37 @@ opponent yields a "cannot see" message. Any exact-coordinate debug mode would be
 an explicitly documented, negotiated future option. **Consequences:** Messages
 stay human and free-form; hidden coordinates are structurally impossible to emit
 (the sender's observation has none); tests assert messages contain no digits.
+
+## ADR-0020 — FastMCP over HTTP transport for the MCP servers
+**Context:** Stage 5 needs local MCP servers that will later expose public,
+authenticated URLs for inter-group play (ADR-0003). **Decision:** Use **FastMCP
+3.4.2** (added via uv, pinned `fastmcp>=3.4.2,<4`) with **HTTP transport**
+(`run(transport="http", host, port, path)`); build servers with a builder
+function so `http_app()` / `list_tools()` are testable without binding a socket.
+**Consequences:** HTTP is the transport from day one (no stdio-only rework);
+servers run locally on separate ports now and can be exposed via public URLs
+later; tests assert tool registration without long-running processes. The LLM
+lives in the future client, not the server.
+
+## ADR-0021 — Explicit-token argument as local MCP auth (Stage 5)
+**Context:** Protected MCP calls must require a token, but request-metadata/OIDC
+auth adds complexity not needed for local development. **Decision:** Stage 5 uses
+an explicit **`auth_token` tool argument** checked against an environment
+variable (`COP_MCP_TOKEN` / `THIEF_MCP_TOKEN`); a mismatch returns a **structured
+unauthorized result** (never raises), and the real token is **never logged or
+returned** (redacted). This is documented as **local development auth, to be
+upgraded** to request-metadata / OIDC for cloud. **Consequences:** Auth is
+unit-testable without a network; no secret is committed (env + `.env-example`
+placeholders); the upgrade path to cloud auth is explicit and isolated to the
+guard.
+
+## ADR-0022 — Role-separated MCP servers with capability isolation
+**Context:** The Cop and Thief have different capabilities (only the cop places
+barriers) and must be independently addressable. **Decision:** Ship **two
+independent server modules/entrypoints** (`cop_server`/`run_cop`,
+`thief_server`/`run_thief`); the **thief server does not register the
+barrier-placement tool** at all, and both servers return only role-safe
+observations (a hidden opponent's position is never exposed). **Consequences:**
+Capability isolation is structural (not a runtime check), each role gets its own
+URL/port/token, and tests assert the thief server lacks barrier placement and
+that observations do not leak hidden coordinates.

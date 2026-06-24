@@ -41,14 +41,28 @@ deterministic (no RNG), with seed hooks deferred until randomness is introduced.
 
 ## 2. Local MCP over HTTP
 
-- **AC-MCP-1** (R-002, R-004): Both Cop and Thief MCP servers start over HTTP and
-  expose perception (`look`) and action (`move`/`place_barrier`) tools.
-- **AC-MCP-2** (R-010): A tool call without a valid token returns 401/403 and is
-  logged; a call with a valid token succeeds.
+**Stage 5 status:** two local FastMCP servers (HTTP transport) are implemented and
+test-covered (`mcp_servers/`, `tests/unit/mcp_servers/`). They expose role-safe
+tools (`get_observation`, `compose_message`, `propose_action`, `health_check`,
+`get_role_info`; cop-only `place_barrier_candidate`) that delegate to the domain
+packages; the thief server omits barrier placement; observations never leak the
+hidden opponent. Auth is an explicit `auth_token` checked against an env var
+(local dev auth). The over-the-wire orchestrator drive is a later stage.
+
+- **AC-MCP-1** (R-002, R-004) — ✅ test-covered: Both Cop and Thief servers build
+  over HTTP transport and register the role-safe perception/action tools
+  (`get_observation`, `propose_action`, cop-only `place_barrier_candidate`);
+  server builds are asserted via `list_tools` without binding a socket.
+- **AC-MCP-2** (R-010) — ✅ test-covered: a protected tool call without/with a
+  wrong token returns a structured unauthorized result (and never reveals the
+  token); a matching token succeeds. (Local dev auth; HTTP-status mapping arrives
+  with the client/cloud stage.)
 - **AC-MCP-3** (R-005): The orchestrator drives a full local match end-to-end
-  through the two HTTP servers and produces a results record.
+  through the two HTTP servers and produces a results record — later stage.
 - **AC-MCP-4** (R-025, R-026): An illegal action submitted via MCP is rejected
-  with a structured error and recorded in the transcript.
+  with a structured error and recorded in the transcript — later stage (the
+  engine already returns structured violations; wiring over the tool call comes
+  with the protocol-over-MCP stage).
 
 ## 3. Cloud / self-play
 

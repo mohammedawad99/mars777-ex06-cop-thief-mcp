@@ -179,5 +179,49 @@ cloud, Gmail/Google, external-LLM understanding, GUI, or inter-group networking.
 implemented; all quality gates pass (ruff clean, 101 tests, 100% coverage). No
 MCP/HTTP/Gmail/external-LLM/cloud/inter-group implementation added.
 
-> Subsequent stages will append their driving prompts here (MCP, protocol over
-> MCP, LLM agents, orchestrator, report sender, cloud, bonus, audit).
+## Stage 5 — Local HTTP MCP servers (2026-06-24)
+
+**Goal:** Implement two local HTTP-based MCP servers (Cop and Thief) that expose
+role-safe tools delegating to the existing engine / observability / dialogue /
+policy code. **No** cloud deployment, public URLs, Gmail, external-LLM calls,
+GUI, production OAuth, or inter-group remote play.
+
+**Key constraints captured from the prompt:**
+- The LLM does **not** live in the MCP server; servers expose tools/resources for
+  a future client/orchestrator. Game logic stays in the domain packages; MCP
+  modules only delegate.
+- Two independent server entrypoints (Cop, Thief) over **HTTP** transport,
+  runnable on separate local ports.
+- Tools: `get_role_info`, `get_observation` (role-safe, hidden opponent never
+  leaked), `compose_message` (free text), `propose_action` (observation-based
+  policy), `health_check`; cop-only `place_barrier_candidate` (respects budget /
+  occupancy). Thief server must not expose barrier placement.
+- Token auth required for protected calls via an explicit `auth_token` argument
+  checked against an env var (documented local dev auth, upgrade for cloud);
+  mismatch returns a structured unauthorized result; the real token is never
+  logged or returned.
+- Dependencies only via uv and pinned; FastMCP preferred; stop and report if the
+  API were unclear (it was verified working: FastMCP 3.4.2).
+
+**Dependency decision:** verified FastMCP 3.4.2 API (`FastMCP(name, version)`,
+`mcp.tool(fn, name=...)`, `await mcp.list_tools()`, `run(transport="http", host,
+port, path)`; `http_app()` builds without binding a socket). Added via
+`uv add fastmcp` and pinned `fastmcp>=3.4.2,<4` (uv.lock pins exact 3.4.2 + deps).
+
+**Artifacts produced:**
+- `src/mars777_cop_thief/mcp_servers/` — `auth.py`, `common.py`, `tools.py`,
+  `cop_server.py`, `thief_server.py`, `run_cop.py`, `run_thief.py`, `__init__.py`.
+- `config/mcp.local.default.json`; `.env-example` per-role token/URL placeholders.
+- `pyproject.toml` + `uv.lock` (FastMCP pinned).
+- Tests under `tests/unit/mcp_servers/` (auth, tools, server builders/adapters,
+  run-module import safety, config validation) — 127 tests total, 100% coverage.
+- Doc updates: `README.md`, `TODO.md`, `DECISIONS.md` (ADR-0020…ADR-0022),
+  `REQUIREMENTS_MATRIX.md`, `ACCEPTANCE_CRITERIA.md`, `PLAN.md`, `SECURITY.md`,
+  `COSTS.md`.
+
+**Outcome:** Local HTTP MCP server layer implemented; all quality gates pass
+(ruff clean, 127 tests, 100% coverage). No cloud/Gmail/external-LLM/GUI/
+inter-group implementation added.
+
+> Subsequent stages will append their driving prompts here (protocol over MCP,
+> LLM agents, orchestrator, report sender, cloud, bonus, audit).

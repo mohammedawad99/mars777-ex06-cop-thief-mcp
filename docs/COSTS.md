@@ -25,3 +25,15 @@ a measured figure once the relevant stage runs. Track per-run cost in
 - Rate limits in `config/rate_limits.default.json` cap request volume.
 - `max_moves` and `num_sub_games` bound per-run cost.
 - Retries are bounded (`retry_max_attempts`) to avoid runaway spend.
+
+## Dependency / hosting note (Stage 5)
+
+- Stage 5 added **FastMCP** (`fastmcp>=3.4.2,<4`, pinned in `uv.lock`) for the
+  local HTTP MCP servers. This is a development/runtime library, not a paid
+  service — it adds **no direct $ cost**.
+- The MCP servers run **local-only** on `127.0.0.1` (Cop `8001`, Thief `8002`);
+  there is **no cloud hosting, no public URL, and no tunneling** at this stage,
+  so the "Cloud hosting / tunneling" row remains a **future** assumption (~$0
+  baseline). It will be revisited when cloud/public URLs are introduced.
+- No LLM or Gmail calls are made by the MCP servers (the LLM lives in the future
+  client), so LLM/Gmail cost rows are unchanged and still TBD.

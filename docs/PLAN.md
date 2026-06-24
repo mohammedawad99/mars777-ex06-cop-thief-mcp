@@ -1,6 +1,6 @@
 # PLAN — Intended Architecture
 
-**Group:** MaRs-777 · **Status:** Stage 4 (local partial-observability & dialogue)
+**Group:** MaRs-777 · **Status:** Stage 5 (local HTTP MCP servers)
 
 ## Architecture overview
 
@@ -54,10 +54,11 @@
 ## Build order
 
 SDK/shared (Stage 0 ✅) → requirements hardening (Stage 1 ✅) → game engine
-(Stage 2 ✅) → local self-play pipeline (Stage 3 ✅) → **local
-partial-observability & dialogue (Stage 4 — current)** → MCP servers (HTTP) →
-natural-language protocol over MCP → LLM agents → orchestrator over MCP → report
-sender → cloud/self-play → bonus inter-group → hardening & audit.
+(Stage 2 ✅) → local self-play pipeline (Stage 3 ✅) → local
+partial-observability & dialogue (Stage 4 ✅) → **local HTTP MCP servers (Stage 5
+— current)** → natural-language protocol over MCP → LLM agents → orchestrator
+over MCP → report sender → cloud/self-play → bonus inter-group → hardening &
+audit.
 
 ## Pipeline progress (Stage 3)
 
@@ -102,6 +103,28 @@ full-state runner is preserved for regression. When the LLM/MCP stages arrive,
 they consume this same observation contract and message channel; only the
 *source* of the message (a model instead of a template) and the *transport* (HTTP
 instead of in-process) change.
+
+## Pipeline progress (Stage 5)
+
+Stage 5 adds the **local HTTP MCP server layer** (`mcp_servers/`) on top of the
+domain packages, preserving the four-way separation from Stage 4:
+
+- **Two role-separated FastMCP servers** (`cop_server`/`run_cop`,
+  `thief_server`/`run_thief`) over HTTP transport on separate local ports
+  (ADR-0020). The **thief server omits barrier placement** (ADR-0022).
+- **Pure tool adapters** (`tools.py`) delegate to engine / observability /
+  dialogue / observed-policy code and return JSON-safe payloads; the LLM lives in
+  the future client, not the server, and game logic stays in the domain.
+- **Role-safe observations** — the `get_observation` tool returns the Stage 4
+  `Observation` (hidden opponent stays `None`), so the transport cannot leak
+  hidden state.
+- **Token auth guard** (`auth.py`) — protected tools require an `auth_token`
+  checked against an env var (local dev auth, ADR-0021); failures are structured
+  and the token is never logged/returned.
+
+The next stage wires natural-language message interpretation and interpreted
+actions through these tools; cloud/public-URL exposure and Gmail sending remain
+later, explicitly out of Stage 5.
 
 ## Verification artifacts (core)
 

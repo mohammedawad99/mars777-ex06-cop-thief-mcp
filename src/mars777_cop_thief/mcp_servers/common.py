@@ -6,6 +6,8 @@ They hold no game rules of their own — the engine remains authoritative.
 
 from __future__ import annotations
 
+import os
+
 from mars777_cop_thief.game import GameEngine
 from mars777_cop_thief.game.models import Action, Position
 from mars777_cop_thief.game.state import SubGameState
@@ -47,3 +49,9 @@ def action_to_dict(action: Action | None) -> dict | None:
 def server_http_settings(server_config: dict) -> tuple[str, int, str]:
     """Return ``(host, port, path)`` for one role's local server config."""
     return server_config["host"], int(server_config["port"]), server_config["path"]
+
+
+def resolve_port(server_config: dict, port_env_var: str) -> int:
+    """Port from ``port_env_var`` if set (smoke/test override), else config."""
+    override = os.environ.get(port_env_var)
+    return int(override) if override else int(server_config["port"])

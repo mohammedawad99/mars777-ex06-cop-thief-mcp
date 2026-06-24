@@ -199,3 +199,33 @@ observations (a hidden opponent's position is never exposed). **Consequences:**
 Capability isolation is structural (not a runtime check), each role gets its own
 URL/port/token, and tests assert the thief server lacks barrier placement and
 that observations do not leak hidden coordinates.
+
+## ADR-0023 — Subprocess server pair for real HTTP E2E
+**Context:** Stage 5 proved the server modules/tools exist; Stage 6 must prove the
+HTTP transport actually works. **Decision:** Start the Cop and Thief servers as
+short-lived **subprocesses** on free `127.0.0.1` ports (`subprocess_pair.py`),
+inject tokens and ports via the **child process environment** (dummy local values,
+never committed), wait for readiness with a **bounded `ping` retry**, and always
+**terminate in `finally`** (escalating to kill). **Consequences:** A genuine
+client↔server HTTP round-trip is exercised; no long-running servers leak after a
+run; the lifecycle helpers are unit-testable (free port, env injection, terminate
+with a fake process) and the live path is covered by the integration test.
+
+## ADR-0024 — Deterministic smoke flow reused for HTTP and in-memory
+**Context:** The E2E flow logic should be tested fast and deterministically, yet
+also exercised over real HTTP. **Decision:** Write one `run_flow(cop_target,
+thief_target, ...)` that accepts **either an HTTP URL or an in-process FastMCP
+object** (both valid FastMCP client targets), and returns a JSON-serializable
+result. Unit tests run it in-memory (fast, no network); `smoke.py` and the
+integration test run it over HTTP. **Consequences:** Flow logic is fully covered
+without flakiness; the same code proves the real transport; the smoke exits 0 only
+when every check passes.
+
+## ADR-0025 — Default-on HTTP integration test, skippable via env
+**Context:** Real subprocess/HTTP tests can be unavailable in some sandboxes.
+**Decision:** Run the HTTP E2E integration test **by default** (it is reliable and
+fast here), but allow skipping with **`RUN_MCP_E2E=0`** for environments that
+cannot spawn local subprocesses; keep the standalone `smoke` command for manual
+verification. **Consequences:** Coverage and proof come from the default run;
+constrained environments degrade gracefully without failing unrelated gates; the
+smoke command remains the canonical manual check.

@@ -11,7 +11,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from mars777_cop_thief.mcp_servers.common import server_http_settings
+from mars777_cop_thief.mcp_servers.common import resolve_port, server_http_settings
 from mars777_cop_thief.mcp_servers.cop_server import build_cop_server
 from mars777_cop_thief.shared.config import load_game_config, load_json_config
 
@@ -24,7 +24,8 @@ def main() -> None:  # pragma: no cover - starts a long-running server
     game_config = load_game_config(GAME_CONFIG_PATH)
     mcp_config = load_json_config(MCP_CONFIG_PATH)
     server = build_cop_server(game_config, mcp_config)
-    host, port, path = server_http_settings(mcp_config["cop_server"])
+    host, _, path = server_http_settings(mcp_config["cop_server"])
+    port = resolve_port(mcp_config["cop_server"], "COP_MCP_PORT")
     server.run(transport=mcp_config["transport"], host=host, port=port, path=path)
 
 

@@ -8,6 +8,34 @@ a natural-language protocol, and the final results are reported via a Google
 (Gmail) report sender. Inter-group play is treated as in-scope (see
 `docs/PRD_bonus_intergroup.md`).
 
+## Status — Stage 6 (local MCP client & HTTP E2E smoke)
+
+The **local MCP HTTP end-to-end smoke is implemented and passes**: a client
+(`src/mars777_cop_thief/mcp_client/`) starts the Cop and Thief servers as local
+subprocesses on free `127.0.0.1` ports, connects over **HTTP** with the official
+FastMCP `Client`, and drives a deterministic flow — proving the transport works
+end-to-end, not just that the tool modules exist.
+
+The smoke verifies, over real HTTP, for **both** roles: `health_check`,
+`get_role_info`, valid-token `get_observation`/`compose_message`/`propose_action`,
+a wrong-token call returning a structured **unauthorized** result, that a hidden
+opponent's position stays `None` (no leak), that messages are plain text, that
+actions are structured, and that the **Thief server exposes no barrier tool**.
+Servers are always torn down afterward.
+
+Run the local E2E smoke (starts both servers, prints a JSON result, exits 0 on
+pass):
+
+```bash
+uv run python -m mars777_cop_thief.mcp_client.smoke
+```
+
+The real HTTP E2E also runs as a pytest integration test by default
+(`tests/integration/mcp/`); set `RUN_MCP_E2E=0` to skip it where local
+subprocesses are not allowed. This stage is still **local-only**: **no public
+URLs / cloud deployment**, **no Gmail/email sending**, **no external-LLM calls**,
+**no GUI**, and **no inter-group remote play**.
+
 ## Status — Stage 5 (local HTTP MCP servers)
 
 The **local HTTP MCP server layer is implemented** and unit-tested: two
@@ -113,6 +141,7 @@ src/mars777_cop_thief/
   dialogue/           natural-language message generation + transcript records
   orchestration/      full-state and observed/dialogue runners, totals, report
   mcp_servers/        local HTTP MCP servers (Cop/Thief), auth guard, tools
+  mcp_client/         local MCP client, server-pair lifecycle, E2E smoke flow
 tests/unit/           version, config, and SDK smoke tests
 tests/unit/game/      engine TDD suite (models, rules, engine, events, SDK)
 tests/unit/agents/    baseline + observed policy tests
@@ -120,6 +149,8 @@ tests/unit/observability/  visibility and observation tests
 tests/unit/dialogue/  message and transcript tests
 tests/unit/orchestration/  runner, dialogue runner, report, and SDK tests
 tests/unit/mcp_servers/    auth, tools, server-builder, run/config tests
+tests/unit/mcp_client/     client URLs, lifecycle, in-memory flow, smoke entry
+tests/integration/mcp/     real HTTP end-to-end smoke (default-on)
 ```
 
 ## Requirements

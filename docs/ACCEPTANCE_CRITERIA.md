@@ -41,22 +41,24 @@ deterministic (no RNG), with seed hooks deferred until randomness is introduced.
 
 ## 2. Local MCP over HTTP
 
-**Stage 5 status:** two local FastMCP servers (HTTP transport) are implemented and
-test-covered (`mcp_servers/`, `tests/unit/mcp_servers/`). They expose role-safe
-tools (`get_observation`, `compose_message`, `propose_action`, `health_check`,
-`get_role_info`; cop-only `place_barrier_candidate`) that delegate to the domain
-packages; the thief server omits barrier placement; observations never leak the
-hidden opponent. Auth is an explicit `auth_token` checked against an env var
-(local dev auth). The over-the-wire orchestrator drive is a later stage.
+**Stage 5–6 status:** two local FastMCP servers (HTTP transport) are implemented
+and, in Stage 6, **proven end-to-end over real HTTP** by a client that starts both
+servers as subprocesses and drives a deterministic flow (`mcp_servers/`,
+`mcp_client/`, `tests/unit/mcp_servers/`, `tests/unit/mcp_client/`,
+`tests/integration/mcp/`). The thief server omits barrier placement; observations
+never leak the hidden opponent. Auth is an explicit `auth_token` checked against
+an env var (local dev auth). The over-the-wire **game** orchestrator drive (agents
+playing a full match through MCP) is a later stage.
 
-- **AC-MCP-1** (R-002, R-004) — ✅ test-covered: Both Cop and Thief servers build
-  over HTTP transport and register the role-safe perception/action tools
-  (`get_observation`, `propose_action`, cop-only `place_barrier_candidate`);
-  server builds are asserted via `list_tools` without binding a socket.
-- **AC-MCP-2** (R-010) — ✅ test-covered: a protected tool call without/with a
-  wrong token returns a structured unauthorized result (and never reveals the
-  token); a matching token succeeds. (Local dev auth; HTTP-status mapping arrives
-  with the client/cloud stage.)
+- **AC-MCP-1** (R-002, R-004) — ✅ test-covered (real HTTP): The E2E smoke starts
+  both Cop and Thief servers on free local ports and calls each over HTTP
+  (`health_check`, `get_role_info`, `get_observation`, `compose_message`,
+  `propose_action`; cop-only `place_barrier_candidate`); the smoke command exits 0
+  with all checks true.
+- **AC-MCP-2** (R-010) — ✅ test-covered (real HTTP + unit): a protected tool call
+  with a wrong token returns a structured unauthorized result (and never reveals
+  the token) through the client path; a matching token succeeds. (Local dev auth;
+  HTTP-status mapping arrives with the cloud stage.)
 - **AC-MCP-3** (R-005): The orchestrator drives a full local match end-to-end
   through the two HTTP servers and produces a results record — later stage.
 - **AC-MCP-4** (R-025, R-026): An illegal action submitted via MCP is rejected

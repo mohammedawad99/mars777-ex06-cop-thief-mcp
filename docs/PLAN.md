@@ -1,6 +1,6 @@
 # PLAN — Intended Architecture
 
-**Group:** MaRs-777 · **Status:** Stage 5 (local HTTP MCP servers)
+**Group:** MaRs-777 · **Status:** Stage 6 (local MCP client & HTTP E2E smoke)
 
 ## Architecture overview
 
@@ -55,10 +55,10 @@
 
 SDK/shared (Stage 0 ✅) → requirements hardening (Stage 1 ✅) → game engine
 (Stage 2 ✅) → local self-play pipeline (Stage 3 ✅) → local
-partial-observability & dialogue (Stage 4 ✅) → **local HTTP MCP servers (Stage 5
-— current)** → natural-language protocol over MCP → LLM agents → orchestrator
-over MCP → report sender → cloud/self-play → bonus inter-group → hardening &
-audit.
+partial-observability & dialogue (Stage 4 ✅) → local HTTP MCP servers (Stage 5
+✅) → **local MCP client & HTTP E2E smoke (Stage 6 — current)** → natural-language
+protocol over MCP → LLM agents → orchestrator over MCP → report sender →
+cloud/self-play → bonus inter-group → hardening & audit.
 
 ## Pipeline progress (Stage 3)
 
@@ -125,6 +125,27 @@ domain packages, preserving the four-way separation from Stage 4:
 The next stage wires natural-language message interpretation and interpreted
 actions through these tools; cloud/public-URL exposure and Gmail sending remain
 later, explicitly out of Stage 5.
+
+## Pipeline progress (Stage 6)
+
+Stage 6 adds the **local MCP client/orchestrator** (`mcp_client/`) and proves the
+HTTP transport works end-to-end:
+
+- **Server-pair lifecycle** (`subprocess_pair.py`) — starts both servers as
+  short-lived `127.0.0.1` subprocesses on free ports, injects dummy local tokens
+  and ports via the child environment, and always tears them down (ADR-0023).
+- **Client helpers** (`client.py`) — official FastMCP `Client`, URL builders, and
+  a bounded `wait_ready` ping-based readiness check.
+- **Deterministic flow** (`e2e_flow.py`) — one flow reused for in-memory (fast
+  tests) and real HTTP (smoke + integration), returning a JSON-serializable result
+  (ADR-0024). It calls each role's tools over HTTP and asserts auth ±, hidden-state
+  isolation, plain-text messages, structured actions, and thief-no-barrier.
+- **Smoke entrypoint** (`smoke.py`) — `uv run python -m
+  mars777_cop_thief.mcp_client.smoke`, exits 0 only when every check passes.
+
+This closes the loop from engine → observation → message → MCP tool → **real HTTP
+client call**. The LLM/agent drive over MCP, cloud exposure, and Gmail remain
+later and are explicitly out of Stage 6.
 
 ## Verification artifacts (core)
 

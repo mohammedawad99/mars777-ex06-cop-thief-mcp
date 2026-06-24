@@ -3,6 +3,7 @@
 import importlib
 from pathlib import Path
 
+from mars777_cop_thief.mcp_servers.common import resolve_port
 from mars777_cop_thief.shared.config import load_json_config
 
 MCP_CONFIG_PATH = Path(__file__).resolve().parents[3] / "config" / "mcp.local.default.json"
@@ -23,3 +24,11 @@ def test_local_mcp_config_has_expected_settings():
     assert config["thief_server"]["port"] == 8002
     assert config["cop_server"]["token_env_var"] == "COP_MCP_TOKEN"
     assert config["thief_server"]["token_env_var"] == "THIEF_MCP_TOKEN"
+
+
+def test_resolve_port_prefers_env_override(monkeypatch):
+    server_config = {"port": 8001}
+    monkeypatch.delenv("COP_MCP_PORT", raising=False)
+    assert resolve_port(server_config, "COP_MCP_PORT") == 8001
+    monkeypatch.setenv("COP_MCP_PORT", "9100")
+    assert resolve_port(server_config, "COP_MCP_PORT") == 9100

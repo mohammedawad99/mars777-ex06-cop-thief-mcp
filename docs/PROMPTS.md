@@ -223,5 +223,46 @@ port, path)`; `http_app()` builds without binding a socket). Added via
 (ruff clean, 127 tests, 100% coverage). No cloud/Gmail/external-LLM/GUI/
 inter-group implementation added.
 
+## Stage 6 — Local MCP client & HTTP E2E smoke (2026-06-24)
+
+**Goal:** Prove the local MCP **HTTP transport works end-to-end** by adding a
+client/orchestrator that starts the Cop and Thief servers as local subprocesses,
+connects over HTTP via the official FastMCP `Client`, and drives a deterministic
+flow. **No** cloud, public URLs, Gmail, external-LLM calls, GUI, or inter-group
+remote play.
+
+**Key constraints captured from the prompt:**
+- The LLM stays outside the servers; game logic stays in the domain; the client
+  owns trusted state and calls tools **over HTTP** (not by importing tool
+  functions) for the E2E path.
+- Two separate local servers on different free `127.0.0.1` ports; tokens/ports
+  injected via the child process environment (dummy local values, not committed);
+  bounded readiness; always terminate in `finally`.
+- Verify auth ± through the client path, hidden opponent never leaks, the thief
+  server has no barrier tool, and the result is JSON-serializable.
+
+**FastMCP client decision:** inspected the installed API first
+(`fastmcp.Client(url|server)`, async context manager, `call_tool(...).data`,
+`list_tools()`, `ping()`); verified a real subprocess HTTP round-trip before
+building. **No dependency added** — FastMCP 3.4.2 (already pinned) provides the
+client.
+
+**Artifacts produced:**
+- `src/mars777_cop_thief/mcp_client/` — `client.py`, `subprocess_pair.py`,
+  `e2e_flow.py`, `smoke.py`, `__init__.py`.
+- `mcp_servers/common.py` `resolve_port` + `run_cop`/`run_thief` honor
+  `COP_MCP_PORT`/`THIEF_MCP_PORT`.
+- Tests: `tests/unit/mcp_client/` (URLs, lifecycle with mocks, in-memory flow,
+  smoke entry/readiness branches) and `tests/integration/mcp/test_http_e2e.py`
+  (real HTTP, default-on, skippable via `RUN_MCP_E2E=0`) — 143 tests, 100% cov.
+- Doc updates: `README.md`, `TODO.md`, `DECISIONS.md` (ADR-0023…ADR-0025),
+  `REQUIREMENTS_MATRIX.md`, `ACCEPTANCE_CRITERIA.md`, `PLAN.md`, `QUALITY.md`,
+  `SECURITY.md`.
+
+**Outcome:** Local MCP HTTP E2E smoke implemented and **passing** over real HTTP
+(`uv run python -m mars777_cop_thief.mcp_client.smoke` → exit 0, all checks true);
+all quality gates pass (ruff clean, 143 tests, 100% coverage). No
+cloud/Gmail/external-LLM/GUI/inter-group implementation added.
+
 > Subsequent stages will append their driving prompts here (protocol over MCP,
 > LLM agents, orchestrator, report sender, cloud, bonus, audit).

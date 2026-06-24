@@ -17,6 +17,12 @@ every gate below passes.
    or course files are tracked.
 8. **File-size gate** — every Python source file stays **< 150** non-empty,
    non-comment lines: `find src tests -name "*.py" -print0 | xargs -0 wc -l`.
+9. **Local MCP HTTP E2E smoke** —
+   `uv run python -m mars777_cop_thief.mcp_client.smoke` must exit 0 with all
+   checks true. It starts the Cop/Thief servers as local subprocesses on free
+   ports, drives them over HTTP, and tears them down. Also runs as a default
+   pytest integration test (`tests/integration/mcp/`); skippable with
+   `RUN_MCP_E2E=0` where local subprocesses are not permitted.
 
 ## Staging discipline
 

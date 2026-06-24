@@ -28,6 +28,18 @@
 - This is to be **upgraded to request-metadata / OIDC** auth before any cloud or
   inter-group exposure. No public URLs are deployed in this stage.
 
+### Dummy local tokens vs. real secrets (Stage 6 smoke)
+
+- The E2E smoke (`mcp_client/smoke.py`) uses **dummy local tokens** generated in
+  process memory (e.g. `dummy-local-cop-token`) and injects them into the server
+  **subprocess environment** only. These are **not secrets** — they never grant
+  access to anything beyond a throwaway local server bound to `127.0.0.1` on a
+  free port for the duration of the smoke, and they are **never written to disk**
+  or committed.
+- Real tokens (for any future non-local use) still come only from the untracked
+  `.env`; `.env-example` holds placeholders. The secret scan's only `.env-example`
+  matches are those documented placeholders, not real values.
+
 ### MCP token rotation / revocation
 
 1. Generate a fresh random value for `COP_MCP_TOKEN` / `THIEF_MCP_TOKEN` in `.env`.

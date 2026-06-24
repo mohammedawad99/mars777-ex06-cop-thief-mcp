@@ -1,6 +1,6 @@
 # PLAN — Intended Architecture
 
-**Group:** MaRs-777 · **Status:** Stage 12 (hardened run validation & reproducibility)
+**Group:** MaRs-777 · **Status:** Stage 13A (cloud deployment packaging & preflight)
 
 ## Architecture overview
 
@@ -58,8 +58,9 @@ SDK/shared (Stage 0 ✅) → requirements hardening (Stage 1 ✅) → game engin
 partial-observability & dialogue (Stage 4 ✅) → local HTTP MCP servers (Stage 5
 ✅) → local MCP client & HTTP E2E smoke (Stage 6 ✅) → MCP-backed local game orchestration (Stage 7 ✅) → official report schema, validation & evidence (Stage 8 ✅) → prompted MCP agent layer (Stage 9 ✅; offline fake LLM) → optional Gemini
 provider (Stage 10 ✅; live-gated) → Gmail JSON report sender (Stage 11 ✅;
-dry-run + live-gated) → **hardened run validation (Stage 12 — current)** →
-cloud/self-play → bonus inter-group → hardening & audit.
+dry-run + live-gated) → hardened run validation (Stage 12 ✅) → **cloud deployment
+packaging & preflight (Stage 13A — current)** → live cloud deploy (13B) → bonus
+inter-group → hardening & audit.
 
 ## Pipeline progress (Stage 3)
 
@@ -276,6 +277,26 @@ Stage 12 wraps the working pipeline in a **reproducibility/audit layer**
 The pipeline is now reproducible and auditable. The next stages (cloud/public
 URLs, real inter-group bonus, live Gmail send) reuse this manifest and validation
 unchanged.
+
+## Pipeline progress (Stage 13A)
+
+Stage 13A prepares a **controlled cloud deployment** of the two MCP servers
+without performing it (`deployment/`, `Dockerfile`, `cloud_entrypoint.py`):
+
+- **One role-aware image** (ADR-0042/0043) — `MCP_ROLE` selects cop/thief, binds
+  `0.0.0.0`, reads `PORT`, and fails fast if the role's token env var is missing
+  (name only, never the value); local mode still binds `127.0.0.1`.
+- **Cloud config + placeholders** — `config/cloud.default.json` (Cloud Run target,
+  service names, env-var names, `<set-after-deployment>` URLs,
+  `cloud_status: not_deployed`); `.dockerignore` keeps secrets/caches/tests out of
+  the image.
+- **Preflight before live deploy** (ADR-0044) — validates packaging readiness with
+  **no cloud calls, no gcloud, no credentials**; the deploy script is an inert,
+  `RUN_CLOUD_DEPLOY=1`-gated template with placeholders only.
+
+**No Cloud Run service was created and no public URL exists.** Stage 13B (a
+manual, gated live deploy) records real URLs locally and flips `cloud_status`;
+the hardened validation/manifest and the role-safe boundary carry over unchanged.
 
 ## Verification artifacts (core)
 

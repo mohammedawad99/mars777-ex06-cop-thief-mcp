@@ -46,6 +46,10 @@ Strict checklist for the final review. Boxes are checked only when verified.
 - [x] Hardened run smoke passes with a secret-free manifest + aggregate validation
       (`uv run python -m mars777_cop_thief.run.hardened_smoke` → `status: ok`)
 - [x] Deterministic `run_id`/config fingerprint; failures classified; bounded retries
+- [x] Cloud deployment packaging + preflight ready (Dockerfile, role entrypoint,
+      `deployment.preflight` → `status: ok`); no secrets in image
+- [ ] Two MCP services deployed at public, authenticated URLs (manual gated deploy)
+- [ ] `cloud_status` flipped + real `cop_mcp_url`/`thief_mcp_url` recorded locally
 - [ ] Real internal report emailed via `RUN_GMAIL_LIVE=1` with external OAuth files
       (optional live send; not run in default validation)
 - [ ] Real inter-group bonus game played and reconciled (later stage)

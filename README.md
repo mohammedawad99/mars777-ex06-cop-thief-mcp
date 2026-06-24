@@ -8,6 +8,36 @@ a natural-language protocol, and the final results are reported via a Google
 (Gmail) report sender. Inter-group play is treated as in-scope (see
 `docs/PRD_bonus_intergroup.md`).
 
+## Status — Stage 13A (cloud deployment packaging & preflight)
+
+**Cloud deployment packaging and preflight are implemented** for two independent
+MCP services (`mars777-cop-mcp`, `mars777-thief-mcp`) — **no live deployment was
+performed and no public URL exists yet**. A single role-aware container
+(`Dockerfile` + `mcp_servers/cloud_entrypoint.py`) runs either the Cop or Thief
+server, selected by `MCP_ROLE` (`cop`/`thief`); in cloud mode it binds `0.0.0.0`
+and reads `PORT`, while local mode keeps `127.0.0.1`. The role's token comes from
+the runtime environment / secret manager — **never baked into the image, logged,
+or committed**.
+
+Run the deployment preflight (validates packaging readiness; no cloud calls, no
+gcloud, no credentials):
+
+```bash
+uv run python -m mars777_cop_thief.deployment.preflight
+```
+
+It checks `config/cloud.default.json`, the `Dockerfile`/`.dockerignore`, that no
+secret files are present, that `cloud_status` is `not_deployed` with placeholder
+public URLs, and that `MCP_ROLE`/`PORT` resolve without starting a server. The
+target platform is **Google Cloud Run** (documented in `docs/CLOUD_DEPLOYMENT.md`;
+any HTTPS container platform works). Live deploy is a **separate, manual, gated
+step** (`RUN_CLOUD_DEPLOY=1`) — see the guide; `scripts/cloud_run_deploy_template.sh`
+is an inert placeholder template.
+
+This stage is still local-only: **no Cloud Run service has been created**, **no
+public URL has been deployed**, **no live Gmail email was sent**, and **no real
+inter-group bonus game** has been completed.
+
 ## Status — Stage 12 (hardened run validation, manifest & reproducibility)
 
 A **run-hardening layer** is implemented (`src/mars777_cop_thief/run/`): a

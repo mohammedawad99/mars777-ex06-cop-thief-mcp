@@ -70,6 +70,21 @@
   only the role-safe observation (no hidden coordinates). Unit tests mock the SDK
   and make **no network calls**; the live path is gated behind `RUN_GEMINI_LIVE=1`.
 
+### Cloud token handling (Stage 13A)
+
+- Cloud MCP tokens (`COP_MCP_TOKEN`/`THIEF_MCP_TOKEN`) come from the platform
+  **secret manager or runtime environment** — never image build args,
+  `Dockerfile ENV` values, logs, docs examples, or committed files. The
+  `Dockerfile` sets `MCP_ROLE=""` only (no token) and bakes **no** secret.
+- The cloud entrypoint validates the role's token env var is **present** and
+  references it by **name only**; a missing token causes a controlled error (exit
+  1) and the value is never printed. `.dockerignore` keeps `.env`,
+  `credentials.json`, `token.json`, keys, and caches out of the build context.
+- **Revoke story (cloud):** rotate the value in Secret Manager and redeploy the
+  affected service; for inter-group play, revoke shared tokens after the match.
+  The deploy template is inert unless `RUN_CLOUD_DEPLOY=1`; preflight confirms no
+  secret file is present before any deploy. See `docs/CLOUD_DEPLOYMENT.md`.
+
 ### Run manifests and results (Stage 12)
 
 - Run manifests and the hardened-smoke summary contain **no secrets**: identity,

@@ -493,4 +493,40 @@ mars777_cop_thief.run.hardened_smoke` → `status: ok`, all checks true, exit 0
 (totals cop 30 / thief 60). Ruff clean, 302 tests, 100% coverage. No cloud/live-
 Gmail/live-Gemini/GUI/inter-group implementation added.
 
-> Subsequent stages will append their driving prompts here (cloud, bonus, audit).
+## Stage 13A — Cloud deployment packaging & preflight (2026-06-24)
+
+**Goal:** Make the project **ready for a controlled cloud deployment later**
+(two public MCP servers) **without performing the deployment now**. **No** real
+cloud deployment, public URLs, gcloud execution, cloud resources, cloud
+tokens/secrets, live Gmail, GUI, or real inter-group remote play.
+
+**Key constraints captured from the prompt:**
+- Two future services (`mars777-cop-mcp`, `mars777-thief-mcp`) from one
+  **role-aware container**; `MCP_ROLE` selects cop/thief; cloud mode binds
+  `0.0.0.0` and reads `PORT`; local mode keeps `127.0.0.1`.
+- Public URLs are **placeholders only** (`<set-after-deployment>`),
+  `cloud_status: not_deployed`; tokens come from env/secret manager and never
+  appear in image build args, `Dockerfile ENV`, logs, docs, or artifacts.
+- Single maintainable Dockerfile (uv, locked deps, src/config only) + a
+  `.dockerignore` excluding secrets/caches/tests/results/course docs.
+- A **preflight** command validating config, Docker packaging, absence of secret
+  files, placeholder URLs, and role/port resolution without starting a server —
+  no cloud APIs, no gcloud, no credentials.
+- Google Cloud Run is the documented default; alternatives noted.
+
+**Artifacts produced:**
+- `Dockerfile`, `.dockerignore`; `src/mars777_cop_thief/mcp_servers/cloud_entrypoint.py`.
+- `src/mars777_cop_thief/deployment/` — `cloud_config.py`, `docker_checks.py`,
+  `preflight.py`, `__init__`.
+- `config/cloud.default.json`; `scripts/cloud_run_deploy_template.sh` (inert,
+  gated, placeholders); `docs/CLOUD_DEPLOYMENT.md`; `.env-example` cloud placeholders.
+- Tests under `tests/unit/deployment/` (321 tests, 100% coverage).
+
+**Outcome:** Cloud deployment packaging and preflight implemented; `uv run python
+-m mars777_cop_thief.deployment.preflight` → `status: ok`, all checks true, exit 0.
+Ruff clean, 321 tests, 100% coverage. **No real cloud deployment was attempted**,
+no Cloud Run service was created, no public URL exists, and no credentials/secrets
+were committed.
+
+> Subsequent stages will append their driving prompts here (live cloud deploy,
+> bonus, audit).

@@ -25,7 +25,7 @@ remaining gap with a disposition (fixed / accepted / deferred).
 | Security / secrets | per SECURITY | — | — | — |
 | Costs measured | per COSTS | — | — | — |
 
-## Current status (through Stage 12)
+## Current status (through Stage 13A)
 
 The local pipeline is implemented, tested (100% coverage), and hardened
 (deterministic run identity/manifest, classified failures, bounded
@@ -34,7 +34,8 @@ known open gaps**, deferred to later stages — none is claimed as done:
 
 | Gap | Status | Disposition |
 |-----|--------|-------------|
-| Cloud / public authenticated URLs | **not deployed** — servers run local-only on `127.0.0.1` | Deferred (Stage 13) |
+| Cloud deployment packaging & preflight | **present** — Dockerfile, role entrypoint, cloud config, preflight (`status: ok`) | Done (Stage 13A) |
+| Real deployed public URLs | **still missing** — `cloud_status: not_deployed`, placeholder URLs; no Cloud Run service created | Deferred (Stage 13B, gated) |
 | Live Gmail send | **not sent** — dry-run only; live is opt-in (`RUN_GMAIL_LIVE=1`) with external OAuth files | Deferred (opt-in local) |
 | Live Gemini provider run | **not run** — offline `fake_local` default; live is opt-in (`RUN_GEMINI_LIVE=1`) with a key | Deferred (opt-in local) |
 | Real inter-group bonus game | **not completed** — bonus schema/protocol exist; no real cross-group match played | Deferred (Stage 14) |
@@ -44,6 +45,7 @@ known open gaps**, deferred to later stages — none is claimed as done:
 Already in place and evidenced: game engine + rules, partial observability,
 local MCP over HTTP with token auth, fake-local prompted MCP full game over HTTP,
 official validated JSON report + sanitized evidence pack, Gmail JSON-only sender
-(dry-run), optional Gemini adapter (gated), and the Stage 12 hardened run
-manifest + aggregate validation. The dimension table below is finalized near
-submission once the deferred items are addressed or formally accepted.
+(dry-run), optional Gemini adapter (gated), the Stage 12 hardened run manifest +
+aggregate validation, and Stage 13A cloud deployment **packaging + preflight** (no
+live deploy). The dimension table below is finalized near submission once the
+deferred items are addressed or formally accepted.

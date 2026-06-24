@@ -1,0 +1,23 @@
+{
+  "version": "1.00",
+  "target_platform": "google_cloud_run",
+  "alternative_platforms_note": "Any HTTPS container platform (Cloud Run, Fly.io, Render, or a container on a VM) can host the two MCP services. Cloud Run is the documented default, not the only option.",
+  "services": {
+    "cop": "mars777-cop-mcp",
+    "thief": "mars777-thief-mcp"
+  },
+  "role_env_var": "MCP_ROLE",
+  "port_env_var": "PORT",
+  "required_token_env_vars": {
+    "cop": "COP_MCP_TOKEN",
+    "thief": "THIEF_MCP_TOKEN"
+  },
+  "public_url_placeholders": {
+    "cop": "<set-after-deployment>",
+    "thief": "<set-after-deployment>"
+  },
+  "cloud_status": "not_deployed",
+  "deployment_region_placeholder": "<REGION>",
+  "secret_manager_note": "Provide COP_MCP_TOKEN / THIEF_MCP_TOKEN via the platform secret manager or runtime environment. Never bake tokens into the image, build args, or commit them.",
+  "live_deploy_enabled_env_var": "RUN_CLOUD_DEPLOY"
+}

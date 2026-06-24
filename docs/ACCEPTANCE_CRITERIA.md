@@ -71,12 +71,21 @@ playing a full match through MCP) is a later stage.
 
 ## 3. Cloud / self-play
 
-- **AC-CLOUD-1** (R-006, R-009): Both servers are reachable at public Cop and
-  Thief URLs; a match runs end-to-end against those URLs.
-- **AC-CLOUD-2** (R-010): The public URLs reject unauthenticated requests
-  (verified from an external client).
-- **AC-CLOUD-3** (R-006): A reproducible run command and its output (logs +
-  results JSON) are captured as evidence of the cloud run.
+**Stage 13A status:** cloud **packaging and preflight** are implemented and
+test-covered (`Dockerfile`, `.dockerignore`, `mcp_servers/cloud_entrypoint.py`,
+`deployment/`, `config/cloud.default.json`, `docs/CLOUD_DEPLOYMENT.md`). **No live
+deployment was performed and no public URL exists** (`cloud_status: not_deployed`,
+placeholder URLs). The criteria below that require *real* public URLs remain open.
+
+- **AC-CLOUD-0** (R-006) — ✅ test-covered: `deployment.preflight` validates the
+  config, Dockerfile/.dockerignore, absence of secret files, placeholder URLs, and
+  role/port resolution without starting a server → `status: ok`.
+- **AC-CLOUD-1** (R-006, R-009) — ⏳ open: Both servers reachable at public Cop and
+  Thief URLs; a match runs end-to-end against those URLs (requires live deploy).
+- **AC-CLOUD-2** (R-010) — ⏳ open: The public URLs reject unauthenticated requests
+  (verified from an external client) — requires live deploy.
+- **AC-CLOUD-3** (R-006) — ⏳ open: A reproducible run command and its output are
+  captured as evidence of the cloud run — requires live deploy.
 
 ## 4. Inter-group bonus
 

@@ -16,8 +16,9 @@ Statuses: ✅ done · 🔄 in progress · ⏳ planned
 | 9 | Prompted MCP agent layer: provider interface, offline fake LLM, prompts/parser/cost, prompted game runner | ✅ |
 | 10 | Optional Google Gemini provider adapter (google-genai), env config, provider factory, live-gated smoke | ✅ |
 | 11 | Gmail JSON report sender: dry-run default + live-gated sending, JSON-only body, external OAuth files | ✅ |
-| 12 | Hardened run validation: deterministic identity/manifest, failure classes, retry/timeout, aggregate validation | 🔄 |
-| 13 | Cloud/self-play through public, authenticated URLs | ⏳ |
+| 12 | Hardened run validation: deterministic identity/manifest, failure classes, retry/timeout, aggregate validation | ✅ |
+| 13A | Cloud deployment packaging & preflight (Dockerfile, role entrypoint, cloud config, preflight) — no live deploy | 🔄 |
+| 13B | Cloud/self-play through public, authenticated URLs (live deploy, gated) | ⏳ |
 | 14 | Bonus inter-group play against another group's server (mandatory scope) | ⏳ |
 | 15 | Hardening: cost/measurement tracking, logging, security review | ⏳ |
 | 16 | Final gap audit + submission checklist closure | ⏳ |
@@ -325,7 +326,7 @@ Statuses: ✅ done · 🔄 in progress · ⏳ planned
 - **No** `credentials.json`/`token.json`/`.env` committed, cloud deployment,
   public URLs, GUI, or real inter-group remote play.
 
-## Stage 12 checklist (current — hardened run validation)
+## Stage 12 checklist (completed — hardened run validation)
 
 - [x] `run/identity.py` — deterministic `run_id` (group/stage/config-hash/seed);
       injectable timestamp + git commit; config fingerprint; no secrets
@@ -342,7 +343,7 @@ Statuses: ✅ done · 🔄 in progress · ⏳ planned
 - [x] Hardened smoke verified: `uv run python -m mars777_cop_thief.run.hardened_smoke`
       → `status: ok`, all checks true, exit 0 (totals cop 30 / thief 60)
 - [x] Tests under `tests/unit/run/` (302 total, 100% coverage)
-- [ ] Reviewed and explicitly committed
+- [x] Reviewed and explicitly committed
 
 ### Stage 12 scope notes
 
@@ -353,8 +354,37 @@ Statuses: ✅ done · 🔄 in progress · ⏳ planned
 - **No** cloud deployment, public URLs, live Gmail send, GUI, or real inter-group
   remote play; live Gemini runs only behind the existing `RUN_GEMINI_LIVE` gate.
 
-## Next up (Stage 13 — cloud / public authenticated URLs)
+## Stage 13A checklist (current — cloud deployment packaging & preflight)
 
-- [ ] Deploy the two MCP servers behind public, authenticated URLs
-- [ ] Keep local-only the default; reuse the hardened validation + manifest
-- [ ] No change to the role-safe observation boundary or the JSON-only body rule
+- [x] `Dockerfile` — single role-aware image (uv, locked deps, src/config only);
+      no secrets baked; `MCP_ROLE` selects cop/thief at runtime
+- [x] `.dockerignore` — excludes `.git`, `.venv`, `.env`, credentials/token, caches,
+      tests, results, keys, and course documents
+- [x] `mcp_servers/cloud_entrypoint.py` — `MCP_ROLE`/`PORT`/`0.0.0.0` resolution,
+      role-token check (name only, never the value), controlled error + exit 1
+- [x] `config/cloud.default.json` — target Cloud Run, service placeholders, env-var
+      names, `<set-after-deployment>` URLs, `cloud_status: not_deployed`
+- [x] `deployment/` — `cloud_config.py`, `docker_checks.py`, `preflight.py`
+- [x] `scripts/cloud_run_deploy_template.sh` — inert template (gated by
+      `RUN_CLOUD_DEPLOY=1`); placeholders only; not run in validation
+- [x] `docs/CLOUD_DEPLOYMENT.md` — future deploy/rollback/revoke guide (placeholders)
+- [x] `.env-example` — `MCP_ROLE`/`PORT`/`*_PUBLIC_URL`/`RUN_CLOUD_DEPLOY` placeholders
+- [x] Preflight verified: `uv run python -m mars777_cop_thief.deployment.preflight`
+      → `status: ok`, all checks true, exit 0
+- [x] Tests under `tests/unit/deployment/` (321 total, 100% coverage)
+- [ ] Reviewed and explicitly committed
+
+### Stage 13A scope notes
+
+- **No live deployment was performed**; **no Cloud Run service was created**;
+  **no public URL exists** (placeholders only, `cloud_status: not_deployed`).
+- Tokens come from the runtime env / secret manager — never image build args,
+  `Dockerfile ENV`, logs, docs examples, or committed files; the entrypoint never
+  prints a token value.
+- Local mode still binds `127.0.0.1`; cloud mode binds `0.0.0.0` and reads `PORT`.
+
+## Next up (Stage 13B — live cloud deploy of public authenticated URLs)
+
+- [ ] Manually deploy the two MCP services (gated by `RUN_CLOUD_DEPLOY=1`)
+- [ ] Record real public URLs in local `.env` (never commit); flip `cloud_status`
+- [ ] Verify over HTTPS; reuse the hardened validation + manifest unchanged

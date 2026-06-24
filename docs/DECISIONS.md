@@ -407,3 +407,36 @@ redaction for any recorded message. Retry/timeout bounds come from
 request/concurrency/output limits. **Consequences:** Runs fail loudly and
 categorically; no secret leaks into a status; retries are bounded and
 config-driven, not hardcoded; tests are fast and deterministic.
+
+## ADR-0042 — Google Cloud Run as the documented deployment target
+**Context:** The two MCP servers must later run as remote, authenticated HTTP
+services. **Decision:** Document **Google Cloud Run** as the primary target — it
+hosts containerized HTTP services well and fits two stateless MCP servers — while
+noting that **any HTTPS container platform** (Fly.io, Render, a container on a VM)
+works; Cloud Run is the default, not a hard dependency. **Consequences:** A single
+container image + per-service env var is enough; the packaging is portable; no
+platform lock-in is baked into code.
+
+## ADR-0043 — One role-aware image for two independent services
+**Context:** Cop and Thief must be deployed as **separate** services, but
+maintaining two images is wasteful. **Decision:** Build **one** image whose
+entrypoint (`cloud_entrypoint.py`) selects the role from `MCP_ROLE` (cop/thief),
+binds `0.0.0.0`, reads `PORT`, and **fails fast** if the role's token env var is
+missing (printing only the var name, never the value). Two services
+(`mars777-cop-mcp`, `mars777-thief-mcp`) deploy the same image with different
+`MCP_ROLE` + injected token. **Consequences:** One Dockerfile to maintain; clean
+separation at deploy time; local per-role entrypoints (127.0.0.1) still work;
+capability isolation (thief has no barrier tool) is preserved.
+
+## ADR-0044 — Preflight before any live deploy; no secrets in the image
+**Context:** A live cloud deploy is risky and must not happen accidentally or
+leak secrets. **Decision:** Ship a **preflight** (`deployment/preflight.py`) that
+validates the cloud config, Dockerfile/.dockerignore, the **absence of secret
+files**, placeholder (not deployed) URLs, and role/port resolution **without
+starting a server, calling the cloud, or requiring gcloud/credentials**. Tokens
+come from the runtime env / secret manager — never image build args,
+`Dockerfile ENV`, logs, docs, or commits; `.dockerignore` excludes
+`.env`/credentials/token/caches/tests/results. The deploy script is an **inert
+template** gated by `RUN_CLOUD_DEPLOY=1` with placeholders only. **Consequences:**
+Packaging readiness is provable and CI-safe; a real deploy is a deliberate, manual,
+gated step; no secret can enter the image or the repo.

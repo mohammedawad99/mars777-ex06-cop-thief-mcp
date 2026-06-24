@@ -52,6 +52,12 @@ every gate below passes.
     no_secret_like_content, json_serializable, local_mcp_verified,
     gmail_body_json_only). It runs the fake-local full game, aggregate-validates
     the official report, and builds a secret-free run manifest.
+15. **Cloud deployment preflight** —
+    `uv run python -m mars777_cop_thief.deployment.preflight` must exit 0 with
+    `status: ok` and all checks true (config valid, `cloud_status: not_deployed`,
+    placeholder URLs, Dockerfile/.dockerignore present and covering secrets, no
+    secret files, role/port resolve without a server, smoke commands documented).
+    It makes **no cloud calls** and needs neither gcloud nor credentials.
 
 ### Optional (not required for default validation)
 

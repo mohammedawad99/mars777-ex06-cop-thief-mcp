@@ -26,6 +26,18 @@ a measured figure once the relevant stage runs. Track per-run cost in
 - `max_moves` and `num_sub_games` bound per-run cost.
 - Retries are bounded (`retry_max_attempts`) to avoid runaway spend.
 
+## Cloud hosting cost & budget guard (Stage 13A)
+
+- **Target:** Google Cloud Run — billed per request/CPU/memory with a generous
+  free tier; two small, scale-to-zero MCP services for short matches are expected
+  to be **within the free tier (~$0)**. This is an **assumption**, not a measured
+  figure — nothing is deployed yet.
+- **Budget guard:** deployment is **gated** (`RUN_CLOUD_DEPLOY=1`); the deploy
+  script is inert by default and creates no resources. Scale-to-zero plus the
+  bounded `num_sub_games`/`max_moves` keep any future spend small.
+- **Measured cloud cost:** **TBD** — to be filled in only after a real deploy and
+  a metered run; none was performed.
+
 ## Rate-limit / resource guard (Stage 12)
 
 - A `ResourceGuard` model (`run/rate_limit.py`) reads conservative limits from

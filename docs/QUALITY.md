@@ -34,6 +34,12 @@ every gate below passes.
     `results/evidence/*.example.json`. The internal report schema is validated and
     **token-safe** (no `auth_token`/`secret`/dummy-token keys or values); evidence
     artifacts are deterministic, token-free, and reviewable in Git.
+12. **Prompted MCP game smoke (fake_local)** —
+    `uv run python -m mars777_cop_thief.mcp_client.prompted_game_smoke` must exit 0
+    with all checks true. It plays the full default game over HTTP where each turn
+    is decided by the offline `fake_local` provider, accounting prompt/response
+    tokens and cost, and tears the servers down. A one-sub-game variant runs as a
+    default pytest integration test (same `RUN_MCP_E2E=0` skip).
 
 ## Staging discipline
 

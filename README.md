@@ -8,6 +8,33 @@ a natural-language protocol, and the final results are reported via a Google
 (Gmail) report sender. Inter-group play is treated as in-scope (see
 `docs/PRD_bonus_intergroup.md`).
 
+## Status — Stage 9 (prompted MCP agent layer, offline fake LLM)
+
+A **provider-agnostic LLM-agent layer** and a **prompted MCP-backed game** are
+implemented and pass. The provider lives on the orchestrator side (never in the
+MCP servers): a deterministic, offline **`fake_local`** provider reasons over the
+role-safe observation and emits a natural-language line ending in
+`ACTION: move <direction>`; a parser extracts the action; an invalid/illegal
+action is recorded and replaced by a deterministic legal fallback. The engine
+remains the only authority for legality/capture/scoring.
+
+Each turn the orchestrator calls `get_observation`/`compose_message` over MCP,
+builds a role-specific prompt (no hidden opponent coordinates, no tokens/secrets),
+calls the provider, parses the action, and applies it. The JSON report adds
+`llm_mode: fake_local`, `provider_name`, `model_name`, token estimates,
+`estimated_cost_usd`, `parse_failures`, and `fallbacks_used`.
+
+Run the prompted MCP game smoke (offline fake provider over real HTTP):
+
+```bash
+uv run python -m mars777_cop_thief.mcp_client.prompted_game_smoke
+```
+
+**No external LLM API is implemented** (no OpenAI/Gemini/Anthropic calls, no API
+keys) — only the offline `fake_local` provider. This stage is still local-only:
+**cloud/public URLs are not deployed**, **Gmail/email sending is not
+implemented**, and **no real inter-group bonus game has been completed**.
+
 ## Status — Stage 8 (official report schema, validation & evidence pack)
 
 The **official report schema, validation, and a local evidence pack are
@@ -199,6 +226,7 @@ src/mars777_cop_thief/
   orchestration/      full-state and observed/dialogue runners, totals, report
   mcp_servers/        local HTTP MCP servers (Cop/Thief), auth guard, tools
   mcp_client/         local MCP client, server-pair lifecycle, E2E + game flow
+  llm/                provider interface, offline fake provider, prompts, parser, agent
   reporting/          official report schema, validation, evidence pack writer
 results/evidence/     sanitized, deterministic example artifacts (*.example.json)
 tests/unit/           version, config, and SDK smoke tests
@@ -211,6 +239,7 @@ tests/unit/mcp_servers/    auth, tools, server-builder, run/config tests
 tests/unit/mcp_client/     client URLs, lifecycle, in-memory flow, smoke entry
 tests/integration/mcp/     real HTTP end-to-end smoke (default-on)
 tests/unit/reporting/      schema validation, official report, evidence tests
+tests/unit/llm/            provider, prompt, parser, cost, agent tests
 ```
 
 ## Requirements

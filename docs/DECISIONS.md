@@ -277,3 +277,36 @@ timestamps and URLs to placeholders, drops full event logs (keeping counts and a
 Committed evidence is deterministic (the game is deterministic; volatile fields are
 normalized), small, and provably token-free; a report can be safely used as an
 email body later.
+
+## ADR-0030 — Provider-agnostic LLM interface, fake_local by default
+**Context:** The assignment expects AI-agent orchestration, but tests must stay
+deterministic and offline with no API keys. **Decision:** Define a minimal
+provider interface (`complete(prompt, *, role, context) -> LlmResponse`) and ship
+a deterministic, standard-library **`fake_local`** provider that reasons over the
+role-safe observation and emits a natural-language line ending in `ACTION:
+<...>`. A real external provider can later implement the same interface behind an
+opt-in flag with keys from the environment. **Consequences:** The architecture is
+LLM-ready without any external dependency or secret; the full pipeline (prompt →
+provider → parse → engine) is exercised deterministically; token/cost accounting
+is real (fake rate 0) and ready for a paid provider.
+
+## ADR-0031 — LLM lives on the orchestrator side, never in the MCP servers
+**Context:** MCP servers expose tools; the model must not be embedded in them.
+**Decision:** The provider/agent runs in the **trusted orchestrator/client**; the
+MCP servers stay tool-only and return only the role-safe observation. The agent
+receives the observation + message + rules + allowed actions, **never** hidden
+opponent coordinates, and the engine remains the sole authority.
+**Consequences:** Clean separation (servers stay simple and replaceable); hidden
+state cannot leak into prompts (qualitative directions only); a real LLM swaps in
+on the client side without touching the servers or the engine.
+
+## ADR-0032 — Safe ACTION-line parser with deterministic fallback
+**Context:** Free-text model output must become a legal engine action without
+trusting the model. **Decision:** Parse the action from the last `ACTION:` line
+(8 directions with hyphen/underscore variants; cop-only `barrier`), reject
+stay/malformed with a structured error, convert to an engine `Action`, and — when
+parsing fails or the engine rejects the action — **record it and apply a
+deterministic legal fallback** (`first_legal_action`). Parse failures and
+fallbacks are counted in the report. **Consequences:** A bad or adversarial
+response can never corrupt the game; runs always terminate; the report is honest
+about how often the model's action was unusable.

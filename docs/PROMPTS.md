@@ -339,5 +339,42 @@ command writes deterministic sanitized artifacts (`uv run python -m
 mars777_cop_thief.reporting.generate_evidence_pack` → valid, exit 0). Ruff clean,
 189 tests, 100% coverage. No Gmail/cloud/external-LLM/GUI/inter-group added.
 
-> Subsequent stages will append their driving prompts here (LLM agents,
+## Stage 9 — Prompted MCP agent layer (offline fake LLM) (2026-06-24)
+
+**Goal:** Add a provider-agnostic LLM-agent layer and an MCP-backed **prompted**
+orchestration path that makes the architecture ready for real LLMs while keeping
+tests deterministic and token-safe. **No** real external LLM API, API keys,
+cloud, public URLs, Gmail, GUI, or real inter-group remote play.
+
+**Key constraints captured from the prompt:**
+- The provider lives in the orchestrator/client side, never in the MCP servers;
+  the engine stays the only authority for legality/capture/scoring.
+- The agent receives only the role-safe observation, the NL message/transcript
+  context, a rules summary, and allowed-action instructions — **never** hidden
+  opponent coordinates.
+- Output is natural-language-like with an `ACTION:` line; a safe parser supports
+  the 8 directions (hyphen/underscore variants) and a cop-only `barrier
+  <direction>`, and rejects stay/malformed actions. On parse/legality failure the
+  orchestrator records it and uses a deterministic legal fallback.
+- A deterministic, standard-library `fake_local` provider (no network) supports
+  both roles and avoids exact coordinates. Prompts/responses are token/cost
+  counted (fake rate = 0, no real spend) and loggable.
+
+**Artifacts produced:**
+- `src/mars777_cop_thief/llm/` — `provider.py`, `fake_provider.py`, `prompts.py`,
+  `parser.py`, `cost.py`, `agent.py`, `__init__`.
+- `src/mars777_cop_thief/mcp_client/` — `prompted_game_flow.py`,
+  `prompted_game_smoke.py`; `game_report.build_prompted_report`; SDK
+  `run_local_prompted_mcp_game`.
+- Tests under `tests/unit/llm/`, `tests/unit/mcp_client/`, and
+  `tests/integration/mcp/` (229 tests, 100% coverage).
+
+**Outcome:** Local fake-LLM prompted MCP orchestration implemented and **passing**
+— the full default game (6 sub-games) runs over real HTTP driven by the fake
+provider (`uv run python -m mars777_cop_thief.mcp_client.prompted_game_smoke` →
+exit 0, all checks true; 24,762 prompt + 2,574 response tokens, cost 0.0, 0 parse
+failures/fallbacks). Ruff clean, 229 tests, 100% coverage. No real-LLM/cloud/
+Gmail/GUI/inter-group implementation added.
+
+> Subsequent stages will append their driving prompts here (real LLM provider,
 > orchestrator hardening, report sender, cloud, bonus, audit).

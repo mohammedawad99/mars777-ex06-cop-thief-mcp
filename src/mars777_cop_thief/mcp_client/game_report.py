@@ -35,3 +35,25 @@ def build_mcp_report(
         }
     )
     return report
+
+
+def build_prompted_report(
+    config, results, accumulator, cop_url, thief_url, provider_name, model_name
+) -> dict:
+    """MCP-backed report plus fake-local LLM mode and token/cost accounting."""
+    report = build_mcp_report(config, results, cop_url, thief_url)
+    report.update(
+        {
+            "mode": "mcp-backed-prompted",
+            "llm_mode": "fake_local",
+            "provider_name": provider_name,
+            "model_name": model_name,
+            "total_prompt_tokens_estimate": accumulator["prompt_tokens"],
+            "total_response_tokens_estimate": accumulator["response_tokens"],
+            "estimated_cost_usd": round(accumulator["cost"], 6),
+            "parse_failures": accumulator["parse_failures"],
+            "fallbacks_used": accumulator["fallbacks_used"],
+            "cost_model": {"rate_per_1k_usd": 0.0, "note": "fake_local: no real spend"},
+        }
+    )
+    return report

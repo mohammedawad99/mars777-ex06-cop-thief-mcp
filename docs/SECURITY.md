@@ -57,6 +57,18 @@
   `results/evidence/*.example.json` files are tracked; all other run output under
   `results/` is git-ignored.
 
+### LLM prompts and responses (Stage 9)
+
+- Prompts are built only from the **role-safe observation** (`llm/prompts.py`).
+  They describe a visible opponent with a **qualitative relative direction** and
+  **never** include exact opponent coordinates; a hidden opponent is reported as
+  not visible. Prompts never contain tokens, environment-variable values, or
+  secrets.
+- The offline `fake_local` provider emits natural language with no coordinates.
+  Prompt **summaries** (not full prompts) and responses are stored in the
+  transcript; both are coordinate-free and token-free. No API keys are used or
+  required at this stage — only the offline provider.
+
 ### MCP token rotation / revocation
 
 1. Generate a fresh random value for `COP_MCP_TOKEN` / `THIEF_MCP_TOKEN` in `.env`.

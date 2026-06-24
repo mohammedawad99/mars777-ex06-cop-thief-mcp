@@ -12,14 +12,15 @@ Statuses: ✅ done · 🔄 in progress · ⏳ planned
 | 5 | Local HTTP MCP servers (Cop & Thief): FastMCP, role-safe tools, token auth, run entrypoints | ✅ |
 | 6 | Local MCP client & HTTP E2E smoke: subprocess server pair, FastMCP client, deterministic flow over HTTP | ✅ |
 | 7 | MCP-backed local game orchestration: real sub-games/full game where each turn calls the MCP servers over HTTP | ✅ |
-| 8 | Official report schema/validation + sanitized local evidence pack; bonus schema example | 🔄 |
-| 9 | Cop & Thief LLM agents wired through MCP | ⏳ |
-| 10 | Orchestrator hardening over MCP: seeds, aggregation, rate limits | ⏳ |
-| 11 | Google report sender (Gmail/OAuth) for final results, JSON-only email body | ⏳ |
-| 12 | Cloud/self-play through public, authenticated URLs | ⏳ |
-| 13 | Bonus inter-group play against another group's server (mandatory scope) | ⏳ |
-| 14 | Hardening: cost/measurement tracking, logging, security review | ⏳ |
-| 15 | Final gap audit + submission checklist closure | ⏳ |
+| 8 | Official report schema/validation + sanitized local evidence pack; bonus schema example | ✅ |
+| 9 | Prompted MCP agent layer: provider interface, offline fake LLM, prompts/parser/cost, prompted game runner | 🔄 |
+| 10 | Real external LLM provider behind the same interface (opt-in, keys via env) | ⏳ |
+| 11 | Orchestrator hardening over MCP: seeds, aggregation, rate limits | ⏳ |
+| 12 | Google report sender (Gmail/OAuth) for final results, JSON-only email body | ⏳ |
+| 13 | Cloud/self-play through public, authenticated URLs | ⏳ |
+| 14 | Bonus inter-group play against another group's server (mandatory scope) | ⏳ |
+| 15 | Hardening: cost/measurement tracking, logging, security review | ⏳ |
+| 16 | Final gap audit + submission checklist closure | ⏳ |
 
 ## Stage 0 checklist (current)
 
@@ -191,7 +192,7 @@ Statuses: ✅ done · 🔄 in progress · ⏳ planned
   contain tokens. **No** cloud/public URLs, Gmail/email, external-LLM, GUI,
   production OAuth, or inter-group remote play in this stage.
 
-## Stage 8 checklist (current — official report schema, validation & evidence)
+## Stage 8 checklist (completed — official report schema, validation & evidence)
 
 - [x] `reporting/schemas.py` — internal/bonus required-field sets, forbidden
       token patterns, normalized evidence placeholders
@@ -209,7 +210,7 @@ Statuses: ✅ done · 🔄 in progress · ⏳ planned
 - [x] Evidence command verified: `uv run python -m
       mars777_cop_thief.reporting.generate_evidence_pack` → valid, exit 0
 - [x] Tests (189 total, 100% coverage)
-- [ ] Reviewed and explicitly committed
+- [x] Reviewed and explicitly committed
 
 ### Stage 8 scope notes
 
@@ -223,9 +224,42 @@ Statuses: ✅ done · 🔄 in progress · ⏳ planned
 - **No** Gmail/email sending, cloud deployment, public URLs, external-LLM, GUI,
   production OAuth, or real inter-group remote play in this stage.
 
-## Next up (Stage 9 — Cop & Thief LLM agents wired through MCP)
+## Stage 9 checklist (current — prompted MCP agent layer)
 
-- [ ] Replace observation-based policies with LLM-driven agents behind the same
-      tool contract
-- [ ] Document prompts; keep the engine authoritative and the transcript honest
-- [ ] Bound cost/latency; no change to the role-safe observation boundary
+- [x] `llm/provider.py` — provider Protocol + `LlmResponse` (token/cost fields)
+- [x] `llm/fake_provider.py` — deterministic offline `fake_local` provider
+      (reasons over the role-safe observation; never emits opponent coordinates)
+- [x] `llm/prompts.py` — role prompts (qualitative opponent direction only; no
+      hidden coordinates, no tokens/secrets)
+- [x] `llm/parser.py` — `ACTION:` parser (8 directions, hyphen/underscore; cop
+      barrier; rejects stay/malformed)
+- [x] `llm/cost.py` — non-negative token/cost estimator (fake rate = 0)
+- [x] `llm/agent.py` — `LlmAgent.decide` → structured decision with parse status
+- [x] `mcp_client/prompted_game_flow.py` — per-turn observation→prompt→provider→
+      parse→engine; records prompt summary, response, parse status, tokens, cost,
+      fallback_used; deterministic fallback on bad/illegal actions
+- [x] `mcp_client/game_report.py` `build_prompted_report` — `llm_mode`/provider/
+      token/cost/parse_failures/fallbacks_used fields
+- [x] `mcp_client/prompted_game_smoke.py` + SDK `run_local_prompted_mcp_game`
+- [x] Full 6-sub-game prompted game verified over real HTTP: `uv run python -m
+      mars777_cop_thief.mcp_client.prompted_game_smoke` → exit 0, all checks true
+      (24,762 prompt + 2,574 response tokens, cost 0.0, 0 parse failures/fallbacks)
+- [x] Tests under `tests/unit/llm/` + prompted flow/integration (229 total, 100%)
+- [ ] Reviewed and explicitly committed
+
+### Stage 9 scope notes
+
+- The provider lives on the orchestrator side, **never in the MCP servers**; the
+  engine stays the only authority. The agent receives only the role-safe
+  observation + message + rules + allowed actions — never hidden coordinates.
+- Output is natural-language with an `ACTION:` line; a safe parser extracts the
+  action and the orchestrator falls back deterministically on parse/legality
+  failure (recorded as `parse_failures`/`fallbacks_used`).
+- **No** real external LLM API, API keys, cloud, public URLs, Gmail, GUI, or real
+  inter-group remote play — only the offline `fake_local` provider.
+
+## Next up (Stage 10 — real external LLM provider, opt-in)
+
+- [ ] Implement a real provider behind the same interface (keys via env only)
+- [ ] Keep `fake_local` as the default offline/test path; measure real cost
+- [ ] No change to the role-safe observation boundary or the parser contract

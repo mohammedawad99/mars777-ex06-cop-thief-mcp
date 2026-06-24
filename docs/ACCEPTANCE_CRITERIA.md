@@ -108,6 +108,12 @@ text. The MCP transport and model-driven interpretation are later stages.
 - **AC-NL-2** (R-003, R-025) — ◑ partially: each turn records a structured event
   and a transcript message with debug-only audit facts; model-driven
   `interpreted_action` over MCP arrives in a later stage.
+- **AC-NL-2b** (R-003, R-040) — ✅ test-covered (Stage 9): a prompted MCP game runs
+  end-to-end where an LLM agent (offline `fake_local` provider) receives the
+  role-safe observation, emits a natural-language `ACTION:` line, and the parser
+  extracts the action; a parse/legality failure is recorded
+  (`parse_failures`/`fallbacks_used`) and replaced by a deterministic legal
+  fallback. Prompts/responses never contain hidden opponent coordinates.
 - **AC-NL-3** (R-003): An ambiguous or uninterpretable NL message is handled
   deterministically (rejected or clarified) and logged — later stage (model
   interpretation not yet implemented).

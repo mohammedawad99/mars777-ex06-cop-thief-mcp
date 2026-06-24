@@ -24,7 +24,7 @@ column expected to change frequently.
 
 | ID | Requirement | Source category | Priority | Planned response | Proof artifact | Validation method | Risk level | Status |
 |----|-------------|-----------------|----------|------------------|----------------|-------------------|------------|--------|
-| R-001 | Two AI agents exist: one Cop, one Thief, each independent | Game | Mandatory | Distinct Cop and Thief agent modules wired to their own server | `src/.../agents/` Cop+Thief modules | Integration run shows two agents acting | Med | Planned |
+| R-001 | Two AI agents exist: one Cop, one Thief, each independent | Game | Mandatory | LLM agent (provider-agnostic; offline `fake_local`) decides each role per turn over MCP; engine authoritative | `llm/agent.py`, `llm/fake_provider.py`, `mcp_client/prompted_game_flow.py`, `tests/unit/llm/` | Prompted game: both roles act via agent over HTTP | Med | In progress |
 | R-002 | Two MCP servers exist: one for Cop, one for Thief | MCP | Mandatory | Independent FastMCP cop/thief servers run as subprocesses on separate free ports; driven over HTTP | `mcp_servers/*_server.py`, `mcp_client/subprocess_pair.py`, `tests/integration/mcp/test_http_e2e.py` | E2E smoke starts both and calls each over HTTP | Med | In progress |
 | R-003 | Communication uses free natural language, not a rigid numeric protocol | Protocol | Mandatory | Local free-text messages (qualitative, no JSON/opcodes/coords); over-MCP exchange later | `dialogue/messages.py`, `dialogue/transcript.py`, `tests/unit/dialogue/` | Tests assert plain-string, no-digit messages | High | In progress |
 | R-004 | MCP communication is HTTP-based from the beginning (not stdio-only) | MCP | Mandatory | FastMCP `transport="http"`; real client↔server HTTP round-trip proven (ADR-0020/0023) | `mcp_client/`, `tests/integration/mcp/test_http_e2e.py`, `smoke` command output | E2E smoke passes over HTTP (exit 0) | Med | In progress |
@@ -63,7 +63,7 @@ column expected to change frequently.
 | R-037 | Use Gmail API or another documented method; Google API preferred | Email | Mandatory | Gmail API via API gatekeeper layer | `PRD_google_report_sender.md` | Documented send path + dry-run | Med | Planned |
 | R-038 | README is scientific/professional and includes Dec-POMDP framing | Docs | Strong | README adds Dec-POMDP section | `README.md` | Doc review | Low | Planned |
 | R-039 | Formal Dec-POMDP tuple documented: ⟨n, S, {A_i}, P, R, {Ω_i}, O, γ⟩ | Docs | Strong | Tuple defined and mapped to engine | README / PRD section | Doc review against tuple | Low | Planned |
-| R-040 | Emphasis on orchestration/pipeline over optimal strategy | Process | Strong | Plan prioritizes pipeline robustness | `PLAN.md` | Plan review | Low | In progress |
+| R-040 | Emphasis on orchestration/pipeline over optimal strategy | Process | Strong | Full prompted MCP pipeline (observe→prompt→provider→parse→engine) with safe fallback; strategy is pluggable | `mcp_client/prompted_game_flow.py`, `llm/`, `tests/` | Prompted full game runs end-to-end | Low | In progress |
 | R-041 | Q-learning / RL is optional creative, not required for baseline | Process | Optional | Deterministic baseline policies play full games with no RL; callable contract is pluggable | `agents/baseline.py`, `tests/unit/agents/`, `tests/unit/orchestration/` | Baseline runs full game without RL | Low | Done |
 | R-042 | GUI is optional and must not risk core delivery | Process | Optional | No GUI on critical path; CLI/headless first | `PRD.md` non-scope | Core path runs headless | Low | Done |
 | R-043 | Professional software guidelines are mandatory evaluation basis | Quality | Mandatory | Quality gates enforced each stage | `QUALITY.md` | Gate run each stage | Med | In progress |
@@ -84,7 +84,7 @@ column expected to change frequently.
 | R-058 | Test-driven development | Process | Strong | Tests precede/accompany each feature | Test suite, git history | Commits show tests-with-code | Med | In progress |
 | R-059 | Meaningful Git history | Process | Strong | Staged, descriptive commits | git log | History review | Low | In progress |
 | R-060 | Documented prompts (visible AI workflow) | Feedback | Mandatory | `PROMPTS.md` appended each stage | `docs/PROMPTS.md` | Prompt log present per stage | Low | In progress |
-| R-061 | Cost/resource awareness | Feedback | Mandatory | Token/cost tracking + budget notes | `docs/COSTS.md` | Cost doc + measured numbers | Med | In progress |
+| R-061 | Cost/resource awareness | Feedback | Mandatory | Token/cost accounting model per prompt/response; report fields + COSTS doc; real-provider rate later | `llm/cost.py`, `mcp_client/game_report.py`, `docs/COSTS.md`, `tests/unit/llm/test_cost.py` | Report shows token estimates + cost; tests assert non-negative | Med | In progress |
 | R-062 | Quality gates defined and run | Quality | Mandatory | Gate list executed each stage | `docs/QUALITY.md` | Gate run logged each stage | Med | In progress |
 | R-063 | Final gap audit performed | Process | Mandatory | Closing audit before submission | `docs/FINAL_GAP_AUDIT.md` | Audit completed, gaps closed | Med | Planned |
 | R-064 | Extensibility addressed (Assignment 1 feedback) | Feedback | Strong | Pluggable strategy + config-driven design | `PLAN.md`, ADRs | Design review for seams | Med | In progress |

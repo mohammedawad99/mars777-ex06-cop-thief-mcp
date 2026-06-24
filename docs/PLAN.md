@@ -1,6 +1,6 @@
 # PLAN — Intended Architecture
 
-**Group:** MaRs-777 · **Status:** Stage 8 (official report schema, validation & evidence)
+**Group:** MaRs-777 · **Status:** Stage 9 (prompted MCP agent layer, offline fake LLM)
 
 ## Architecture overview
 
@@ -56,10 +56,10 @@
 SDK/shared (Stage 0 ✅) → requirements hardening (Stage 1 ✅) → game engine
 (Stage 2 ✅) → local self-play pipeline (Stage 3 ✅) → local
 partial-observability & dialogue (Stage 4 ✅) → local HTTP MCP servers (Stage 5
-✅) → local MCP client & HTTP E2E smoke (Stage 6 ✅) → MCP-backed local game orchestration (Stage 7 ✅) → **official report schema,
-validation & evidence (Stage 8 — current)** → LLM agents over MCP → orchestrator
-hardening → report sender → cloud/self-play → bonus inter-group → hardening &
-audit.
+✅) → local MCP client & HTTP E2E smoke (Stage 6 ✅) → MCP-backed local game orchestration (Stage 7 ✅) → official report schema, validation & evidence (Stage 8 ✅) → **prompted MCP
+agent layer (Stage 9 — current; offline fake LLM)** → real LLM provider (opt-in)
+→ orchestrator hardening → report sender → cloud/self-play → bonus inter-group →
+hardening & audit.
 
 ## Pipeline progress (Stage 3)
 
@@ -190,6 +190,31 @@ validated, token-safe report** plus committed evidence (`reporting/`):
 The report is now JSON-only and email-body ready; the **report sender (Gmail)**
 that actually emails it remains a later stage, as do cloud exposure and a real
 inter-group bonus game.
+
+## Pipeline progress (Stage 9)
+
+Stage 9 adds a **provider-agnostic LLM-agent layer** (`llm/`) and a **prompted**
+MCP-backed game, making the architecture LLM-ready while staying offline and
+deterministic:
+
+- **Provider interface + `fake_local`** (`provider.py`, `fake_provider.py`) — a
+  minimal `complete(...)` contract and a deterministic offline provider that
+  reasons over the role-safe observation and emits `ACTION: move <direction>`
+  (ADR-0030). A real provider can later implement the same interface (keys via
+  env, opt-in).
+- **Prompts + parser + cost** (`prompts.py`, `parser.py`, `cost.py`) — role
+  prompts with qualitative opponent direction (no hidden coordinates, no
+  secrets); a safe `ACTION:` parser; non-negative token/cost estimates.
+- **Prompted flow** (`mcp_client/prompted_game_flow.py`) — per turn:
+  `get_observation` → `compose_message` → build prompt → provider → parse →
+  engine, with a deterministic fallback on parse/legality failure (ADR-0032),
+  recording prompt summary, response, parse status, tokens, cost, and
+  `fallback_used`. The provider lives on the client side, never in the servers
+  (ADR-0031).
+
+The report gains `llm_mode`/provider/token/cost/`parse_failures`/`fallbacks_used`
+fields. Real external LLM calls, cloud exposure, Gmail, and inter-group play
+remain out of Stage 9.
 
 ## Verification artifacts (core)
 

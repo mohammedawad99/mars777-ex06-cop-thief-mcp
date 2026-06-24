@@ -26,6 +26,22 @@ a measured figure once the relevant stage runs. Track per-run cost in
 - `max_moves` and `num_sub_games` bound per-run cost.
 - Retries are bounded (`retry_max_attempts`) to avoid runaway spend.
 
+## Token/cost accounting model (Stage 9, fake_local)
+
+- The LLM layer estimates tokens per prompt/response (`llm/cost.py`, ~4 chars per
+  token) and an `estimated_cost_usd` from a per-1k rate. The offline `fake_local`
+  provider uses a **zero rate** — it does **no real spend** — but token counts are
+  computed and summed, so the accounting model is real and ready for a paid
+  provider that sets a non-zero rate.
+- The prompted game report carries `total_prompt_tokens_estimate`,
+  `total_response_tokens_estimate`, `estimated_cost_usd`, `parse_failures`, and
+  `fallbacks_used`. A measured full default game (6 sub-games) over local HTTP
+  reported ≈ **24,762 prompt** + **2,574 response** token estimates,
+  `estimated_cost_usd = 0.0` (fake_local).
+- These are **estimates from the fake provider**, not real-provider figures. When
+  a real external provider is added (opt-in, later stage), the rate and measured
+  usage/cost from real responses replace the zero-rate model here.
+
 ## Dependency / hosting note (Stage 5)
 
 - Stage 5 added **FastMCP** (`fastmcp>=3.4.2,<4`, pinned in `uv.lock`) for the

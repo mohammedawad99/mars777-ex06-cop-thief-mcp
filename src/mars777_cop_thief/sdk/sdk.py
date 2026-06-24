@@ -13,6 +13,7 @@ from pathlib import Path
 from mars777_cop_thief.agents import cop_policy, thief_policy
 from mars777_cop_thief.game import GameEngine
 from mars777_cop_thief.mcp_client.game_smoke import run_game_smoke
+from mars777_cop_thief.mcp_client.prompted_game_smoke import run_prompted_game_smoke
 from mars777_cop_thief.orchestration import (
     build_report,
     run_dialogue_full_game,
@@ -80,6 +81,10 @@ class AssignmentSdk:
     def run_local_mcp_full_game(self) -> dict:
         """Run the full MCP-backed game over local HTTP servers; return the report."""
         return run_game_smoke()
+
+    def run_local_prompted_mcp_game(self, num_sub_games: int | None = None) -> dict:
+        """Run an MCP-backed game decided by the offline fake LLM agent; return its report."""
+        return run_prompted_game_smoke(num_sub_games=num_sub_games)
 
     def validate_internal_report(self, report: dict) -> list[str]:
         """Validate an official internal report; return errors (empty == valid)."""

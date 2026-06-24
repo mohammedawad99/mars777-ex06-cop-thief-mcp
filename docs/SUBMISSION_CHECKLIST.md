@@ -30,6 +30,15 @@ Strict checklist for the final review. Boxes are checked only when verified.
 - [ ] Google report sender emails final results
 - [ ] Bonus inter-group play demonstrated
 
+## Reports & evidence
+- [x] Official internal report schema defined and **validated** (`reporting/`)
+- [x] Report is JSON-only / email-body ready and **token-safe** (no token keys/values)
+- [x] Bonus/inter-group schema example exists (no real run claimed; `bonus_claim=false`)
+- [x] Sanitized, deterministic evidence pack committed under
+      `results/evidence/*.example.json` (no tokens, no full event logs)
+- [ ] Real internal report emailed (Gmail sender — later stage)
+- [ ] Real inter-group bonus game played and reconciled (later stage)
+
 ## Documentation & measurement
 - [ ] PRDs, PLAN, DECISIONS, PROMPTS complete and current
 - [ ] COSTS includes measured (not just assumed) figures

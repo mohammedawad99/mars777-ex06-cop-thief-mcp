@@ -251,3 +251,29 @@ result. **Decision:** The MCP-backed report carries explicit status fields —
 reader (or grader) sees the precise local scope at a glance; the evidence is
 honest about what has and has not been done; tokens cannot leak through results
 (asserted by tests).
+
+## ADR-0028 — Official report schema derived from the MCP-backed report
+**Context:** The final submission needs a stable, email-ready JSON report, but the
+Stage 7 MCP-backed report is operational (full events, dynamic URLs).
+**Decision:** Define a **stable internal schema** (`reporting/schemas.py`) and a
+builder (`build_official_internal_report`) that **transforms** the MCP-backed
+report into it — summarising transcripts and replacing raw event arrays with an
+`event_count`, adding `report_type`/`schema_version`/`students`/`evidence`/
+`validation_status`, and required `sub_game`/`totals` fields. A separate **bonus
+schema example** is provided but explicitly claims no real run. **Consequences:**
+The report is JSON-only and email-body ready; it is small and reviewable; the
+schema is versioned so later cloud/bonus runs reuse it without breaking shape.
+
+## ADR-0029 — Token-safe validation and sanitized, deterministic evidence
+**Context:** Reports and committed evidence must never carry secrets, and evidence
+must be reviewable and reproducible in Git. **Decision:** Validation runs a
+**recursive token scan** (`find_token_like`) rejecting forbidden keys/values
+(auth/access/refresh tokens, secret, password, private_key, the MCP token names,
+and dummy local tokens), enforces required fields, and allows local URLs **only**
+when `cloud_status` is local/not_deployed. The evidence writer **normalizes**
+timestamps and URLs to placeholders, drops full event logs (keeping counts and a
+≤4-message excerpt), and **refuses to write** if any token-like content survives.
+`.gitignore` tracks only `results/evidence/*.example.json`. **Consequences:**
+Committed evidence is deterministic (the game is deterministic; volatile fields are
+normalized), small, and provably token-free; a report can be safely used as an
+email body later.

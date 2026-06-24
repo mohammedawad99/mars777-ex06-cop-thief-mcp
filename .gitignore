@@ -42,6 +42,10 @@ logs/
 *.log
 results/local/
 
+# --- Evidence: track only intentional, sanitized example artifacts ---
+results/evidence/*
+!results/evidence/*.example.json
+
 # --- Editor / OS noise ---
 .vscode/
 .idea/

@@ -21,6 +21,8 @@ from mars777_cop_thief.orchestration import (
     run_sub_game,
 )
 from mars777_cop_thief.orchestration.results import SubGameResult
+from mars777_cop_thief.reporting import build_official_internal_report, validate_internal_report
+from mars777_cop_thief.reporting.generate_evidence_pack import generate as generate_evidence
 from mars777_cop_thief.shared.config import load_game_config
 from mars777_cop_thief.shared.version import __version__
 
@@ -78,3 +80,15 @@ class AssignmentSdk:
     def run_local_mcp_full_game(self) -> dict:
         """Run the full MCP-backed game over local HTTP servers; return the report."""
         return run_game_smoke()
+
+    def validate_internal_report(self, report: dict) -> list[str]:
+        """Validate an official internal report; return errors (empty == valid)."""
+        return validate_internal_report(report)
+
+    def build_official_internal_report(self, mcp_report: dict, students=None) -> dict:
+        """Build a validated official internal report from an MCP-backed report."""
+        return build_official_internal_report(mcp_report, students=students)
+
+    def generate_local_evidence_pack(self, directory=None) -> dict:
+        """Generate the sanitized local evidence pack; return a status dict."""
+        return generate_evidence(directory=directory)

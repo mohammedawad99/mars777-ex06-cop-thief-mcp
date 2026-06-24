@@ -28,6 +28,12 @@ every gate below passes.
     checks true. It plays the full default game (6 sub-games) where every turn
     calls the role servers over HTTP, then tears the servers down. A one-sub-game
     variant runs as a default pytest integration test (same `RUN_MCP_E2E=0` skip).
+11. **Official report validation & evidence pack** —
+    `uv run python -m mars777_cop_thief.reporting.generate_evidence_pack` must
+    exit 0 with `validation_status: valid` and write sanitized
+    `results/evidence/*.example.json`. The internal report schema is validated and
+    **token-safe** (no `auth_token`/`secret`/dummy-token keys or values); evidence
+    artifacts are deterministic, token-free, and reviewable in Git.
 
 ## Staging discipline
 

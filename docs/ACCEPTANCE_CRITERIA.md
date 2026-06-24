@@ -124,19 +124,26 @@ text. The MCP transport and model-driven interpretation are later stages.
 
 ## 6. JSON reports
 
-**Stage 3 status:** an in-memory, `json.dumps`-serializable local report builder
-is implemented and test-covered (`orchestration/report.py`,
-`tests/unit/orchestration/test_report.py`). It is local-only
-(`mcp_status: not-deployed`) and not emailed; schema validation, students, and
-MCP URLs are added in later stages.
+**Stage 8 status:** an official internal report schema is built from the
+MCP-backed report and **validated** (required fields, token-safety, local-URL
+rule); a bonus schema example exists (no real run claimed); a sanitized,
+deterministic evidence pack is generated and committed
+(`reporting/`, `tests/unit/reporting/`, `results/evidence/*.example.json`).
+Email sending itself is still a later stage.
 
-- **AC-RPT-1** (R-031) — ◑ partially covered: The local report is valid JSON
-  (`json.dumps` succeeds in tests); formal schema validation of the final
-  submission report is a later stage.
-- **AC-RPT-2** (R-033) — ◑ partially covered: The report carries group name/code,
-  GitHub repo (placeholder), timezone, sub_games, and totals; students and the
-  Cop/Thief MCP URLs are added with the MCP/cloud stages.
-- **AC-RPT-3** (R-066): All timestamps in reports are in `Asia/Jerusalem`.
+- **AC-RPT-1** (R-031) — ✅ test-covered: The official internal report is valid
+  JSON (`json.dumps` succeeds) and passes schema validation
+  (`validation_status: valid`); it is **email-body ready** (JSON only, no prose).
+- **AC-RPT-2** (R-033) — ✅ test-covered: The report carries group name/code,
+  students (configurable), GitHub repo, Cop/Thief MCP URLs, timezone, config
+  summary, sub_games, and totals; required-field validation enforces them.
+- **AC-RPT-3** (R-066): All timestamps in reports are in `Asia/Jerusalem`
+  (evidence normalizes `generated_at_iso` to a placeholder for determinism).
+- **AC-RPT-4** (R-034) — ◑ partially: a bonus schema **example** validates and
+  carries all required fields, but explicitly makes no real-run claim
+  (`bonus_claim: false`); a real inter-group bonus game is a later stage.
+- **AC-RPT-5** (R-065) — ✅ test-covered: validation rejects token-like keys/values
+  and dummy tokens; the committed evidence pack is sanitized and token-free.
 
 ## 7. Email sending
 

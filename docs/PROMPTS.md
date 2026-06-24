@@ -302,5 +302,42 @@ the full default game (6 sub-games) runs over real HTTP
 true, totals cop 30 / thief 60); ruff clean, 160 tests, 100% coverage. No
 cloud/Gmail/external-LLM/GUI/inter-group implementation added.
 
+## Stage 8 — Official report schema, validation & evidence pack (2026-06-24)
+
+**Goal:** Make the generated reports **submission-grade** — schema-defined,
+validated, token-safe, JSON-only (email-body ready) — plus a deterministic local
+**evidence pack** for README/grading. **No** Gmail/email sending, cloud, public
+URLs, external-LLM, GUI, or real inter-group remote play.
+
+**Key constraints captured from the prompt:**
+- Stable internal report schema (report_type, schema_version, group/students/
+  repo, MCP urls, mcp/cloud/email status, timezone, config_summary, sub_games,
+  totals, evidence, generated_at_iso, validation_status) with the required
+  sub_game and totals fields.
+- A separate **bonus schema example** that does **not** claim a real run.
+- Token-safety: validation rejects `auth_token`/`access_token`/`refresh_token`/
+  `secret`/`password`/`private_key`/`COP_MCP_TOKEN`/`THIEF_MCP_TOKEN`/dummy tokens
+  as keys or values; reports omit tokens and env values; local URLs allowed only
+  when `cloud_status` is local/not_deployed; cloud URLs accepted but not required.
+- Deterministic, sanitized evidence: normalized timestamp + local placeholder
+  URLs, no tokens, no full event logs, small enough for Git review;
+  `.gitignore` tracks only `results/evidence/*.example.json`.
+
+**Artifacts produced:**
+- `src/mars777_cop_thief/reporting/` — `schemas.py`, `validators.py`,
+  `official_report.py`, `evidence.py`, `generate_evidence_pack.py`, `__init__`.
+- SDK `validate_internal_report` / `build_official_internal_report` /
+  `generate_local_evidence_pack` (delegating).
+- `.gitignore` evidence rule; committed `results/evidence/*.example.json`.
+- Tests under `tests/unit/reporting/` (schema/validation, official report, bonus
+  example, evidence writer, generator + SDK) — 189 tests, 100% coverage.
+
+**Outcome:** Official report schema and local evidence pack implemented; the
+internal report **validates** the MCP-backed local report (validation_status
+`valid`), the bonus example exists without claiming a real run, and the evidence
+command writes deterministic sanitized artifacts (`uv run python -m
+mars777_cop_thief.reporting.generate_evidence_pack` → valid, exit 0). Ruff clean,
+189 tests, 100% coverage. No Gmail/cloud/external-LLM/GUI/inter-group added.
+
 > Subsequent stages will append their driving prompts here (LLM agents,
 > orchestrator hardening, report sender, cloud, bonus, audit).

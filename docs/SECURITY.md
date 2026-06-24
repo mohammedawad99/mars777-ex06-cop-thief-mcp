@@ -45,6 +45,18 @@
   and the server subprocess environment, are **never reported or committed**, and
   are not the values printed by the smoke command.
 
+### Report token-safety validation (Stage 8)
+
+- `reporting/validators.py` runs a **recursive token scan** (`find_token_like`)
+  over the entire report. Validation **fails** if any key or string value contains
+  `auth_token`, `access_token`, `refresh_token`, `secret`, `password`,
+  `private_key`, `cop_mcp_token`/`thief_mcp_token`, or a dummy local token value.
+  Official reports therefore cannot carry tokens or environment-variable values.
+- The evidence writer **refuses to write** if any token-like content survives
+  sanitization, and normalizes URLs/timestamps to placeholders. Only sanitized
+  `results/evidence/*.example.json` files are tracked; all other run output under
+  `results/` is git-ignored.
+
 ### MCP token rotation / revocation
 
 1. Generate a fresh random value for `COP_MCP_TOKEN` / `THIEF_MCP_TOKEN` in `.env`.

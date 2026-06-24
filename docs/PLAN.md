@@ -1,6 +1,6 @@
 # PLAN — Intended Architecture
 
-**Group:** MaRs-777 · **Status:** Stage 7 (MCP-backed local game orchestration)
+**Group:** MaRs-777 · **Status:** Stage 8 (official report schema, validation & evidence)
 
 ## Architecture overview
 
@@ -56,9 +56,10 @@
 SDK/shared (Stage 0 ✅) → requirements hardening (Stage 1 ✅) → game engine
 (Stage 2 ✅) → local self-play pipeline (Stage 3 ✅) → local
 partial-observability & dialogue (Stage 4 ✅) → local HTTP MCP servers (Stage 5
-✅) → local MCP client & HTTP E2E smoke (Stage 6 ✅) → **MCP-backed local game
-orchestration (Stage 7 — current)** → LLM agents over MCP → orchestrator hardening
-→ report sender → cloud/self-play → bonus inter-group → hardening & audit.
+✅) → local MCP client & HTTP E2E smoke (Stage 6 ✅) → MCP-backed local game orchestration (Stage 7 ✅) → **official report schema,
+validation & evidence (Stage 8 — current)** → LLM agents over MCP → orchestrator
+hardening → report sender → cloud/self-play → bonus inter-group → hardening &
+audit.
 
 ## Pipeline progress (Stage 3)
 
@@ -169,6 +170,26 @@ Hidden-state isolation holds end-to-end: the orchestrator may pass full state to
 `propose_action` consumes only that — the transcript carries no hidden
 coordinates. LLM agents will later replace the observed policy behind the same
 tool contract; cloud exposure, Gmail, and inter-group play remain out of Stage 7.
+
+## Pipeline progress (Stage 8)
+
+Stage 8 turns the operational MCP-backed report into a **submission-grade,
+validated, token-safe report** plus committed evidence (`reporting/`):
+
+- **`schemas.py` / `validators.py`** — stable required-field sets and a recursive
+  token-safety scan; local URLs allowed only when `cloud_status` is
+  local/not_deployed; cloud URLs accepted but not required (ADR-0028/0029).
+- **`official_report.py`** — `build_official_internal_report` transforms the
+  Stage 7 report into the stable internal schema (summarised transcripts,
+  `event_count` instead of raw events, students/evidence/validation_status), and
+  `build_bonus_report_example` provides a bonus schema that claims no real run.
+- **`evidence.py` / `generate_evidence_pack.py`** — write a sanitized,
+  deterministic pack (normalized URLs/timestamp, summary, ≤4-message excerpt,
+  no full logs) under `results/evidence/`, refusing any token-like content.
+
+The report is now JSON-only and email-body ready; the **report sender (Gmail)**
+that actually emails it remains a later stage, as do cloud exposure and a real
+inter-group bonus game.
 
 ## Verification artifacts (core)
 

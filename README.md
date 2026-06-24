@@ -8,6 +8,33 @@ a natural-language protocol, and the final results are reported via a Google
 (Gmail) report sender. Inter-group play is treated as in-scope (see
 `docs/PRD_bonus_intergroup.md`).
 
+## Status — Stage 8 (official report schema, validation & evidence pack)
+
+The **official report schema, validation, and a local evidence pack are
+implemented** and pass. A stable internal report schema
+(`src/mars777_cop_thief/reporting/`) is built from the Stage 7 MCP-backed report,
+**validated** (required fields, token-safety, local-URL rule), and is
+JSON-only — ready to be an email body later. A **bonus/inter-group schema
+example** exists too, but it explicitly makes **no claim that a real inter-group
+game has been run** (`bonus_claim: false`, `mutual_agreement: false`).
+
+The reports are **token-safe**: validation rejects any key/value that looks like
+`auth_token`, `access_token`, `refresh_token`, `secret`, `password`,
+`private_key`, `COP_MCP_TOKEN`/`THIEF_MCP_TOKEN`, or a dummy local token; the
+report omits all tokens.
+
+Generate the sanitized, deterministic evidence pack (committed under
+`results/evidence/` as `*.example.json` — normalized URLs/timestamp, no tokens,
+no full event logs):
+
+```bash
+uv run python -m mars777_cop_thief.reporting.generate_evidence_pack
+```
+
+This stage is still **local-only**: **Gmail/email sending is not implemented**,
+**cloud/public URLs are not deployed**, and the **bonus schema exists but no real
+inter-group bonus game has been completed**.
+
 ## Status — Stage 7 (MCP-backed local game orchestration)
 
 The **local MCP-backed game orchestration is implemented and passes**: a trusted
@@ -172,6 +199,8 @@ src/mars777_cop_thief/
   orchestration/      full-state and observed/dialogue runners, totals, report
   mcp_servers/        local HTTP MCP servers (Cop/Thief), auth guard, tools
   mcp_client/         local MCP client, server-pair lifecycle, E2E + game flow
+  reporting/          official report schema, validation, evidence pack writer
+results/evidence/     sanitized, deterministic example artifacts (*.example.json)
 tests/unit/           version, config, and SDK smoke tests
 tests/unit/game/      engine TDD suite (models, rules, engine, events, SDK)
 tests/unit/agents/    baseline + observed policy tests
@@ -181,6 +210,7 @@ tests/unit/orchestration/  runner, dialogue runner, report, and SDK tests
 tests/unit/mcp_servers/    auth, tools, server-builder, run/config tests
 tests/unit/mcp_client/     client URLs, lifecycle, in-memory flow, smoke entry
 tests/integration/mcp/     real HTTP end-to-end smoke (default-on)
+tests/unit/reporting/      schema validation, official report, evidence tests
 ```
 
 ## Requirements

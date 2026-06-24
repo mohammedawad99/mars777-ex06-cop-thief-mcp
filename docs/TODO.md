@@ -11,14 +11,15 @@ Statuses: ✅ done · 🔄 in progress · ⏳ planned
 | 4 | Local partial-observability & natural-language dialogue: visibility-radius observations, free-text messages, observed runner | ✅ |
 | 5 | Local HTTP MCP servers (Cop & Thief): FastMCP, role-safe tools, token auth, run entrypoints | ✅ |
 | 6 | Local MCP client & HTTP E2E smoke: subprocess server pair, FastMCP client, deterministic flow over HTTP | ✅ |
-| 7 | MCP-backed local game orchestration: real sub-games/full game where each turn calls the MCP servers over HTTP | 🔄 |
-| 8 | Cop & Thief LLM agents wired through MCP | ⏳ |
-| 9 | Orchestrator hardening over MCP: seeds, aggregation, rate limits | ⏳ |
-| 10 | Google report sender (Gmail/OAuth) for final results, JSON-only email body | ⏳ |
-| 11 | Cloud/self-play through public, authenticated URLs | ⏳ |
-| 12 | Bonus inter-group play against another group's server (mandatory scope) | ⏳ |
-| 13 | Hardening: cost/measurement tracking, logging, security review | ⏳ |
-| 14 | Final gap audit + submission checklist closure | ⏳ |
+| 7 | MCP-backed local game orchestration: real sub-games/full game where each turn calls the MCP servers over HTTP | ✅ |
+| 8 | Official report schema/validation + sanitized local evidence pack; bonus schema example | 🔄 |
+| 9 | Cop & Thief LLM agents wired through MCP | ⏳ |
+| 10 | Orchestrator hardening over MCP: seeds, aggregation, rate limits | ⏳ |
+| 11 | Google report sender (Gmail/OAuth) for final results, JSON-only email body | ⏳ |
+| 12 | Cloud/self-play through public, authenticated URLs | ⏳ |
+| 13 | Bonus inter-group play against another group's server (mandatory scope) | ⏳ |
+| 14 | Hardening: cost/measurement tracking, logging, security review | ⏳ |
+| 15 | Final gap audit + submission checklist closure | ⏳ |
 
 ## Stage 0 checklist (current)
 
@@ -160,7 +161,7 @@ Statuses: ✅ done · 🔄 in progress · ⏳ planned
 - **No** cloud deployment, public URLs, Gmail/email, external-LLM calls, GUI,
   production OAuth, or inter-group remote play in this stage.
 
-## Stage 7 checklist (current — MCP-backed local game orchestration)
+## Stage 7 checklist (completed — MCP-backed local game orchestration)
 
 - [x] `mcp_client/game_flow.py` — `run_mcp_sub_game`/`run_mcp_full_game`: each
       turn calls `get_observation`→`compose_message`→`propose_action` over the
@@ -176,7 +177,7 @@ Statuses: ✅ done · 🔄 in progress · ⏳ planned
 - [x] Full 6-sub-game game smoke verified passing over real HTTP: `uv run python
       -m mars777_cop_thief.mcp_client.game_smoke` → exit 0, all checks true
 - [x] Tests (160 total, 100% coverage)
-- [ ] Reviewed and explicitly committed
+- [x] Reviewed and explicitly committed
 
 ### Stage 7 scope notes
 
@@ -190,7 +191,39 @@ Statuses: ✅ done · 🔄 in progress · ⏳ planned
   contain tokens. **No** cloud/public URLs, Gmail/email, external-LLM, GUI,
   production OAuth, or inter-group remote play in this stage.
 
-## Next up (Stage 8 — Cop & Thief LLM agents wired through MCP)
+## Stage 8 checklist (current — official report schema, validation & evidence)
+
+- [x] `reporting/schemas.py` — internal/bonus required-field sets, forbidden
+      token patterns, normalized evidence placeholders
+- [x] `reporting/validators.py` — `validate_internal_report`/`validate_bonus_report`,
+      recursive `find_token_like`, local-URL-only-when-local rule
+- [x] `reporting/official_report.py` — `build_official_internal_report` (validated)
+      + `build_bonus_report_example` (no real run claimed)
+- [x] `reporting/evidence.py` — sanitized writer (normalized URLs/timestamp,
+      summary, short transcript excerpt; refuses unsanitized input)
+- [x] `reporting/generate_evidence_pack.py` — CLI; validates and writes the pack
+- [x] SDK `validate_internal_report` / `build_official_internal_report` /
+      `generate_local_evidence_pack` (delegating)
+- [x] `.gitignore` tracks only `results/evidence/*.example.json`
+- [x] Committed deterministic evidence artifacts (report/summary/transcript excerpt)
+- [x] Evidence command verified: `uv run python -m
+      mars777_cop_thief.reporting.generate_evidence_pack` → valid, exit 0
+- [x] Tests (189 total, 100% coverage)
+- [ ] Reviewed and explicitly committed
+
+### Stage 8 scope notes
+
+- Reports are JSON-only (email-body ready) and **token-safe** — validation rejects
+  token-like keys/values and dummy tokens; reports omit all tokens.
+- Evidence is **deterministic** (the game is deterministic; URLs/timestamp are
+  normalized to placeholders) and **small** (no full event logs, ≤4-message
+  excerpt) so it is reviewable in Git.
+- The **bonus schema is an example only** — `bonus_claim: false`,
+  `mutual_agreement: false`; **no real inter-group game has been run**.
+- **No** Gmail/email sending, cloud deployment, public URLs, external-LLM, GUI,
+  production OAuth, or real inter-group remote play in this stage.
+
+## Next up (Stage 9 — Cop & Thief LLM agents wired through MCP)
 
 - [ ] Replace observation-based policies with LLM-driven agents behind the same
       tool contract

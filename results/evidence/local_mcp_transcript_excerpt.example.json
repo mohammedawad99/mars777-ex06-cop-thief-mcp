@@ -1,0 +1,34 @@
+{
+  "sub_game_index": 0,
+  "messages": [
+    {
+      "turn_index": 0,
+      "sender": "thief",
+      "recipient": "cop",
+      "message": "I cannot see the cop right now; I am staying cautious and exploring.",
+      "opponent_visible": false
+    },
+    {
+      "turn_index": 1,
+      "sender": "cop",
+      "recipient": "thief",
+      "message": "I cannot see the thief right now; I am guarding nearby corridors.",
+      "opponent_visible": false
+    },
+    {
+      "turn_index": 2,
+      "sender": "thief",
+      "recipient": "cop",
+      "message": "I cannot see the cop right now; I am staying cautious and exploring.",
+      "opponent_visible": false
+    },
+    {
+      "turn_index": 3,
+      "sender": "cop",
+      "recipient": "thief",
+      "message": "I cannot see the thief right now; I am guarding nearby corridors.",
+      "opponent_visible": false
+    }
+  ],
+  "note": "Excerpt only; full transcripts and event logs are not committed."
+}

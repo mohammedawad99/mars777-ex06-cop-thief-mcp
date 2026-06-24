@@ -1,0 +1,26 @@
+{
+  "report_type": "internal_game",
+  "schema_version": "1.0",
+  "group_code": "MaRs-777",
+  "transport": "local_mcp_http",
+  "mcp_status": "local_verified",
+  "cloud_status": "not_deployed",
+  "email_status": "not_sent",
+  "totals": {
+    "cop_score": 30,
+    "thief_score": 60,
+    "cop_wins": 0,
+    "thief_wins": 6,
+    "sub_games_completed": 6,
+    "invalid_sub_games": 0,
+    "scoring_summary": {
+      "cop_win": "cop 20 / thief 5",
+      "thief_win": "thief 10 / cop 5",
+      "team_total_bounds_over_6": [
+        30,
+        90
+      ]
+    }
+  },
+  "validation_status": "valid"
+}

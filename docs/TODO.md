@@ -479,12 +479,30 @@ Statuses: ✅ done · 🔄 in progress · ⏳ planned
       (flags only; no IDs, no body, `live_gmail_sent: false`).
 - [ ] Reviewed and explicitly committed
 
-## Next up (Stage 14D+ — bonus inter-group + final live report)
+### Stage 15A — inter-group bonus readiness gate (prepared, not completed)
 
-> The Stage 14C draft is a **preview to the student only** — it is **not** the
-> official submission. Sending the final report to the lecturer is still pending.
+- [x] Readiness gate `scripts/bonus_partner_readiness.py` + tested pure intake module
+      (`src/mars777_cop_thief/bonus/intake.py`, `tests/unit/bonus/`).
+- [x] Self checks pass: our public `/mcp` URLs, local Cloud Run tokens, local student
+      identities, and Gmail OAuth are all ready (`self_cloud_ready: true`).
+- [x] Partner intake is a **local git-ignored** file
+      (`.secrets/bonus_partner.local.json`, auto-created from the tracked
+      `config/bonus_partner.template.json`); tokens stay local, never committed.
+- [x] Strategy recorded (`config/bonus_strategy.default.json`): pairing, scoring,
+      turn-order caveat, safe defaults — no guaranteed-victory claim.
+- [x] Sanitized evidence `results/evidence/bonus_readiness.example.json`
+      (`bonus_ready: false`, no tokens, no IDs) with explicit blockers.
+- [ ] **Pending (Stage 15B):** fill the local partner file, pass the partner
+      compatibility smoke, and run the real bonus game.
 
-- [ ] Play a real inter-group match against another group's deployed URLs
+> Bonus readiness is **prepared, not completed** — no real partner smoke has passed
+> and no bonus game has been run. The Stage 14C draft remains a student-only preview,
+> not the official submission.
+
+## Next up (Stage 15B+ — run the bonus game + final live report)
+
+- [ ] Fill `.secrets/bonus_partner.local.json` and pass the partner compatibility smoke
+- [ ] Play the real inter-group match (6 sub-games) and produce a `bonus_game` report
 - [ ] Send the final official report **to the lecturer** via Gmail
       (`RUN_GMAIL_LIVE=1`, external OAuth) — still pending
 - [ ] Close `FINAL_GAP_AUDIT.md` and the submission checklist (students already real)

@@ -85,6 +85,16 @@ every gate below passes.
   `final_report_dry_run.example.json`). Operational (live cloud), not part of the
   offline unit gate; the game/report/validation logic is unit-tested offline.
 
+- **Inter-group bonus readiness gate** —
+  `MARS777_STUDENTS_FILE=.secrets/students.local.json uv run python
+  scripts/bonus_partner_readiness.py` must exit 0 and print safe flags. It validates
+  our cloud readiness, ingests the local git-ignored partner file (auto-created from
+  `config/bonus_partner.template.json`), and runs a partner compatibility smoke only
+  when the partner endpoints/tokens are real — otherwise `partner_smoke_passed:
+  unknown` and `bonus_ready: false` with blockers. It **never** sends Gmail, runs a
+  full bonus game, or prints tokens/IDs. The pure intake validation
+  (`bonus/intake.py`) is in the **offline unit gate** (`tests/unit/bonus/`).
+
 ### Operational preflight (env-specific; not a pure unit gate)
 
 - **Live-readiness preflight** —

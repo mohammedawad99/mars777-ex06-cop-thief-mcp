@@ -87,7 +87,10 @@ Strict checklist for the final review. Boxes are checked only when verified.
       the official submission
 - [ ] Real internal report emailed **to the lecturer** via `RUN_GMAIL_LIVE=1` with
       external OAuth files (optional live send; not run yet)
-- [ ] Real inter-group bonus game played and reconciled (later stage)
+- [x] Inter-group bonus **readiness gate** prepared (`bonus_partner_readiness.py`):
+      self cloud ready, local partner intake + strategy, sanitized evidence
+      (`bonus_ready: false` pending partner; no tokens/IDs) — **prepared, not the game**
+- [ ] Real inter-group bonus game played and reconciled (Stage 15B)
 
 ## Documentation & measurement
 - [ ] PRDs, PLAN, DECISIONS, PROMPTS complete and current

@@ -168,6 +168,20 @@
   and any direct old-commit-SHA URL could be cached. This is outside repo control;
   no further client-side action can purge GitHub's internal copies.
 
+### Inter-group bonus partner intake (Stage 15A)
+
+- Partner connection data lives **only** in a local **git-ignored + docker-ignored**
+  file (`.secrets/bonus_partner.local.json`, auto-created from the tracked
+  placeholder `config/bonus_partner.template.json`). Partner **tokens are secrets** —
+  read at runtime, used in-memory for the compatibility smoke, **never printed,
+  staged, or committed**.
+- The readiness gate's tracked evidence (`bonus_readiness.example.json`) and the
+  pure intake validator (`bonus/intake.py`) carry **public-only** partner data —
+  group code, public `/mcp` URLs, repo, and token-**presence** booleans — and never
+  token values, partner national IDs, or OAuth content (asserted by unit tests). The
+  bonus report schema does **not** require partner national IDs; any provided stay
+  local-only and are redacted from tracked evidence.
+
 ### Run manifests and results (Stage 12)
 
 - Run manifests and the hardened-smoke summary contain **no secrets**: identity,

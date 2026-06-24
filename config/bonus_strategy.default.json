@@ -1,0 +1,19 @@
+{
+  "pairing": "6 sub-games: Set A (3) our Cop vs partner Thief; Set B (3) our Thief vs partner Cop",
+  "both_directions": true,
+  "scoring": {"cop_win": "cop 20 / thief 5", "thief_win": "thief 10 / cop 5", "team_over_6": [30, 90]},
+  "turn_order_local_default": ["thief", "cop"],
+  "turn_order_note": "Our engine defaults to thief-first; protocol default is Cop-first. MUST be agreed in writing first.",
+  "board": [5, 5],
+  "max_moves": 25,
+  "num_sub_games": 6,
+  "recommended_default": [
+    "Confirm baseline ruleset in writing (5x5, 6 sub-games, <=25 moves, no stay, <=5 cop barriers).",
+    "Agree coordinate origin/axes and turn order explicitly to avoid invalid games.",
+    "Exchange match-scoped tokens out-of-band; revoke after the match.",
+    "Warm-up interop on a small board (e.g. 3x3) before the official 5x5 run.",
+    "As Cop, prioritize capture (cop-win 20 > thief-win 10); as Thief, survive to max_moves.",
+    "Keep full transcripts; set mutual_agreement only when both reports match."
+  ],
+  "no_guarantee": "Maximizes expected score and avoids invalid games; does NOT guarantee victory."
+}

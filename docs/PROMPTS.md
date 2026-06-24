@@ -638,5 +638,24 @@ false`. Tracked evidence `gmail_draft_preview.example.json` holds flags only (no
 no body). The draft is a **preview to the student**, **not** the official submission;
 live send to the lecturer and the bonus remain pending.
 
-> Subsequent stages will append their driving prompts here (bonus, final live
-> report, audit).
+## Stage 15A — inter-group bonus readiness gate (prepared, not run)
+
+**Prompt summary:** Prepare the inter-group bonus: partner intake + compatibility +
+strategy go/no-go gate. Validate our own cloud readiness, ingest a local git-ignored
+partner file, run a partner endpoint compatibility smoke if the partner is real,
+recommend a winning strategy (without overclaiming), and produce sanitized evidence.
+Do not run the bonus game unless all checks pass; no live Gmail; no tokens/IDs in
+tracked files.
+
+**Outcome:** `scripts/bonus_partner_readiness.py` + a tested pure intake module
+(`src/mars777_cop_thief/bonus/intake.py`, `tests/unit/bonus/`, 100% coverage),
+strategy data (`config/bonus_strategy.default.json`) and a placeholder template
+(`config/bonus_partner.template.json`). The gate auto-creates the local partner file
+and reports `bonus_ready: false`, `self_cloud_ready: true`, `partner_smoke_passed:
+unknown` with explicit blockers, exit 0. Strategy: 6 sub-games split (our Cop vs
+partner Thief ×3, our Thief vs partner Cop ×3); Cop-win 20 > Thief-win 10; turn-order
+must be agreed (our default is thief-first); no guaranteed victory. Evidence is
+token-free and ID-free. **No partner smoke passed, no bonus game run, no live Gmail.**
+
+> Subsequent stages will append their driving prompts here (run the bonus game,
+> final live report, audit).

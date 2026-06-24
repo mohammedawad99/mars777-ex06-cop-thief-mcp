@@ -1,0 +1,68 @@
+{
+  "stage": "15A",
+  "artifact": "bonus_readiness",
+  "bonus_ready": false,
+  "self_cloud_ready": true,
+  "self_checks": {
+    "our_urls_ok": true,
+    "cloud_tokens_present": true,
+    "students_present": true,
+    "gmail_oauth_ready": true
+  },
+  "partner_intake_present": false,
+  "partner_urls_present": false,
+  "partner_smoke_passed": "unknown",
+  "partner": {
+    "partner_group_code": null,
+    "partner_github_repo": null,
+    "partner_cop_mcp_url": null,
+    "partner_thief_mcp_url": null,
+    "partner_students_count": 1,
+    "partner_cop_token_present": false,
+    "partner_thief_token_present": false
+  },
+  "our_cop_mcp_url": "https://mars777-cop-mcp-6lhzzicqha-zf.a.run.app/mcp",
+  "our_thief_mcp_url": "https://mars777-thief-mcp-6lhzzicqha-zf.a.run.app/mcp",
+  "strategy": {
+    "pairing": "6 sub-games: Set A (3) our Cop vs partner Thief; Set B (3) our Thief vs partner Cop",
+    "both_directions": true,
+    "scoring": {
+      "cop_win": "cop 20 / thief 5",
+      "thief_win": "thief 10 / cop 5",
+      "team_over_6": [
+        30,
+        90
+      ]
+    },
+    "turn_order_local_default": [
+      "thief",
+      "cop"
+    ],
+    "turn_order_note": "Our engine defaults to thief-first; protocol default is Cop-first. MUST be agreed in writing first.",
+    "board": [
+      5,
+      5
+    ],
+    "max_moves": 25,
+    "num_sub_games": 6,
+    "recommended_default": [
+      "Confirm baseline ruleset in writing (5x5, 6 sub-games, <=25 moves, no stay, <=5 cop barriers).",
+      "Agree coordinate origin/axes and turn order explicitly to avoid invalid games.",
+      "Exchange match-scoped tokens out-of-band; revoke after the match.",
+      "Warm-up interop on a small board (e.g. 3x3) before the official 5x5 run.",
+      "As Cop, prioritize capture (cop-win 20 > thief-win 10); as Thief, survive to max_moves.",
+      "Keep full transcripts; set mutual_agreement only when both reports match."
+    ],
+    "no_guarantee": "Maximizes expected score and avoids invalid games; does NOT guarantee victory."
+  },
+  "blockers": [
+    "partner intake incomplete (placeholders): partner_group_code, partner_group_slug, partner_github_repo, partner_cop_mcp_url, partner_thief_mcp_url, agreement_channel",
+    "partner file created as placeholder; fill .secrets/bonus_partner.local.json",
+    "partner compatibility smoke not passed (status: unknown)"
+  ],
+  "mutual_agreement_pending": true,
+  "live_gmail_sent": false,
+  "bonus_game_run": false,
+  "token_values_recorded": false,
+  "ids_redacted_in_tracked_evidence": true
+}

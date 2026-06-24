@@ -111,8 +111,16 @@ submission** yet.
 
 ## 4. Inter-group bonus
 
-- **AC-BONUS-1** (R-007): A match completes against another group's MCP server
-  using config-provided foreign URLs and exchanged tokens.
+- **AC-BONUS-0** (R-007) — ✅ test-covered (Stage 15A): a readiness gate
+  (`scripts/bonus_partner_readiness.py`) validates our own cloud readiness and a
+  local git-ignored partner intake file, and runs a partner compatibility smoke when
+  the partner endpoints/tokens are real. It exits 0 with `bonus_ready: false` and
+  explicit blockers while the partner is pending; the pure intake validation is
+  unit-tested (`tests/unit/bonus/`). Evidence is token-free and ID-free
+  (`results/evidence/bonus_readiness.example.json`). **Readiness is prepared, not the
+  bonus game itself.**
+- **AC-BONUS-1** (R-007) — ⏳ open: A match completes against another group's MCP
+  server using the local partner URLs and exchanged tokens.
 - **AC-BONUS-2** (R-070): Both groups run 3 sub-games one way and 3 with roles
   swapped, per `INTERGROUP_BONUS_PROTOCOL.md`.
 - **AC-BONUS-3** (R-034): A bonus report is produced containing both group names,

@@ -1,0 +1,11 @@
+{
+  "partner_group_code": "<PARTNER_GROUP_CODE>",
+  "partner_group_slug": "<partner_slug>",
+  "partner_github_repo": "<https://github.com/PARTNER/REPO>",
+  "partner_cop_mcp_url": "<https://PARTNER-cop.../mcp>",
+  "partner_thief_mcp_url": "<https://PARTNER-thief.../mcp>",
+  "partner_cop_token": "<PARTNER_COP_TOKEN_if_required>",
+  "partner_thief_token": "<PARTNER_THIEF_TOKEN_if_required>",
+  "partner_students_public": [{"name": "<partner student name>"}],
+  "agreement_channel": "<email/chat used to confirm mutual agreement>"
+}

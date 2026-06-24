@@ -1,5 +1,5 @@
 {
-  "stage": "14A",
+  "stage": "14B",
   "project_id": "api-mars-777",
   "region": "me-west1",
   "cop_mcp_url": "https://mars777-cop-mcp-6lhzzicqha-zf.a.run.app/mcp",
@@ -30,5 +30,9 @@
   "gmail_body_json_valid": true,
   "live_gmail_sent": false,
   "intergroup_bonus_run": false,
-  "token_values_recorded": false
+  "token_values_recorded": false,
+  "students_count": 2,
+  "ids_required_for_official_report": true,
+  "ids_loaded_from_local_ignored_file": true,
+  "ids_redacted_in_tracked_evidence": true
 }

@@ -30,6 +30,13 @@ and `results/evidence/final_report_dry_run.example.json` (summary). **No live Gm
 was sent, no inter-group bonus game was played, and the final submission is not
 complete** — those remain later steps. Tokens stayed only in git-ignored `.secrets/`.
 
+**Student privacy (Stage 14B):** student national-IDs are **not** stored in any
+tracked file. The report script loads the real identities at runtime from a local
+git-ignored file (`MARS777_STUDENTS_FILE`, default `.secrets/students.local.json`)
+for the in-memory report and Gmail dry-run; tracked evidence **redacts** the IDs
+(`id: REDACTED`) and records `identity_privacy` flags. (An earlier commit still
+holds the values in history; no history rewrite was performed.)
+
 ## Status — Stage 13C (live Cloud Run deployment)
 
 **Both MCP services are deployed and live on Google Cloud Run** in project

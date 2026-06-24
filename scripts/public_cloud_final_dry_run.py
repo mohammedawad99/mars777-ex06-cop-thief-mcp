@@ -6,6 +6,12 @@ URLs, builds and validates the official internal report (with the real public
 sanitized, token-free evidence. Tokens are read from the environment (sourced from
 the local git-ignored `.secrets/`) and are never printed or written anywhere.
 
+Student identities (national IDs + EN/HE names) are loaded at runtime from a local
+git-ignored file (``MARS777_STUDENTS_FILE``, default ``.secrets/students.local.json``)
+so the real IDs reach the in-memory official report and the Gmail dry-run **only**.
+The tracked evidence redacts the national IDs (``id`` → ``REDACTED``) and records
+privacy flags; no national-ID value is ever written to a tracked file.
+
     set -a; . .secrets/cloud-run.local.env; set +a
     uv run python scripts/public_cloud_final_dry_run.py
 """
@@ -13,6 +19,7 @@ the local git-ignored `.secrets/`) and are never printed or written anywhere.
 from __future__ import annotations
 
 import asyncio
+import copy
 import json
 import os
 from pathlib import Path
@@ -35,27 +42,37 @@ EVID = _ROOT / "results" / "evidence"
 COP_URL = os.environ.get("COP_MCP_URL", "https://mars777-cop-mcp-6lhzzicqha-zf.a.run.app/mcp")
 THIEF_URL = os.environ.get("THIEF_MCP_URL", "https://mars777-thief-mcp-6lhzzicqha-zf.a.run.app/mcp")
 REPO = "https://github.com/mohammedawad99/mars777-ex06-cop-thief-mcp"
-STUDENTS = [
-    {
-        "id": "REDACTED_STUDENT_ID",
-        "name": "Mohamed Awad",
-        "first_name_en": "Mohamed",
-        "last_name_en": "Awad",
-        "first_name_he": "מוחמד",
-        "last_name_he": "עואד",
-    },
-    {
-        "id": "REDACTED_STUDENT_ID",
-        "name": "Rawey Sleiman",
-        "first_name_en": "Rawey",
-        "last_name_en": "Sleiman",
-        "first_name_he": "ראווי",
-        "last_name_he": "סולימאן",
-    },
-]
+STUDENTS_FILE = Path(
+    os.environ.get("MARS777_STUDENTS_FILE", _ROOT / ".secrets" / "students.local.json")
+)
 
 
-def _cloud_official_report(config: dict, results) -> dict:
+def _load_students() -> list[dict]:
+    """Load real student identities from a local git-ignored file (never tracked)."""
+    if not STUDENTS_FILE.is_file():
+        raise SystemExit(
+            f"students file missing; set MARS777_STUDENTS_FILE (looked for {STUDENTS_FILE})"
+        )
+    return json.loads(STUDENTS_FILE.read_text(encoding="utf-8"))["students"]
+
+
+def _redact_students(report: dict) -> dict:
+    """Deep-copy the report with national-IDs redacted and privacy flags added."""
+    red = copy.deepcopy(report)
+    students = red.get("students", [])
+    for student in students:
+        if "id" in student:
+            student["id"] = "REDACTED"
+    red["identity_privacy"] = {
+        "students_count": len(students),
+        "ids_required_for_official_report": True,
+        "ids_loaded_from_local_ignored_file": True,
+        "ids_redacted_in_tracked_evidence": True,
+    }
+    return red
+
+
+def _cloud_official_report(config: dict, results, students: list[dict]) -> dict:
     mcp = build_mcp_report(config, results, COP_URL, THIEF_URL)
     mcp.update(
         {
@@ -67,7 +84,7 @@ def _cloud_official_report(config: dict, results) -> dict:
         }
     )
     return build_official_internal_report(
-        mcp, students=STUDENTS, generated_at_iso=GENERATED_AT_PLACEHOLDER
+        mcp, students=students, generated_at_iso=GENERATED_AT_PLACEHOLDER
     )
 
 
@@ -90,7 +107,7 @@ async def _play(config: dict, cop_token: str, thief_token: str):
 
 def _evidence(report: dict, dry: dict, thief_tools, denied) -> dict:
     return {
-        "stage": "14A",
+        "stage": "14B",
         "project_id": "api-mars-777",
         "region": "me-west1",
         "cop_mcp_url": COP_URL,
@@ -107,21 +124,26 @@ def _evidence(report: dict, dry: dict, thief_tools, denied) -> dict:
         "live_gmail_sent": False,
         "intergroup_bonus_run": False,
         "token_values_recorded": False,
+        "students_count": len(report["students"]),
+        "ids_required_for_official_report": True,
+        "ids_loaded_from_local_ignored_file": True,
+        "ids_redacted_in_tracked_evidence": True,
     }
 
 
 def main() -> int:
     config = load_game_config(GAME_CONFIG_PATH)
+    students = _load_students()  # real IDs stay in memory only
     cop_token = os.environ["COP_MCP_TOKEN"]
     thief_token = os.environ["THIEF_MCP_TOKEN"]
     results, thief_tools, denied = asyncio.run(_play(config, cop_token, thief_token))
-    report = _cloud_official_report(config, results)
+    report = _cloud_official_report(config, results, students)
     errors = validate_internal_report(report)
-    dry = run_send(env={"RUN_GMAIL_LIVE": "0"}, report=report)  # dry-run only; never live
+    dry = run_send(env={"RUN_GMAIL_LIVE": "0"}, report=report)  # real report in-memory; never live
     evid = _evidence(report, dry, thief_tools, denied)
     EVID.mkdir(parents=True, exist_ok=True)
     (EVID / "public_cloud_full_game.example.json").write_text(
-        json.dumps(report, indent=2) + "\n", encoding="utf-8"
+        json.dumps(_redact_students(report), indent=2) + "\n", encoding="utf-8"
     )
     (EVID / "final_report_dry_run.example.json").write_text(
         json.dumps(evid, indent=2) + "\n", encoding="utf-8"

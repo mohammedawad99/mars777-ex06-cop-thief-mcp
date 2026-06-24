@@ -447,11 +447,23 @@ Statuses: ✅ done · 🔄 in progress · ⏳ planned
 ### Stage 14A scope notes
 
 - **No live Gmail send** (`RUN_GMAIL_LIVE` never set to 1), **no inter-group bonus
-  run**, and the final submission is **not** complete. The official report now
-  carries the **two real students** (no placeholders remaining); the live email and
-  bonus match are the only items left.
+  run**, and the final submission is **not** complete. The live email and bonus
+  match are the only items left.
 
-## Next up (Stage 14B+ — bonus inter-group + final live report)
+### Stage 14B — student-ID privacy hotfix
+
+- [x] Real student national-IDs **removed from every tracked file** (script +
+      evidence); no ID literals remain in source.
+- [x] Real identities live only in a local **git-ignored** file
+      (`MARS777_STUDENTS_FILE`, default `.secrets/students.local.json`); the script
+      loads them at runtime for the in-memory report + Gmail dry-run.
+- [x] Tracked evidence **redacts** the IDs (`id: REDACTED`) and adds the
+      `identity_privacy` flags; English/Hebrew names retained.
+- [x] No history rewrite/force-push (the earlier commit `5aae040` still holds the
+      values in history).
+- [ ] Reviewed and explicitly committed
+
+## Next up (Stage 14C+ — bonus inter-group + final live report)
 
 - [ ] Play a real inter-group match against another group's deployed URLs
 - [ ] Send the final official report via Gmail (`RUN_GMAIL_LIVE=1`, external OAuth)

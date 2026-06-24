@@ -140,6 +140,26 @@
   auth/secret material. The Gmail sender ran in **dry-run only** (`RUN_GMAIL_LIVE`
   never set); no email was sent.
 
+### Student national-ID privacy (Stage 14B hotfix)
+
+- Student **national-ID** values must never appear in a tracked file. The official
+  report needs them for the live/send workflow, so they are loaded **at runtime
+  only** from a local **git-ignored + docker-ignored** file
+  (`MARS777_STUDENTS_FILE`, default `.secrets/students.local.json`) — never as a
+  literal in any script, config, doc, or test.
+- `scripts/public_cloud_final_dry_run.py` reads the real identities from that local
+  file into the **in-memory** official report (and the Gmail **dry-run** body), then
+  writes a **redacted** copy to tracked evidence: each student `id` becomes
+  `REDACTED`, English/Hebrew names are kept, and an `identity_privacy` block records
+  `ids_required_for_official_report` / `ids_loaded_from_local_ignored_file` /
+  `ids_redacted_in_tracked_evidence`. No national-ID value reaches a tracked artifact.
+- **History note:** a previous pushed commit (`5aae040`) contained the real IDs in
+  tracked evidence and the script. This hotfix redacts them from the **current
+  tracked tree**; **no history rewrite / force-push was performed**, so the values
+  remain reachable in that earlier commit's history. Rotating national IDs is not
+  possible; if removal from history is required later, it must be done deliberately
+  (e.g. `git filter-repo`) as a separate, coordinated step.
+
 ### Run manifests and results (Stage 12)
 
 - Run manifests and the hardened-smoke summary contain **no secrets**: identity,

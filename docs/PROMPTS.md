@@ -587,5 +587,22 @@ public URL, `gmail_dry_run_status: dry_run` / `body_json_valid: true`. Evidence:
 tokens). 340 tests, 100% coverage. **No live Gmail send, no inter-group bonus, no
 final submission.** Tokens stayed only in git-ignored `.secrets/`.
 
+## Stage 14B — student-ID privacy hotfix
+
+**Prompt summary:** Real student national-IDs had been committed to tracked files
+(script + evidence) and pushed. Remove every national-ID value from all tracked
+files, keep the full identities only in a local git-ignored file
+(`.secrets/students.local.json`, via `MARS777_STUDENTS_FILE`), refactor the report
+script to load them at runtime, and redact the tracked evidence (`id: REDACTED` +
+`identity_privacy` flags). No history rewrite / force-push; no live Gmail; no bonus.
+
+**Outcome:** `scripts/public_cloud_final_dry_run.py` now loads identities from the
+local ignored file into the in-memory report + Gmail dry-run and writes a redacted
+copy to tracked evidence. Re-run via `MARS777_STUDENTS_FILE` passed (schema-valid,
+`dry_run`, `body_json_valid: true`, no send). Privacy grep (excluding `.secrets`)
+finds **no real ID in any tracked file**. The earlier commit `5aae040` still holds
+the values in history — **no history rewrite was performed**. Docs (SECURITY, TODO,
+SUBMISSION_CHECKLIST, FINAL_GAP_AUDIT) updated. 340 tests, 100% coverage.
+
 > Subsequent stages will append their driving prompts here (bonus, final live
 > report, audit).

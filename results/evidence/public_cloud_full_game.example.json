@@ -5,7 +5,7 @@
   "group_slug": "mars777",
   "students": [
     {
-      "id": "REDACTED_STUDENT_ID",
+      "id": "REDACTED",
       "name": "Mohamed Awad",
       "first_name_en": "Mohamed",
       "last_name_en": "Awad",
@@ -13,7 +13,7 @@
       "last_name_he": "\u05e2\u05d5\u05d0\u05d3"
     },
     {
-      "id": "REDACTED_STUDENT_ID",
+      "id": "REDACTED",
       "name": "Rawey Sleiman",
       "first_name_en": "Rawey",
       "last_name_en": "Sleiman",
@@ -312,5 +312,11 @@
     "hidden_state_respected": true
   },
   "generated_at_iso": "EXAMPLE_GENERATED_AT_UTC",
-  "validation_status": "valid"
+  "validation_status": "valid",
+  "identity_privacy": {
+    "students_count": 2,
+    "ids_required_for_official_report": true,
+    "ids_loaded_from_local_ignored_file": true,
+    "ids_redacted_in_tracked_evidence": true
+  }
 }

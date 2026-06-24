@@ -40,8 +40,9 @@ known open gaps**, deferred to later stages — none is claimed as done:
 | Cloud live deployment | **done** — both MCP services deployed to Cloud Run (`api-mars-777`/`me-west1`); public HTTPS smoke `passed: true`; APIs enabled: run/cloudbuild/artifactregistry | Done (Stage 13C) |
 | Real deployed public URLs | **present** — `mars777-cop-mcp` + `mars777-thief-mcp` live; recorded in `results/evidence/cloud_deployment.example.json` and README (no token values) | Done (Stage 13C) |
 | Full public-cloud game + official report | **done** — 6/6 sub-games over the public `/mcp` URLs; official report schema-valid; Gmail **dry-run** passed (no send); token-free evidence | Done (Stage 14A) |
-| Official report student identities | **real** — two MaRs-777 students (id + EN/HE names) in the report; no student placeholders remain | Done (Stage 14A) |
-| Final official report sent via Gmail | **not sent** — only dry-run done; live is opt-in (`RUN_GMAIL_LIVE=1`) with external OAuth files | Deferred (Stage 14B) |
+| Official report student identities | **runtime-only** — two MaRs-777 students load from a local git-ignored file at runtime; the in-memory report + Gmail dry-run use real IDs | Done (Stage 14A/14B) |
+| Student national-ID privacy in tracked files | **redacted** — no national-ID value in any tracked file; tracked evidence shows `id: REDACTED` + `identity_privacy` flags. Earlier commit `5aae040` still holds the values in history; **no history rewrite done** | Done (Stage 14B hotfix) |
+| Final official report sent via Gmail | **not sent** — only dry-run done; live is opt-in (`RUN_GMAIL_LIVE=1`) with external OAuth files | Deferred (Stage 14C) |
 | Live Gemini provider run | **not run** — offline `fake_local` default; live is opt-in (`RUN_GEMINI_LIVE=1`) with a key | Deferred (opt-in local) |
 | Real inter-group bonus game | **not completed** — bonus schema/protocol exist; no real cross-group match played | Deferred (Stage 14) |
 | Final Moodle submission PDF | **not prepared yet** | Deferred (near submission) |
@@ -56,7 +57,9 @@ live deploy), Stage 13B **live-readiness preflight** (read-only Gmail OAuth +
 cloud/gcloud checks), Stage 13C **live Cloud Run deployment** of both MCP
 services at public token-auth URLs with a passing public HTTPS smoke, and Stage 14A
 a **full public-cloud 6-sub-game game + official report dry-run** (schema-valid
-report; Gmail dry-run; token-free evidence). Still **not** done: **no live Gmail
+report; Gmail dry-run; token-free evidence), and the Stage 14B **privacy hotfix**
+(student national-IDs removed from all tracked files; loaded at runtime from a local
+git-ignored file; tracked evidence redacted). Still **not** done: **no live Gmail
 report sent**, **no real inter-group bonus match**, and **no final submission** —
-these remain Stage 14B+. The dimension table below is finalized near submission once
+these remain Stage 14C+. The dimension table below is finalized near submission once
 the deferred items are addressed or formally accepted.

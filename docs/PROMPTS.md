@@ -549,5 +549,24 @@ machine: Gmail OAuth files present outside the repo; `gcloud` not installed (clo
 blocked). **No live Gmail send and no cloud deployment were performed**, no public
 URL exists, and no credentials/token/secret contents were read or committed.
 
-> Subsequent stages will append their driving prompts here (live cloud deploy,
-> bonus, audit).
+## Stage 13C — live Cloud Run deployment (public URLs + app token auth)
+
+**Prompt summary:** Perform a controlled **live** Cloud Run deployment of the two
+MCP services (`mars777-cop-mcp`, `mars777-thief-mcp`) in `api-mars-777` / `me-west1`.
+Generate strong per-service tokens locally with Python `secrets` (never print or
+commit them), deploy from the repo `Dockerfile`, allow IAM-unauthenticated access
+**because the MCP app enforces token auth**, run public smoke (bad token rejected /
+good token healthy), and record sanitized evidence with public URLs and non-secret
+metadata. Forbidden: live Gmail send, final report, inter-group bonus, committing
+any secret/token/OAuth content, printing token values, or overclaiming completion.
+
+**Outcome:** Both services deployed and serving. APIs enabled (only required): run,
+cloudbuild, artifactregistry. Public smoke `passed: true` over HTTPS for both Cop
+and Thief; raw `GET /`→404, `GET /mcp`→406 (app-handled, not IAM 403). Tokens live
+only in git-ignored `.secrets/`. Added `scripts/public_cloud_smoke.py` and
+`results/evidence/cloud_deployment.example.json`; `config/cloud.default.json` kept
+as the packaging template (preflight stays green); 340 tests, 100% coverage. **No
+live Gmail send, no inter-group bonus, no final report** — submission not complete.
+
+> Subsequent stages will append their driving prompts here (bonus, final report,
+> audit).

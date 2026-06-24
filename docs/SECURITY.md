@@ -108,6 +108,26 @@
   and a Calendar event succeeded. Those files are referenced only by env-var path at
   command runtime and are excluded by `.gitignore`/`.dockerignore`.
 
+### Cloud Run deployment — public IAM + app token boundary (Stage 13C)
+
+- Both services are deployed with `--allow-unauthenticated` (IAM-public) **by
+  design**: a cross-group MCP client cannot present a Google identity, so the
+  **application** enforces auth. Protected tools check the `auth_token` argument
+  against the per-service `COP_MCP_TOKEN`/`THIEF_MCP_TOKEN`; a wrong/absent token
+  returns a structured `unauthorized` result (never the real token). A raw
+  unauthenticated `GET /` returns `404` and `GET /mcp` returns `406` — app-handled,
+  **not** an IAM `403`. "Public IAM" therefore does **not** mean "open access".
+- **No token value is tracked.** Per-service tokens are generated locally with
+  Python `secrets`, stored only under git-ignored **and** docker-ignored
+  `.secrets/` (the ignore rule was added **before** any file was written there), and
+  passed to `gcloud` via `--env-vars-file` so they never appear on the command line,
+  in shell history, in the image, in logs, or in the repo. Tracked artifacts carry
+  only env-var **names**, public URLs, and `token_values_recorded: false`.
+- **Rotation/revoke (cloud):** generate a new token locally, update the service with
+  a fresh `--env-vars-file` (new revision), and discard the old `.secrets/` value;
+  the previous revision can be deleted. Only the strictly-required APIs were enabled
+  (`run`, `cloudbuild`, `artifactregistry`).
+
 ### Run manifests and results (Stage 12)
 
 - Run manifests and the hardened-smoke summary contain **no secrets**: identity,

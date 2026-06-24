@@ -55,8 +55,18 @@ Strict checklist for the final review. Boxes are checked only when verified.
 - [ ] Cloud live blockers cleared: `gcloud` installed + authenticated, project
       `api-mars-777` active, **billing enabled**, region `me-west1` confirmed
       (currently blocked: gcloud not installed on the dev machine)
-- [ ] Two MCP services deployed at public, authenticated URLs (manual gated deploy)
-- [ ] `cloud_status` flipped + real `cop_mcp_url`/`thief_mcp_url` recorded locally
+- [x] Two MCP services **deployed** at public, app-token-authenticated Cloud Run
+      URLs (`mars777-cop-mcp`, `mars777-thief-mcp` in `api-mars-777`/`me-west1`)
+- [x] Public HTTPS smoke passed: both reject a bad token, accept the correct token
+      (`scripts/public_cloud_smoke.py` → `passed: true`)
+- [x] Sanitized deployment evidence committed, no token values
+      (`results/evidence/cloud_deployment.example.json`)
+- [x] Cop & Thief public URLs recorded in README + evidence; tokens only in
+      git-ignored `.secrets/` (never committed/printed)
+- [x] Real `cop_mcp_url`/`thief_mcp_url` recorded in tracked evidence + README
+      (deployed-state in `results/evidence/cloud_deployment.example.json`;
+      `config/cloud.default.json` deliberately stays the not-deployed packaging
+      template so the packaging preflight remains a valid pre-deploy gate)
 - [ ] Real internal report emailed via `RUN_GMAIL_LIVE=1` with external OAuth files
       (optional live send; not run in default validation)
 - [ ] Real inter-group bonus game played and reconciled (later stage)

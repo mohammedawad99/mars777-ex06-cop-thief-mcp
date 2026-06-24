@@ -18,6 +18,7 @@ service_account*.json
 *.pem
 *.p12
 secrets/
+.secrets/
 private/
 
 # --- Python caches & build artifacts ---

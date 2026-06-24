@@ -71,11 +71,13 @@ playing a full match through MCP) is a later stage.
 
 ## 3. Cloud / self-play
 
-**Stage 13A status:** cloud **packaging and preflight** are implemented and
-test-covered (`Dockerfile`, `.dockerignore`, `mcp_servers/cloud_entrypoint.py`,
-`deployment/`, `config/cloud.default.json`, `docs/CLOUD_DEPLOYMENT.md`). **No live
-deployment was performed and no public URL exists** (`cloud_status: not_deployed`,
-placeholder URLs). The criteria below that require *real* public URLs remain open.
+**Stage 13C status:** both MCP services are **deployed live** to Cloud Run
+(`api-mars-777` / `me-west1`) at public URLs with **app-level token auth**; public
+HTTPS smoke passes. Packaging/preflight from 13A–13B remain green. The packaging
+template `config/cloud.default.json` is intentionally left `not_deployed` as a
+reusable pre-deploy gate; the live state is recorded in
+`results/evidence/cloud_deployment.example.json`. **No live Gmail report, no
+inter-group bonus run, and no final submission** yet.
 
 - **AC-CLOUD-0** (R-006) — ✅ test-covered: `deployment.preflight` validates the
   config, Dockerfile/.dockerignore, absence of secret files, placeholder URLs, and
@@ -87,12 +89,16 @@ placeholder URLs). The criteria below that require *real* public URLs remain ope
   preflight into one JSON report. It exits `0` with blockers listed and performs
   **no live send and no deploy**. Blockers/warnings never crash. Mocked/temp-file
   tests make no network call.
-- **AC-CLOUD-1** (R-006, R-009) — ⏳ open: Both servers reachable at public Cop and
-  Thief URLs; a match runs end-to-end against those URLs (requires live deploy).
-- **AC-CLOUD-2** (R-010) — ⏳ open: The public URLs reject unauthenticated requests
-  (verified from an external client) — requires live deploy.
-- **AC-CLOUD-3** (R-006) — ⏳ open: A reproducible run command and its output are
-  captured as evidence of the cloud run — requires live deploy.
+- **AC-CLOUD-1** (R-006, R-009) — ✅ real (Stage 13C): both servers are reachable at
+  public Cop and Thief Cloud Run URLs; the deterministic E2E flow runs over HTTPS
+  against those URLs and passes (`scripts/public_cloud_smoke.py` → `passed: true`).
+- **AC-CLOUD-2** (R-010) — ✅ real (Stage 13C): protected tools reject a wrong/absent
+  token with a structured `unauthorized` result (verified over the public URLs); IAM
+  is public **only** because the app enforces the token (raw `GET /mcp` → `406`, not
+  an IAM `403`).
+- **AC-CLOUD-3** (R-006) — ✅ real (Stage 13C): a reproducible smoke command and its
+  sanitized output are captured in `results/evidence/cloud_deployment.example.json`
+  (URLs, revisions, smoke statuses; no token values).
 
 ## 4. Inter-group bonus
 

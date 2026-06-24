@@ -1,6 +1,6 @@
 # PLAN — Intended Architecture
 
-**Group:** MaRs-777 · **Status:** Stage 13B (live-readiness preflight; no live send/deploy)
+**Group:** MaRs-777 · **Status:** Stage 13C (live Cloud Run deployment; public URLs + app token auth)
 
 ## Architecture overview
 
@@ -59,9 +59,9 @@ partial-observability & dialogue (Stage 4 ✅) → local HTTP MCP servers (Stage
 ✅) → local MCP client & HTTP E2E smoke (Stage 6 ✅) → MCP-backed local game orchestration (Stage 7 ✅) → official report schema, validation & evidence (Stage 8 ✅) → prompted MCP agent layer (Stage 9 ✅; offline fake LLM) → optional Gemini
 provider (Stage 10 ✅; live-gated) → Gmail JSON report sender (Stage 11 ✅;
 dry-run + live-gated) → hardened run validation (Stage 12 ✅) → cloud deployment
-packaging & preflight (Stage 13A ✅) → **live-readiness preflight (Stage 13B —
-current; read-only, no live send/deploy)** → live cloud deploy (13C) → bonus
-inter-group → hardening & audit.
+packaging & preflight (Stage 13A ✅) → live-readiness preflight (Stage 13B ✅) →
+**live Cloud Run deploy of public token-auth URLs (Stage 13C — current ✅)** → bonus
+inter-group + final report (Stage 14) → hardening & audit.
 
 ## Pipeline progress (Stage 3)
 
@@ -315,9 +315,24 @@ Stage 13B adds a **read-only bridge** from local implementation to live operatio
 - **Combined readiness** — folds in the packaging preflight and lists the exact
   remaining manual actions; exits `0` once checks complete even with blockers.
 
-The **next** stage (manual, gated live deploy) records real URLs locally and flips
-`cloud_status`; the hardened validation/manifest and the role-safe boundary carry
-over unchanged.
+## Pipeline progress (Stage 13C — live Cloud Run deployment)
+
+Stage 13C performs the **real** deployment of both MCP services to Cloud Run
+(`api-mars-777` / `me-west1`) from the repo `Dockerfile` (ADR-0047/0048):
+
+- **Two live public URLs** — `mars777-cop-mcp` and `mars777-thief-mcp`, each with
+  `MCP_ROLE` and its own token; `PORT` injected by Cloud Run.
+- **IAM-public + app token auth** — `--allow-unauthenticated` so any MCP client can
+  reach the URL, while protected tools reject a wrong/absent token; documented so
+  "public IAM" is not read as "open access".
+- **Secret-safe** — tokens generated locally with `secrets`, kept only in
+  git-ignored `.secrets/`, passed via `--env-vars-file`; never printed/committed.
+- **Public smoke passed** (`scripts/public_cloud_smoke.py`) and sanitized evidence
+  recorded (`results/evidence/cloud_deployment.example.json`).
+
+The hardened validation/manifest and the role-safe boundary carry over unchanged.
+**The next stage** (Stage 14) plays a real inter-group match and sends the final
+official Gmail report — neither was done here.
 
 ## Verification artifacts (core)
 

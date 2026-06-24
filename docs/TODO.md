@@ -18,8 +18,8 @@ Statuses: ✅ done · 🔄 in progress · ⏳ planned
 | 11 | Gmail JSON report sender: dry-run default + live-gated sending, JSON-only body, external OAuth files | ✅ |
 | 12 | Hardened run validation: deterministic identity/manifest, failure classes, retry/timeout, aggregate validation | ✅ |
 | 13A | Cloud deployment packaging & preflight (Dockerfile, role entrypoint, cloud config, preflight) — no live deploy | ✅ |
-| 13B | Live-readiness preflight: Gmail OAuth external-file check + read-only cloud/gcloud checks + combined readiness report — no live send/deploy | 🔄 |
-| 13C | Cloud/self-play through public, authenticated URLs (live deploy, gated) | ⏳ |
+| 13B | Live-readiness preflight: Gmail OAuth external-file check + read-only cloud/gcloud checks + combined readiness report — no live send/deploy | ✅ |
+| 13C | Live Cloud Run deployment of both MCP services (public URLs + app-level token auth) with public smoke | ✅ |
 | 14 | Bonus inter-group play against another group's server (mandatory scope) | ⏳ |
 | 15 | Hardening: cost/measurement tracking, logging, security review | ⏳ |
 | 16 | Final gap audit + submission checklist closure | ⏳ |
@@ -409,8 +409,29 @@ Statuses: ✅ done · 🔄 in progress · ⏳ planned
 - Expected project `api-mars-777`; recommended region `me-west1`. Real absolute
   OAuth paths are used only at command runtime, never committed to config/docs.
 
-## Next up (Stage 13C — live cloud deploy of public authenticated URLs)
+## Stage 13C — live Cloud Run deployment (this stage)
 
-- [ ] Manually deploy the two MCP services (gated by `RUN_CLOUD_DEPLOY=1`)
-- [ ] Record real public URLs in local `.env` (never commit); flip `cloud_status`
-- [ ] Verify over HTTPS; reuse the hardened validation + manifest unchanged
+- [x] Deployed `mars777-cop-mcp` and `mars777-thief-mcp` to Cloud Run
+      (`api-mars-777` / `me-west1`) from the repo `Dockerfile` via `--source .`
+- [x] Per-service tokens generated locally with Python `secrets`, stored only in
+      git-ignored `.secrets/`; supplied via `--env-vars-file` (never on cmdline)
+- [x] IAM public + **app-level token auth**; raw `GET /`→404, `GET /mcp`→406
+- [x] Public smoke passed (`scripts/public_cloud_smoke.py`): both services reject a
+      bad token and accept the correct one; role-correct; no hidden-state leak
+- [x] Sanitized evidence (no tokens): `results/evidence/cloud_deployment.example.json`
+- [x] APIs enabled (only required): run, cloudbuild, artifactregistry
+- [ ] Reviewed and explicitly committed
+
+### Stage 13C scope notes
+
+- **No live Gmail send, no final official report, and no inter-group bonus run**
+  were performed. Final submission is **not** complete.
+- `config/cloud.default.json` stays the not-yet-deployed packaging template so the
+  packaging preflight remains a valid pre-deploy gate; live state is in the
+  evidence file. No token value is in any tracked file.
+
+## Next up (Stage 14 — bonus inter-group + final report)
+
+- [ ] Play a real inter-group match against another group's deployed URLs
+- [ ] Send the final official report via Gmail (`RUN_GMAIL_LIVE=1`, external OAuth)
+- [ ] Close `FINAL_GAP_AUDIT.md` and the submission checklist

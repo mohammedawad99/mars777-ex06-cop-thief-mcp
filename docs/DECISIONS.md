@@ -468,3 +468,32 @@ project mismatch, and **billing disabled** are **blockers**; **billing unknown**
 a **warning** — none crashes. **Consequences:** No cloud resource is created or
 changed; no secret value or file content is read, printed, or committed; readiness
 honestly reflects state without ever claiming billing/auth that wasn't proven.
+
+## ADR-0047 — Cloud Run public IAM with app-level MCP token auth
+**Context:** The assignment requires the two MCP servers reachable at public URLs
+that another group's client can call, while still rejecting unauthorized callers.
+Cloud Run's IAM `--no-allow-unauthenticated` would block *all* anonymous traffic
+(callers would need Google identities/tokens), which does not fit a cross-group MCP
+client that authenticates at the **application** layer. **Decision:** Deploy both
+services with `--allow-unauthenticated` (IAM-public) and rely on the existing
+**app-level token** (the `auth_token` tool argument checked against the per-service
+`COP_MCP_TOKEN`/`THIEF_MCP_TOKEN`): protected tools return a structured
+`unauthorized` result for a wrong/absent token. A raw unauthenticated `GET /`
+returns `404` and `GET /mcp` returns `406` — handled by the app, not an IAM `403`.
+**Consequences:** Any MCP client can reach the URL, but only a correct token can use
+protected tools; the boundary is documented so "IAM-public" is not mistaken for
+"open access". Tokens are injected per service via a git-ignored `--env-vars-file`
+and live only in the runtime environment — never in the image, logs, repo, or docs.
+
+## ADR-0048 — Per-service tokens generated locally; never tracked
+**Context:** Cloud Run needs a strong token per service, but no token value may be
+printed, committed, or placed in tracked docs/config. **Decision:** Generate each
+token locally with Python `secrets.token_urlsafe(32)`, store values only in a
+git-ignored + docker-ignored `.secrets/` directory (added to both ignore files
+**before** any file is written there), and pass them to `gcloud` via
+`--env-vars-file` so they never appear on the command line or in shell history.
+Tracked artifacts (evidence, docs, config) carry only env-var **names**, public
+URLs, and `token_values_recorded: false`. **Consequences:** Deployment is
+reproducible and secret-safe; the packaging template `config/cloud.default.json`
+stays `not_deployed` (a valid pre-deploy gate) while the live deployed state is
+recorded in `results/evidence/cloud_deployment.example.json`.

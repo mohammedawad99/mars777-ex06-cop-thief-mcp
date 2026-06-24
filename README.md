@@ -8,6 +8,36 @@ a natural-language protocol, and the final results are reported via a Google
 (Gmail) report sender. Inter-group play is treated as in-scope (see
 `docs/PRD_bonus_intergroup.md`).
 
+## Status — Stage 13C (live Cloud Run deployment)
+
+**Both MCP services are deployed and live on Google Cloud Run** in project
+`api-mars-777`, region `me-west1`:
+
+| Role | Service | Public URL | MCP endpoint |
+|------|---------|------------|--------------|
+| Cop | `mars777-cop-mcp` | `https://mars777-cop-mcp-6lhzzicqha-zf.a.run.app` | `…/mcp` |
+| Thief | `mars777-thief-mcp` | `https://mars777-thief-mcp-6lhzzicqha-zf.a.run.app` | `…/mcp` |
+
+**Auth boundary:** Cloud Run IAM allows unauthenticated requests **only because the
+MCP app itself enforces a per-service token** on protected tools (the `auth_token`
+argument). A wrong/absent token returns a structured `unauthorized` result; the
+correct token is accepted. Public smoke against both live URLs passes — unauthorized
+rejected, authorized healthy, role-correct, hidden opponent not leaked, thief
+exposes no barrier tool. Tokens were generated locally with Python `secrets`, stored
+only in git-ignored `.secrets/`, and are **never printed or committed**.
+
+```bash
+# Reproduce the public smoke (tokens sourced from the local ignored env file):
+set -a; . .secrets/cloud-run.local.env; set +a
+COP_MCP_URL=https://mars777-cop-mcp-6lhzzicqha-zf.a.run.app \
+THIEF_MCP_URL=https://mars777-thief-mcp-6lhzzicqha-zf.a.run.app \
+uv run python scripts/public_cloud_smoke.py
+```
+
+Sanitized deployment evidence (no tokens): `results/evidence/cloud_deployment.example.json`.
+**No live Gmail report has been sent, no real inter-group bonus game has been
+played, and the final submission is not complete** — those remain later steps.
+
 ## Status — Stage 13B (live-readiness preflight)
 
 **A live-readiness preflight is implemented** — a safe bridge from the local

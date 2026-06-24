@@ -1,9 +1,55 @@
-# CLOUD DEPLOYMENT GUIDE (future, gated)
+# CLOUD DEPLOYMENT GUIDE
 
-> **Status: NOT deployed.** This is a step-by-step guide for a *later*, manual,
-> gated deployment of the two MCP servers. No Cloud Run service has been created,
-> no public URL exists, and nothing here runs automatically. All values are
-> placeholders.
+> **Status: DEPLOYED (Stage 13C).** Both MCP services are live on Cloud Run in
+> `api-mars-777` / `me-west1`. The actual results and reproduction commands are in
+> the **Stage 13C — deployment results** section below; the steps that follow it
+> remain the reusable, placeholder-based runbook for a fresh deploy. Auth tokens
+> live only in git-ignored `.secrets/` and are never printed or committed.
+
+## Stage 13C — deployment results (live)
+
+| Role | Service | Public URL | Revision |
+|------|---------|------------|----------|
+| Cop | `mars777-cop-mcp` | `https://mars777-cop-mcp-6lhzzicqha-zf.a.run.app` | `mars777-cop-mcp-00001-jqk` |
+| Thief | `mars777-thief-mcp` | `https://mars777-thief-mcp-6lhzzicqha-zf.a.run.app` | `mars777-thief-mcp-00001-5nk` |
+
+- **Project/region:** `api-mars-777` / `me-west1`. **Build:** `gcloud run deploy
+  --source .` (Cloud Build from the repo `Dockerfile`).
+- **APIs enabled this stage (only those strictly required):** `run.googleapis.com`,
+  `cloudbuild.googleapis.com`, `artifactregistry.googleapis.com`.
+- **IAM:** `--allow-unauthenticated` (public at the IAM layer) **because the MCP app
+  enforces token auth** on protected tools; a raw unauthenticated `GET /` returns
+  `404` and `GET /mcp` returns `406` (app-handled, **not** an IAM `403`).
+- **Env per service:** `MCP_ROLE=cop|thief` plus the role token
+  (`COP_MCP_TOKEN`/`THIEF_MCP_TOKEN`), supplied via a git-ignored
+  `--env-vars-file .secrets/<role>.env.yaml`. `PORT` is injected by Cloud Run.
+- **Tokens:** generated locally with Python `secrets` (32-byte URL-safe), stored
+  only under `.secrets/` (git-ignored + docker-ignored), never printed/committed.
+
+**Public smoke (token-safe; reproduce):**
+
+```bash
+set -a; . .secrets/cloud-run.local.env; set +a   # load tokens without echoing
+COP_MCP_URL=https://mars777-cop-mcp-6lhzzicqha-zf.a.run.app \
+THIEF_MCP_URL=https://mars777-thief-mcp-6lhzzicqha-zf.a.run.app \
+uv run python scripts/public_cloud_smoke.py
+```
+
+Result: `passed: true` — Cop & Thief both reject a bad token (`unauthorized`) and
+accept the correct token (`health_ok`, role-correct, hidden opponent not leaked,
+thief has no barrier tool). Sanitized evidence (no tokens):
+`results/evidence/cloud_deployment.example.json`. **No live Gmail send and no
+inter-group bonus run were performed.**
+
+> The runbook below is the reusable, **placeholder-based** procedure for a clean
+> deploy; `config/cloud.default.json` stays the not-yet-deployed packaging
+> template (so the packaging preflight remains a valid pre-deploy gate), while the
+> live state is recorded in the evidence file above.
+
+# CLOUD DEPLOYMENT RUNBOOK (reusable, placeholders)
+
+> The two MCP servers deploy from one role-aware image. Values below are
+> placeholders for a fresh deploy.
 
 ## Target
 

@@ -59,6 +59,20 @@ every gate below passes.
     secret files, role/port resolve without a server, smoke commands documented).
     It makes **no cloud calls** and needs neither gcloud nor credentials.
 
+### Operational cloud validation (live; env-specific)
+
+- **Public Cloud Run smoke** —
+  `COP_MCP_URL=… THIEF_MCP_URL=… COP_MCP_TOKEN=… THIEF_MCP_TOKEN=… uv run python
+  scripts/public_cloud_smoke.py` must exit 0 with `passed: true`. It drives the two
+  **deployed** MCP services over their public HTTPS URLs (Stage 13C): each must
+  **reject a bad token** (`unauthorized`) and **accept the correct token**
+  (`health_ok`, role-correct, hidden opponent not leaked, thief has no barrier
+  tool). Tokens are sourced from the git-ignored `.secrets/cloud-run.local.env` and
+  are **never printed**. This is an **operational** check against live cloud
+  resources (not part of the offline unit gate); the underlying flow logic is the
+  same `run_flow` already unit-tested offline. Live URLs/evidence:
+  `results/evidence/cloud_deployment.example.json`.
+
 ### Operational preflight (env-specific; not a pure unit gate)
 
 - **Live-readiness preflight** —

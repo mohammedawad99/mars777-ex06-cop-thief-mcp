@@ -1,0 +1,57 @@
+{
+  "stage": "13C",
+  "artifact": "cloud_deployment_evidence",
+  "sanitized": true,
+  "project_id": "api-mars-777",
+  "region": "me-west1",
+  "platform": "google_cloud_run",
+  "deployed": true,
+  "cloud_status": "deployed",
+  "services": {
+    "cop": {
+      "name": "mars777-cop-mcp",
+      "role": "cop",
+      "public_url": "https://mars777-cop-mcp-6lhzzicqha-zf.a.run.app",
+      "mcp_endpoint": "https://mars777-cop-mcp-6lhzzicqha-zf.a.run.app/mcp",
+      "revision": "mars777-cop-mcp-00001-jqk",
+      "token_env_var": "COP_MCP_TOKEN"
+    },
+    "thief": {
+      "name": "mars777-thief-mcp",
+      "role": "thief",
+      "public_url": "https://mars777-thief-mcp-6lhzzicqha-zf.a.run.app",
+      "mcp_endpoint": "https://mars777-thief-mcp-6lhzzicqha-zf.a.run.app/mcp",
+      "revision": "mars777-thief-mcp-00001-5nk",
+      "token_env_var": "THIEF_MCP_TOKEN"
+    }
+  },
+  "auth_model": {
+    "iam_public_access": true,
+    "app_level_token_auth": true,
+    "note": "Cloud Run IAM allows unauthenticated requests; the MCP app enforces a per-service token on protected tools (auth_token argument). A wrong/absent token returns a structured unauthorized result."
+  },
+  "smoke_tests": {
+    "transport": "https",
+    "cop_unauthorized_rejected": true,
+    "thief_unauthorized_rejected": true,
+    "cop_authorized_health_ok": true,
+    "thief_authorized_health_ok": true,
+    "cop_role_info": true,
+    "thief_role_info": true,
+    "hidden_opponent_not_leaked": true,
+    "thief_no_barrier_tool": true,
+    "raw_unauthenticated_root_http": 404,
+    "raw_unauthenticated_mcp_http": 406,
+    "passed": true
+  },
+  "apis_enabled_this_stage": [
+    "run.googleapis.com",
+    "cloudbuild.googleapis.com",
+    "artifactregistry.googleapis.com"
+  ],
+  "token_values_recorded": false,
+  "tokens_stored": "locally only, in git-ignored .secrets/ (values never printed or committed)",
+  "live_gmail_sent": false,
+  "intergroup_bonus_run": false,
+  "final_submission_complete": false
+}

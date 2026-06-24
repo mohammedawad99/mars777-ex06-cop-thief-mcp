@@ -264,5 +264,43 @@ client.
 all quality gates pass (ruff clean, 143 tests, 100% coverage). No
 cloud/Gmail/external-LLM/GUI/inter-group implementation added.
 
-> Subsequent stages will append their driving prompts here (protocol over MCP,
-> LLM agents, orchestrator, report sender, cloud, bonus, audit).
+## Stage 7 — MCP-backed local game orchestration (2026-06-24)
+
+**Goal:** Prove a real local game pipeline where **each turn uses the MCP servers
+over HTTP**. **No** cloud, public URLs, Gmail, external-LLM calls, GUI, or
+inter-group remote play.
+
+**Key constraints captured from the prompt:**
+- The trusted orchestrator owns authoritative state; the engine remains the only
+  authority for legality/capture/scoring; servers stay separate on separate local
+  ports.
+- The E2E game path calls tools **over HTTP** (not by importing adapters); unit
+  tests may use the in-memory client. Each turn:
+  `get_observation` → verify no hidden leak → `compose_message` (record
+  transcript) → `propose_action` → convert to engine `Action` → apply → record
+  event; stop on capture/`max_moves`; illegal proposal → recorded + legal fallback
+  (documented and tested).
+- Full state may be sent to `get_observation`, but only the **role-safe filtered
+  observation** is returned and `propose_action` consumes only that; transcripts
+  carry no hidden coordinates; reports never contain tokens; all tokens are dummy
+  local values injected via env at runtime.
+- JSON-serializable report with `transport=local_mcp_http`,
+  `mcp_status=local_verified`, local urls, `cloud_status=not_deployed`,
+  `email_status=not_sent`.
+
+**Artifacts produced:**
+- `src/mars777_cop_thief/mcp_client/` — `game_flow.py`, `game_report.py`,
+  `game_smoke.py`; `__init__` exports; SDK `run_local_mcp_sub_game`/
+  `run_local_mcp_full_game`.
+- Tests: `tests/unit/mcp_client/test_game_flow.py`, `test_game_report.py`,
+  `test_game_smoke_main.py`; `tests/integration/mcp/test_http_game_e2e.py`
+  (real HTTP, one sub-game, default-on, `RUN_MCP_E2E=0` skips) — 160 tests, 100%.
+
+**Outcome:** Local MCP-backed game orchestration implemented and **passing** —
+the full default game (6 sub-games) runs over real HTTP
+(`uv run python -m mars777_cop_thief.mcp_client.game_smoke` → exit 0, all checks
+true, totals cop 30 / thief 60); ruff clean, 160 tests, 100% coverage. No
+cloud/Gmail/external-LLM/GUI/inter-group implementation added.
+
+> Subsequent stages will append their driving prompts here (LLM agents,
+> orchestrator hardening, report sender, cloud, bonus, audit).

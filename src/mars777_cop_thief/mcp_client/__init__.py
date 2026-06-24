@@ -6,11 +6,16 @@ HTTP. Local-only — no public URLs, no cloud, no external LLM.
 
 from mars777_cop_thief.mcp_client.client import role_urls, server_url, wait_ready
 from mars777_cop_thief.mcp_client.e2e_flow import run_flow
+from mars777_cop_thief.mcp_client.game_flow import run_mcp_full_game, run_mcp_sub_game
+from mars777_cop_thief.mcp_client.game_report import build_mcp_report
 from mars777_cop_thief.mcp_client.subprocess_pair import server_pair
 
 __all__ = [
+    "build_mcp_report",
     "role_urls",
     "run_flow",
+    "run_mcp_full_game",
+    "run_mcp_sub_game",
     "server_pair",
     "server_url",
     "wait_ready",

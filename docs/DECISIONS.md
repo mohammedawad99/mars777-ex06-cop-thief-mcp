@@ -229,3 +229,25 @@ cannot spawn local subprocesses; keep the standalone `smoke` command for manual
 verification. **Consequences:** Coverage and proof come from the default run;
 constrained environments degrade gracefully without failing unrelated gates; the
 smoke command remains the canonical manual check.
+
+## ADR-0026 — MCP-backed orchestration with the engine as sole authority
+**Context:** Stage 7 plays real games where every turn goes through the MCP
+servers, but legality/capture/scoring must remain trustworthy. **Decision:** The
+**local orchestrator owns authoritative `SubGameState`** and applies every action
+through the **engine** (the only authority); the role servers are consulted over
+HTTP per turn for `get_observation` → `compose_message` → `propose_action`, and a
+proposed action that the engine rejects is **recorded and replaced by a
+deterministic legal fallback** (`first_legal_action`). **Consequences:** Servers
+(and later LLM agents behind them) cannot corrupt state or cheat; games always
+terminate (capture or `max_moves`, or a stuck actor → thief survival); the same
+flow runs over HTTP (smoke/integration) and in-memory (fast unit tests).
+
+## ADR-0027 — Explicit local-status fields on the MCP-backed report
+**Context:** The report must not be mistaken for a cloud/published or emailed
+result. **Decision:** The MCP-backed report carries explicit status fields —
+`transport=local_mcp_http`, `mcp_status=local_verified`, local `cop_mcp_url`/
+`thief_mcp_url`, `cloud_status=not_deployed`, `email_status=not_sent`, and
+`hidden_state_respected` — and **never stores tokens**. **Consequences:** Any
+reader (or grader) sees the precise local scope at a glance; the evidence is
+honest about what has and has not been done; tokens cannot leak through results
+(asserted by tests).

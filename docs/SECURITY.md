@@ -39,6 +39,11 @@
 - Real tokens (for any future non-local use) still come only from the untracked
   `.env`; `.env-example` holds placeholders. The secret scan's only `.env-example`
   matches are those documented placeholders, not real values.
+- The MCP-backed game (`mcp_client/game_flow.py`, `game_report.py`) **never writes
+  tokens into results or transcripts** — the report omits the `auth_token` and any
+  token value (asserted by tests). Dummy local tokens exist only in process memory
+  and the server subprocess environment, are **never reported or committed**, and
+  are not the values printed by the smoke command.
 
 ### MCP token rotation / revocation
 

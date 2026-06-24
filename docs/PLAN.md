@@ -1,6 +1,6 @@
 # PLAN — Intended Architecture
 
-**Group:** MaRs-777 · **Status:** Stage 6 (local MCP client & HTTP E2E smoke)
+**Group:** MaRs-777 · **Status:** Stage 7 (MCP-backed local game orchestration)
 
 ## Architecture overview
 
@@ -56,9 +56,9 @@
 SDK/shared (Stage 0 ✅) → requirements hardening (Stage 1 ✅) → game engine
 (Stage 2 ✅) → local self-play pipeline (Stage 3 ✅) → local
 partial-observability & dialogue (Stage 4 ✅) → local HTTP MCP servers (Stage 5
-✅) → **local MCP client & HTTP E2E smoke (Stage 6 — current)** → natural-language
-protocol over MCP → LLM agents → orchestrator over MCP → report sender →
-cloud/self-play → bonus inter-group → hardening & audit.
+✅) → local MCP client & HTTP E2E smoke (Stage 6 ✅) → **MCP-backed local game
+orchestration (Stage 7 — current)** → LLM agents over MCP → orchestrator hardening
+→ report sender → cloud/self-play → bonus inter-group → hardening & audit.
 
 ## Pipeline progress (Stage 3)
 
@@ -146,6 +146,29 @@ HTTP transport works end-to-end:
 This closes the loop from engine → observation → message → MCP tool → **real HTTP
 client call**. The LLM/agent drive over MCP, cloud exposure, and Gmail remain
 later and are explicitly out of Stage 6.
+
+## Pipeline progress (Stage 7)
+
+Stage 7 turns the Stage 6 transport into a **real game pipeline** — the
+orchestrator plays full games where every turn goes through the MCP servers:
+
+- **`game_flow.py`** — `run_mcp_sub_game`/`run_mcp_full_game`: the trusted
+  orchestrator holds authoritative state; each turn calls
+  `get_observation`→`compose_message`→`propose_action` over the client, converts
+  the proposal to an engine `Action`, and applies it through the engine (sole
+  authority). Illegal proposals are recorded and replaced by a legal fallback
+  (ADR-0026).
+- **`game_report.py`** — `build_mcp_report` adds explicit local status fields
+  (`transport`, `mcp_status`, urls, `cloud_status`, `email_status`,
+  `hidden_state_respected`) and never stores tokens (ADR-0027).
+- **`game_smoke.py`** — `uv run python -m mars777_cop_thief.mcp_client.game_smoke`
+  plays the full default game over HTTP and exits 0 only when every check passes.
+
+Hidden-state isolation holds end-to-end: the orchestrator may pass full state to
+`get_observation`, but the server returns only the role-safe observation and
+`propose_action` consumes only that — the transcript carries no hidden
+coordinates. LLM agents will later replace the observed policy behind the same
+tool contract; cloud exposure, Gmail, and inter-group play remain out of Stage 7.
 
 ## Verification artifacts (core)
 

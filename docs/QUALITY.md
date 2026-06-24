@@ -23,6 +23,11 @@ every gate below passes.
    ports, drives them over HTTP, and tears them down. Also runs as a default
    pytest integration test (`tests/integration/mcp/`); skippable with
    `RUN_MCP_E2E=0` where local subprocesses are not permitted.
+10. **Local MCP-backed game smoke** —
+    `uv run python -m mars777_cop_thief.mcp_client.game_smoke` must exit 0 with all
+    checks true. It plays the full default game (6 sub-games) where every turn
+    calls the role servers over HTTP, then tears the servers down. A one-sub-game
+    variant runs as a default pytest integration test (same `RUN_MCP_E2E=0` skip).
 
 ## Staging discipline
 

@@ -12,6 +12,7 @@ from pathlib import Path
 
 from mars777_cop_thief.agents import cop_policy, thief_policy
 from mars777_cop_thief.game import GameEngine
+from mars777_cop_thief.mcp_client.game_smoke import run_game_smoke
 from mars777_cop_thief.orchestration import (
     build_report,
     run_dialogue_full_game,
@@ -69,3 +70,11 @@ class AssignmentSdk:
         radius = config.get("visibility_radius", 1)
         results = run_dialogue_full_game(engine, config["num_sub_games"], radius)
         return build_report(config, results, mode="observed-dialogue")
+
+    def run_local_mcp_sub_game(self) -> dict:
+        """Run one MCP-backed sub-game over local HTTP servers; return the report."""
+        return run_game_smoke(num_sub_games=1)
+
+    def run_local_mcp_full_game(self) -> dict:
+        """Run the full MCP-backed game over local HTTP servers; return the report."""
+        return run_game_smoke()

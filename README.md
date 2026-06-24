@@ -8,6 +8,36 @@ a natural-language protocol, and the final results are reported via a Google
 (Gmail) report sender. Inter-group play is treated as in-scope (see
 `docs/PRD_bonus_intergroup.md`).
 
+## Status — Stage 7 (MCP-backed local game orchestration)
+
+The **local MCP-backed game orchestration is implemented and passes**: a trusted
+orchestrator (`src/mars777_cop_thief/mcp_client/game_flow.py`) plays real
+sub-games where **every turn calls the Cop/Thief MCP servers over HTTP** —
+`get_observation` → `compose_message` → `propose_action` — then applies the
+proposed action through the local game engine (the only authority for legality,
+capture, and scoring). The full default game (6 sub-games) runs end-to-end over
+HTTP.
+
+The MCP-backed report is JSON-serializable and states **local** status only:
+`transport=local_mcp_http`, `mcp_status=local_verified`, local `cop_mcp_url` /
+`thief_mcp_url`, `cloud_status=not_deployed`, `email_status=not_sent`, plus
+`hidden_state_respected`. The orchestrator may send full state to
+`get_observation`, but the server returns only the role-safe filtered observation
+and `propose_action` consumes only that — hidden opponent coordinates never leak.
+
+Run the MCP-backed game smoke (starts both servers, plays the full game over
+HTTP, prints JSON, exits 0 on pass):
+
+```bash
+uv run python -m mars777_cop_thief.mcp_client.game_smoke
+```
+
+A real-HTTP one-sub-game integration test runs by default
+(`tests/integration/mcp/test_http_game_e2e.py`; skip with `RUN_MCP_E2E=0`). This
+stage is still **local-only**: **no public URLs / cloud deployment**, **no
+Gmail/email sending**, **no external-LLM calls**, **no GUI**, and **no
+inter-group remote play** — those remain later stages.
+
 ## Status — Stage 6 (local MCP client & HTTP E2E smoke)
 
 The **local MCP HTTP end-to-end smoke is implemented and passes**: a client
@@ -141,7 +171,7 @@ src/mars777_cop_thief/
   dialogue/           natural-language message generation + transcript records
   orchestration/      full-state and observed/dialogue runners, totals, report
   mcp_servers/        local HTTP MCP servers (Cop/Thief), auth guard, tools
-  mcp_client/         local MCP client, server-pair lifecycle, E2E smoke flow
+  mcp_client/         local MCP client, server-pair lifecycle, E2E + game flow
 tests/unit/           version, config, and SDK smoke tests
 tests/unit/game/      engine TDD suite (models, rules, engine, events, SDK)
 tests/unit/agents/    baseline + observed policy tests

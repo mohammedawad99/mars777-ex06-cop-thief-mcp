@@ -59,12 +59,15 @@ playing a full match through MCP) is a later stage.
   with a wrong token returns a structured unauthorized result (and never reveals
   the token) through the client path; a matching token succeeds. (Local dev auth;
   HTTP-status mapping arrives with the cloud stage.)
-- **AC-MCP-3** (R-005): The orchestrator drives a full local match end-to-end
-  through the two HTTP servers and produces a results record — later stage.
-- **AC-MCP-4** (R-025, R-026): An illegal action submitted via MCP is rejected
-  with a structured error and recorded in the transcript — later stage (the
-  engine already returns structured violations; wiring over the tool call comes
-  with the protocol-over-MCP stage).
+- **AC-MCP-3** (R-005) — ✅ test-covered (real HTTP, Stage 7): the orchestrator
+  drives a full local game (6 sub-games) end-to-end through the two HTTP servers —
+  each turn calls `get_observation`/`compose_message`/`propose_action` over HTTP —
+  and produces a JSON-serializable report with local status fields. The
+  `game_smoke` command exits 0 with all checks true.
+- **AC-MCP-4** (R-025, R-026) — ◑ partially (Stage 7): an MCP-proposed action the
+  engine rejects is recorded as a not-ok event and replaced by a deterministic
+  legal fallback (tested). Full natural-language interpreted-action dispute logs
+  arrive with the LLM-agent stage.
 
 ## 3. Cloud / self-play
 

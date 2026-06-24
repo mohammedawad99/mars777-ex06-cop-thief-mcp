@@ -10,10 +10,10 @@ Statuses: ✅ done · 🔄 in progress · ⏳ planned
 | 3 | Local self-play pipeline: deterministic baseline policies, sub-game/full-game runners, transcripts, in-memory JSON report | ✅ |
 | 4 | Local partial-observability & natural-language dialogue: visibility-radius observations, free-text messages, observed runner | ✅ |
 | 5 | Local HTTP MCP servers (Cop & Thief): FastMCP, role-safe tools, token auth, run entrypoints | ✅ |
-| 6 | Local MCP client & HTTP E2E smoke: subprocess server pair, FastMCP client, deterministic flow over HTTP | 🔄 |
-| 7 | Natural-language protocol over MCP: message interpretation + validator + interpreted-action logs | ⏳ |
+| 6 | Local MCP client & HTTP E2E smoke: subprocess server pair, FastMCP client, deterministic flow over HTTP | ✅ |
+| 7 | MCP-backed local game orchestration: real sub-games/full game where each turn calls the MCP servers over HTTP | 🔄 |
 | 8 | Cop & Thief LLM agents wired through MCP | ⏳ |
-| 9 | Orchestrator: run num_sub_games, seeds, aggregation, rate limits over MCP | ⏳ |
+| 9 | Orchestrator hardening over MCP: seeds, aggregation, rate limits | ⏳ |
 | 10 | Google report sender (Gmail/OAuth) for final results, JSON-only email body | ⏳ |
 | 11 | Cloud/self-play through public, authenticated URLs | ⏳ |
 | 12 | Bonus inter-group play against another group's server (mandatory scope) | ⏳ |
@@ -134,7 +134,7 @@ Statuses: ✅ done · 🔄 in progress · ⏳ planned
 - **No** cloud deployment, public URLs, Gmail/email, external-LLM calls, GUI,
   production OAuth, or inter-group remote play in this stage.
 
-## Stage 6 checklist (current — local MCP client & HTTP E2E smoke)
+## Stage 6 checklist (completed — local MCP client & HTTP E2E smoke)
 
 - [x] `mcp_client/client.py` — FastMCP client URL helpers + bounded `wait_ready`
 - [x] `mcp_client/subprocess_pair.py` — free ports, env-token/port injection,
@@ -148,7 +148,7 @@ Statuses: ✅ done · 🔄 in progress · ⏳ planned
 - [x] Smoke verified passing over real HTTP: `uv run python -m
       mars777_cop_thief.mcp_client.smoke` → exit 0, all checks true
 - [x] Tests (143 total, 100% coverage)
-- [ ] Reviewed and explicitly committed
+- [x] Reviewed and explicitly committed
 
 ### Stage 6 scope notes
 
@@ -160,8 +160,39 @@ Statuses: ✅ done · 🔄 in progress · ⏳ planned
 - **No** cloud deployment, public URLs, Gmail/email, external-LLM calls, GUI,
   production OAuth, or inter-group remote play in this stage.
 
-## Next up (Stage 7 — natural-language protocol over MCP)
+## Stage 7 checklist (current — MCP-backed local game orchestration)
 
-- [ ] Message interpretation + validator wired through the MCP tools
-- [ ] Interpreted-action logs alongside raw NL over the transport
-- [ ] Integration test exercising the tool contract without external LLM calls
+- [x] `mcp_client/game_flow.py` — `run_mcp_sub_game`/`run_mcp_full_game`: each
+      turn calls `get_observation`→`compose_message`→`propose_action` over the
+      client; engine applies the action; illegal proposal → recorded + legal fallback
+- [x] `mcp_client/game_report.py` — `build_mcp_report` with local status fields
+      (`transport`, `mcp_status`, urls, `cloud_status`, `email_status`,
+      `hidden_state_respected`); JSON-serializable; no tokens stored
+- [x] `mcp_client/game_smoke.py` — `run_game_smoke()` + `main()`; full default
+      game over HTTP; exits 0 only on pass; always tears servers down
+- [x] SDK `run_local_mcp_sub_game` / `run_local_mcp_full_game` (delegating)
+- [x] Real-HTTP one-sub-game integration test (default-on, `RUN_MCP_E2E=0` skips)
+      + in-memory full-game/flow/report unit tests
+- [x] Full 6-sub-game game smoke verified passing over real HTTP: `uv run python
+      -m mars777_cop_thief.mcp_client.game_smoke` → exit 0, all checks true
+- [x] Tests (160 total, 100% coverage)
+- [ ] Reviewed and explicitly committed
+
+### Stage 7 scope notes
+
+- The trusted orchestrator owns authoritative state; the **engine** stays the only
+  authority for legality/capture/scoring. Each turn calls the role's MCP tools
+  **over HTTP** (in-memory client only in unit tests).
+- The orchestrator may send full state to `get_observation`, but the server
+  returns only the role-safe filtered observation and `propose_action` consumes
+  only that; transcripts carry no hidden coordinates (`hidden_state_respected`).
+- Dummy local tokens are injected via the child env at runtime; reports never
+  contain tokens. **No** cloud/public URLs, Gmail/email, external-LLM, GUI,
+  production OAuth, or inter-group remote play in this stage.
+
+## Next up (Stage 8 — Cop & Thief LLM agents wired through MCP)
+
+- [ ] Replace observation-based policies with LLM-driven agents behind the same
+      tool contract
+- [ ] Document prompts; keep the engine authoritative and the transcript honest
+- [ ] Bound cost/latency; no change to the role-safe observation boundary

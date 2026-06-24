@@ -41,6 +41,22 @@ thief has no barrier tool). Sanitized evidence (no tokens):
 `results/evidence/cloud_deployment.example.json`. **No live Gmail send and no
 inter-group bonus run were performed.**
 
+**Full public-cloud game + official report dry-run (Stage 14A):**
+
+```bash
+set -a; . .secrets/cloud-run.local.env; set +a   # tokens, never echoed
+uv run python scripts/public_cloud_final_dry_run.py
+```
+
+Plays the full **6 sub-games** over the public `/mcp` URLs, builds and
+**schema-validates** the official internal report (real public URLs + repo,
+`cloud_status: deployed`), and runs the Gmail sender in **dry-run only**. Result:
+6/6 decided (totals cop 30 / thief 60), `report_schema_valid: true`, bad token
+rejected, `gmail_dry_run_status: dry_run` / `body_json_valid: true`,
+`live_gmail_sent: false`. Evidence (token-free):
+`results/evidence/public_cloud_full_game.example.json` (full report) and
+`results/evidence/final_report_dry_run.example.json` (summary).
+
 > The runbook below is the reusable, **placeholder-based** procedure for a clean
 > deploy; `config/cloud.default.json` stays the not-yet-deployed packaging
 > template (so the packaging preflight remains a valid pre-deploy gate), while the

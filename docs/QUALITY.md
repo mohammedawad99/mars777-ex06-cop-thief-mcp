@@ -73,6 +73,18 @@ every gate below passes.
   same `run_flow` already unit-tested offline. Live URLs/evidence:
   `results/evidence/cloud_deployment.example.json`.
 
+- **Public-cloud full game + report dry-run** —
+  `set -a; . .secrets/cloud-run.local.env; set +a; uv run python
+  scripts/public_cloud_final_dry_run.py` must exit 0 with `passed: true`. It plays
+  the full **6 sub-games** over the deployed public `/mcp` URLs, builds and
+  **schema-validates** the official internal report (public URLs, real repo,
+  `cloud_status: deployed`), and runs the Gmail sender in **dry-run only**
+  (`RUN_GMAIL_LIVE` never set) → `dry_run`, `body_json_valid: true`. Tokens come from
+  the git-ignored `.secrets/` and are **never printed**; evidence is token-free
+  (`results/evidence/public_cloud_full_game.example.json`,
+  `final_report_dry_run.example.json`). Operational (live cloud), not part of the
+  offline unit gate; the game/report/validation logic is unit-tested offline.
+
 ### Operational preflight (env-specific; not a pure unit gate)
 
 - **Live-readiness preflight** —

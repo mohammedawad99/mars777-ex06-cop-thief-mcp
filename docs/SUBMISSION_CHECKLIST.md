@@ -52,9 +52,8 @@ Strict checklist for the final review. Boxes are checked only when verified.
       blockers; read-only — no live send, no deploy)
 - [x] Gmail OAuth files present **outside the repo** (manual smoke: draft + calendar
       event OK); `gmail.preflight` → `status: ready` without reading file contents
-- [ ] Cloud live blockers cleared: `gcloud` installed + authenticated, project
+- [x] Cloud live blockers cleared: `gcloud` installed + authenticated, project
       `api-mars-777` active, **billing enabled**, region `me-west1` confirmed
-      (currently blocked: gcloud not installed on the dev machine)
 - [x] Two MCP services **deployed** at public, app-token-authenticated Cloud Run
       URLs (`mars777-cop-mcp`, `mars777-thief-mcp` in `api-mars-777`/`me-west1`)
 - [x] Public HTTPS smoke passed: both reject a bad token, accept the correct token
@@ -67,8 +66,14 @@ Strict checklist for the final review. Boxes are checked only when verified.
       (deployed-state in `results/evidence/cloud_deployment.example.json`;
       `config/cloud.default.json` deliberately stays the not-deployed packaging
       template so the packaging preflight remains a valid pre-deploy gate)
+- [x] Full **6-sub-game game over the public `/mcp` URLs** + official report built
+      and **schema-validated** (`scripts/public_cloud_final_dry_run.py`;
+      `results/evidence/public_cloud_full_game.example.json`)
+- [x] Final official report **Gmail dry-run** passed with that report (`dry_run`,
+      `body_json_valid: true`); **no live email sent**
+      (`results/evidence/final_report_dry_run.example.json`)
 - [ ] Real internal report emailed via `RUN_GMAIL_LIVE=1` with external OAuth files
-      (optional live send; not run in default validation)
+      (optional live send; not run — also needs the real student `id`)
 - [ ] Real inter-group bonus game played and reconciled (later stage)
 
 ## Documentation & measurement

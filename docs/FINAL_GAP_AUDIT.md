@@ -25,7 +25,7 @@ remaining gap with a disposition (fixed / accepted / deferred).
 | Security / secrets | per SECURITY | — | — | — |
 | Costs measured | per COSTS | — | — | — |
 
-## Current status (through Stage 13C)
+## Current status (through Stage 14A)
 
 The local pipeline is implemented, tested (100% coverage), and hardened
 (deterministic run identity/manifest, classified failures, bounded
@@ -39,7 +39,8 @@ known open gaps**, deferred to later stages — none is claimed as done:
 | Gmail OAuth files (external) | **present outside the repo** — manual smoke succeeded (Gmail draft + Calendar event); `gmail.preflight` → `ready` (no content read); never committed | Done (manual, external) |
 | Cloud live deployment | **done** — both MCP services deployed to Cloud Run (`api-mars-777`/`me-west1`); public HTTPS smoke `passed: true`; APIs enabled: run/cloudbuild/artifactregistry | Done (Stage 13C) |
 | Real deployed public URLs | **present** — `mars777-cop-mcp` + `mars777-thief-mcp` live; recorded in `results/evidence/cloud_deployment.example.json` and README (no token values) | Done (Stage 13C) |
-| Final official report sent via Gmail | **not sent** — sender is dry-run only; live is opt-in (`RUN_GMAIL_LIVE=1`) with external OAuth files (which now exist) | Deferred (Stage 14) |
+| Full public-cloud game + official report | **done** — 6/6 sub-games over the public `/mcp` URLs; official report schema-valid; Gmail **dry-run** passed (no send); token-free evidence | Done (Stage 14A) |
+| Final official report sent via Gmail | **not sent** — only dry-run done; live is opt-in (`RUN_GMAIL_LIVE=1`) with external OAuth files; also needs the real student `id` | Deferred (Stage 14B) |
 | Live Gemini provider run | **not run** — offline `fake_local` default; live is opt-in (`RUN_GEMINI_LIVE=1`) with a key | Deferred (opt-in local) |
 | Real inter-group bonus game | **not completed** — bonus schema/protocol exist; no real cross-group match played | Deferred (Stage 14) |
 | Final Moodle submission PDF | **not prepared yet** | Deferred (near submission) |
@@ -51,9 +52,10 @@ official validated JSON report + sanitized evidence pack, Gmail JSON-only sender
 (dry-run), optional Gemini adapter (gated), the Stage 12 hardened run manifest +
 aggregate validation, Stage 13A cloud deployment **packaging + preflight** (no
 live deploy), Stage 13B **live-readiness preflight** (read-only Gmail OAuth +
-cloud/gcloud checks), and Stage 13C **live Cloud Run deployment** of both MCP
-services at public token-auth URLs with a passing public HTTPS smoke (sanitized
-evidence committed). Still **not** done: **no live Gmail report sent**, **no real
-inter-group bonus match**, and **no final submission** — these remain Stage 14+. The
-dimension table below is finalized near submission once the deferred items are
-addressed or formally accepted.
+cloud/gcloud checks), Stage 13C **live Cloud Run deployment** of both MCP
+services at public token-auth URLs with a passing public HTTPS smoke, and Stage 14A
+a **full public-cloud 6-sub-game game + official report dry-run** (schema-valid
+report; Gmail dry-run; token-free evidence). Still **not** done: **no live Gmail
+report sent**, **no real inter-group bonus match**, and **no final submission** —
+these remain Stage 14B+. The dimension table below is finalized near submission once
+the deferred items are addressed or formally accepted.

@@ -568,5 +568,24 @@ only in git-ignored `.secrets/`. Added `scripts/public_cloud_smoke.py` and
 as the packaging template (preflight stays green); 340 tests, 100% coverage. **No
 live Gmail send, no inter-group bonus, no final report** — submission not complete.
 
-> Subsequent stages will append their driving prompts here (bonus, final report,
-> audit).
+## Stage 14A — public-cloud full game + official report dry-run
+
+**Prompt summary:** Run a complete public-cloud MCP game flow and generate/validate
+the official final JSON report in **dry-run only** — no live Gmail. Play the full
+6 sub-games against the deployed public Cop/Thief `/mcp` URLs (tokens from the local
+ignored `.secrets/`, never printed), build the official internal report (group
+MaRs-777, students, real repo, public URLs, timezone, sub_games, totals), validate
+it, run the Gmail sender dry-run, and write token-free evidence. Forbidden: live
+Gmail/`RUN_GMAIL_LIVE=1`, inter-group play, exposing tokens, committing secrets, or
+overclaiming submission complete.
+
+**Outcome:** `scripts/public_cloud_final_dry_run.py` reused `run_mcp_full_game` +
+`build_official_internal_report` against the public URLs. 6/6 sub-games decided
+(totals cop 30 / thief 60), `report_schema_valid: true`, bad token rejected over the
+public URL, `gmail_dry_run_status: dry_run` / `body_json_valid: true`. Evidence:
+`public_cloud_full_game.example.json` + `final_report_dry_run.example.json` (no
+tokens). 340 tests, 100% coverage. **No live Gmail send, no inter-group bonus, no
+final submission.** Tokens stayed only in git-ignored `.secrets/`.
+
+> Subsequent stages will append their driving prompts here (bonus, final live
+> report, audit).

@@ -8,6 +8,28 @@ a natural-language protocol, and the final results are reported via a Google
 (Gmail) report sender. Inter-group play is treated as in-scope (see
 `docs/PRD_bonus_intergroup.md`).
 
+## Status — Stage 14A (public-cloud full game + final report dry-run)
+
+**A complete 6-sub-game game was played over the deployed public Cloud Run URLs**,
+and the **official internal report** was generated, schema-validated, and run
+through the Gmail sender in **dry-run only** (no email sent). Result: 6/6 sub-games
+decided (totals cop 30 / thief 60), `report_schema_valid: true`, bad token rejected
+over the public URL, `gmail_dry_run_status: dry_run` with `body_json_valid: true`.
+
+```bash
+# Full public-cloud game + official report dry-run (tokens from the ignored file):
+set -a; . .secrets/cloud-run.local.env; set +a
+uv run python scripts/public_cloud_final_dry_run.py
+```
+
+The official report carries `group_code: MaRs-777`, students, the real
+`github_repo`, the public `cop_mcp_url`/`thief_mcp_url` (`…/mcp`), timezone,
+6 `sub_games`, and `totals`, with `cloud_status: deployed`. Sanitized, token-free
+evidence: `results/evidence/public_cloud_full_game.example.json` (the full report)
+and `results/evidence/final_report_dry_run.example.json` (summary). **No live Gmail
+was sent, no inter-group bonus game was played, and the final submission is not
+complete** — those remain later steps. Tokens stayed only in git-ignored `.secrets/`.
+
 ## Status — Stage 13C (live Cloud Run deployment)
 
 **Both MCP services are deployed and live on Google Cloud Run** in project

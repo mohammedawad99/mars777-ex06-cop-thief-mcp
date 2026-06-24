@@ -71,13 +71,15 @@ playing a full match through MCP) is a later stage.
 
 ## 3. Cloud / self-play
 
-**Stage 13C status:** both MCP services are **deployed live** to Cloud Run
+**Stage 13C/14A status:** both MCP services are **deployed live** to Cloud Run
 (`api-mars-777` / `me-west1`) at public URLs with **app-level token auth**; public
-HTTPS smoke passes. Packaging/preflight from 13A–13B remain green. The packaging
-template `config/cloud.default.json` is intentionally left `not_deployed` as a
-reusable pre-deploy gate; the live state is recorded in
-`results/evidence/cloud_deployment.example.json`. **No live Gmail report, no
-inter-group bonus run, and no final submission** yet.
+HTTPS smoke passes and a **full 6-sub-game game + official report dry-run** runs over
+those public URLs (Stage 14A). Packaging/preflight from 13A–13B remain green. The
+packaging template `config/cloud.default.json` is intentionally left `not_deployed`
+as a reusable pre-deploy gate; live state is in
+`results/evidence/cloud_deployment.example.json` and the public-cloud report
+evidence. **No live Gmail report, no inter-group bonus run, and no final
+submission** yet.
 
 - **AC-CLOUD-0** (R-006) — ✅ test-covered: `deployment.preflight` validates the
   config, Dockerfile/.dockerignore, absence of secret files, placeholder URLs, and
@@ -99,6 +101,13 @@ inter-group bonus run, and no final submission** yet.
 - **AC-CLOUD-3** (R-006) — ✅ real (Stage 13C): a reproducible smoke command and its
   sanitized output are captured in `results/evidence/cloud_deployment.example.json`
   (URLs, revisions, smoke statuses; no token values).
+- **AC-CLOUD-4** (R-005, R-031, R-033) — ✅ real (Stage 14A): a **full 6-sub-game
+  game** runs over the public `/mcp` URLs (`scripts/public_cloud_final_dry_run.py`);
+  the **official internal report** is built with the public URLs + repo +
+  `cloud_status: deployed`, **schema-validates** (`validation_status: valid`), and
+  passes the Gmail sender in **dry-run only** (`dry_run`, `body_json_valid: true`).
+  Evidence: `results/evidence/public_cloud_full_game.example.json` and
+  `final_report_dry_run.example.json` (no tokens). **No live email was sent.**
 
 ## 4. Inter-group bonus
 

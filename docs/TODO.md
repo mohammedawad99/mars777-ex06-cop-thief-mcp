@@ -20,6 +20,7 @@ Statuses: ✅ done · 🔄 in progress · ⏳ planned
 | 13A | Cloud deployment packaging & preflight (Dockerfile, role entrypoint, cloud config, preflight) — no live deploy | ✅ |
 | 13B | Live-readiness preflight: Gmail OAuth external-file check + read-only cloud/gcloud checks + combined readiness report — no live send/deploy | ✅ |
 | 13C | Live Cloud Run deployment of both MCP services (public URLs + app-level token auth) with public smoke | ✅ |
+| 14A | Full public-cloud 6-sub-game flow + official report generated/validated + Gmail dry-run (no live send) | ✅ |
 | 14 | Bonus inter-group play against another group's server (mandatory scope) | ⏳ |
 | 15 | Hardening: cost/measurement tracking, logging, security review | ⏳ |
 | 16 | Final gap audit + submission checklist closure | ⏳ |
@@ -430,8 +431,27 @@ Statuses: ✅ done · 🔄 in progress · ⏳ planned
   packaging preflight remains a valid pre-deploy gate; live state is in the
   evidence file. No token value is in any tracked file.
 
-## Next up (Stage 14 — bonus inter-group + final report)
+## Stage 14A — public-cloud full game + final report dry-run (this stage)
+
+- [x] Played the full 6 sub-games over the public `/mcp` URLs
+      (`scripts/public_cloud_final_dry_run.py`); 6/6 decided, totals cop 30/thief 60
+- [x] Built + schema-validated the official internal report (group MaRs-777,
+      students, real `github_repo`, public `cop_mcp_url`/`thief_mcp_url`, timezone,
+      `sub_games`, `totals`, `cloud_status: deployed`) → `validation_status: valid`
+- [x] Gmail sender **dry-run only** with that report → `dry_run`, `body_json_valid`
+- [x] Token-free evidence: `results/evidence/public_cloud_full_game.example.json`,
+      `results/evidence/final_report_dry_run.example.json`
+- [x] Tokens stayed only in git-ignored `.secrets/`; never printed/committed
+- [ ] Reviewed and explicitly committed
+
+### Stage 14A scope notes
+
+- **No live Gmail send** (`RUN_GMAIL_LIVE` never set to 1), **no inter-group bonus
+  run**, and the final submission is **not** complete. Student `id` in the report is
+  still a placeholder pending the real value.
+
+## Next up (Stage 14B+ — bonus inter-group + final live report)
 
 - [ ] Play a real inter-group match against another group's deployed URLs
 - [ ] Send the final official report via Gmail (`RUN_GMAIL_LIVE=1`, external OAuth)
-- [ ] Close `FINAL_GAP_AUDIT.md` and the submission checklist
+- [ ] Fill the real student id; close `FINAL_GAP_AUDIT.md` and the checklist

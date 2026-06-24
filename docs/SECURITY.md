@@ -128,6 +128,18 @@
   the previous revision can be deleted. Only the strictly-required APIs were enabled
   (`run`, `cloudbuild`, `artifactregistry`).
 
+### Public-cloud full game + report dry-run (Stage 14A)
+
+- The full 6-sub-game public-cloud run (`scripts/public_cloud_final_dry_run.py`)
+  reads `COP_MCP_TOKEN`/`THIEF_MCP_TOKEN` from the environment (sourced from the
+  git-ignored `.secrets/cloud-run.local.env`) and passes them to MCP tool calls as
+  the `auth_token` argument. **No token value is printed, logged, or written** to
+  any evidence file or report. The official report and both evidence files carry
+  only public URLs and game data — verified token-free (`token_values_recorded:
+  false`); the report's recursive token scan (`find_token_like`) also blocks any
+  auth/secret material. The Gmail sender ran in **dry-run only** (`RUN_GMAIL_LIVE`
+  never set); no email was sent.
+
 ### Run manifests and results (Stage 12)
 
 - Run manifests and the hardened-smoke summary contain **no secrets**: identity,

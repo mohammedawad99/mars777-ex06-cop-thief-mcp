@@ -1,6 +1,6 @@
 # PLAN — Intended Architecture
 
-**Group:** MaRs-777 · **Status:** Stage 13C (live Cloud Run deployment; public URLs + app token auth)
+**Group:** MaRs-777 · **Status:** Stage 14A (public-cloud full game + official report dry-run)
 
 ## Architecture overview
 
@@ -60,8 +60,9 @@ partial-observability & dialogue (Stage 4 ✅) → local HTTP MCP servers (Stage
 provider (Stage 10 ✅; live-gated) → Gmail JSON report sender (Stage 11 ✅;
 dry-run + live-gated) → hardened run validation (Stage 12 ✅) → cloud deployment
 packaging & preflight (Stage 13A ✅) → live-readiness preflight (Stage 13B ✅) →
-**live Cloud Run deploy of public token-auth URLs (Stage 13C — current ✅)** → bonus
-inter-group + final report (Stage 14) → hardening & audit.
+live Cloud Run deploy of public token-auth URLs (Stage 13C ✅) → **public-cloud full
+6-sub-game game + official report dry-run (Stage 14A — current ✅)** → bonus
+inter-group + final live report (Stage 14B+) → hardening & audit.
 
 ## Pipeline progress (Stage 3)
 
@@ -331,8 +332,25 @@ Stage 13C performs the **real** deployment of both MCP services to Cloud Run
   recorded (`results/evidence/cloud_deployment.example.json`).
 
 The hardened validation/manifest and the role-safe boundary carry over unchanged.
-**The next stage** (Stage 14) plays a real inter-group match and sends the final
-official Gmail report — neither was done here.
+
+## Pipeline progress (Stage 14A — public-cloud full game + report dry-run)
+
+Stage 14A proves the deployed URLs work for a **full game**, not just a health
+smoke, and exercises the **official reporting** path end-to-end without sending
+email (`scripts/public_cloud_final_dry_run.py`):
+
+- **Full 6-sub-game game over public HTTPS** — reuses `run_mcp_full_game` against the
+  deployed Cop/Thief `/mcp` URLs (tokens from git-ignored `.secrets/`, never
+  printed); 6/6 decided, totals cop 30 / thief 60, bad token rejected.
+- **Official report built + validated** — `build_official_internal_report` with the
+  public URLs, real repo, students, and `cloud_status: deployed` →
+  `validation_status: valid` (all required fields present, token-safe).
+- **Gmail dry-run only** — the report passes the sender's validation/JSON-body build
+  with `RUN_GMAIL_LIVE` never set; `dry_run` / `body_json_valid: true`. Token-free
+  evidence written under `results/evidence/`.
+
+**Still next** (Stage 14B+): a real inter-group match and the final **live** Gmail
+report — neither was done here; the final submission is not complete.
 
 ## Verification artifacts (core)
 

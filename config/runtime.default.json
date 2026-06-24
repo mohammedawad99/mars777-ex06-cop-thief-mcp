@@ -1,0 +1,11 @@
+{
+  "version": "1.00",
+  "mcp_connect_timeout_seconds": 10,
+  "mcp_call_timeout_seconds": 20,
+  "server_readiness_timeout_seconds": 20,
+  "max_retries": 2,
+  "backoff_seconds": 0.5,
+  "provider_max_output_tokens": 120,
+  "gmail_send_timeout_seconds": 30,
+  "notes": "Controlled timeouts/retries for orchestration. Orchestration reads these instead of hardcoding; tests use small or injected values to stay fast."
+}

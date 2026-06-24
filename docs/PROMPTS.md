@@ -454,5 +454,43 @@ clean). The dry-run CLI returns `status: dry_run`, `body_json_valid: true`, exit
 Gmail email was not sent** (`RUN_GMAIL_LIVE` not enabled). No
 credentials/cloud/GUI/inter-group implementation added.
 
-> Subsequent stages will append their driving prompts here (orchestrator
-> hardening, cloud, bonus, audit).
+## Stage 12 — Hardened run validation (2026-06-24)
+
+**Goal:** Make the working local pipeline **reproducible and auditable** —
+deterministic run identity/manifest, classified failures, controlled
+retries/timeouts, aggregate report validation, and no secrets in
+manifests/results. **No** cloud, public URLs, live Gmail send, live Gemini
+(unless the existing gate is set), GUI, or real inter-group remote play.
+
+**Key constraints captured from the prompt:**
+- Deterministic `run_id` from group/stage/config-hash/seed; injectable
+  timestamp/git/seed for stable tests; stable config fingerprint.
+- JSON manifest with run identity, config summary, enabled capabilities
+  (game_engine, partial_observability, local_mcp_http, fake_local_llm,
+  optional_gemini_provider, gmail_dry_run) and disabled/not-yet ones
+  (cloud_public_urls, live_gmail_send, real_intergroup_bonus), validation gates,
+  artifact paths, secret/overclaim scan status, warnings — **no secrets**.
+- 12 failure categories + an exception classifier (by type, then name) that does
+  not read possibly-sensitive messages, plus dummy-token redaction.
+- Validated retry/timeout policy from `config/runtime.default.json` and an
+  injectable `retry_call` (fast tests); a resource-guard model.
+- Aggregate validation: exact sub-game count, totals == sum, no invalid
+  sub-games, winners/outcomes present, required status fields, token-scan, local
+  URLs only when local, manifest cloud cross-check.
+- Did not expand `prompted_game_flow.py`; added small new modules instead.
+
+**Artifacts produced:**
+- `src/mars777_cop_thief/run/` — `identity.py`, `manifest.py`, `status.py`,
+  `retry.py`, `rate_limit.py`, `validation.py`, `hardened_smoke.py`, `__init__`.
+- `config/runtime.default.json`; SDK `build_run_manifest` / `validate_full_report`
+  / `run_hardened_local_smoke`.
+- Tests under `tests/unit/run/` (302 tests, 100% coverage).
+
+**Outcome:** Hardened local run manifest and validation implemented; the hardened
+smoke runs the fake-local full game, builds + aggregate-validates the official
+report, builds a manifest, and gates the programmatic checks — `uv run python -m
+mars777_cop_thief.run.hardened_smoke` → `status: ok`, all checks true, exit 0
+(totals cop 30 / thief 60). Ruff clean, 302 tests, 100% coverage. No cloud/live-
+Gmail/live-Gemini/GUI/inter-group implementation added.
+
+> Subsequent stages will append their driving prompts here (cloud, bonus, audit).

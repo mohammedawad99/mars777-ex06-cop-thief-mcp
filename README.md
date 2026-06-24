@@ -8,6 +8,32 @@ a natural-language protocol, and the final results are reported via a Google
 (Gmail) report sender. Inter-group play is treated as in-scope (see
 `docs/PRD_bonus_intergroup.md`).
 
+## Status — Stage 12 (hardened run validation, manifest & reproducibility)
+
+A **run-hardening layer** is implemented (`src/mars777_cop_thief/run/`): a
+deterministic run identity (`run_id` from group/stage/config-hash/seed, with
+injectable timestamp/git for reproducible tests), a JSON-serializable **run
+manifest** (capabilities enabled/disabled, validation gates, scan status), a
+structured **failure classification** (12 categories) with secret-safe
+redaction, a validated **retry/timeout policy** + resource guard
+(`config/runtime.default.json`), and **aggregate validation** of a full report
+(exact sub-game count, totals match, no invalid sub-games, winners/outcomes
+present, required status fields, no token-like content, local URLs only when
+local).
+
+Run the hardened local smoke — it runs the fake-local prompted MCP full game,
+builds the official report, validates it as a whole, builds a manifest, and gates
+programmatic quality checks (report_valid, totals_valid, no_secret_like_content,
+json_serializable, local_mcp_verified, gmail_body_json_only):
+
+```bash
+uv run python -m mars777_cop_thief.run.hardened_smoke
+```
+
+Manifests and results carry **no tokens/secrets**. This stage remains local-only:
+**no cloud/public URLs**, **no live Gmail send**, **live Gemini only if enabled by
+the existing gate**, and **no real inter-group bonus game** has been completed.
+
 ## Status — Stage 11 (Gmail JSON report sender, dry-run + live-gated)
 
 A **Gmail JSON report sender** is implemented with a **dry-run** default and
@@ -287,6 +313,7 @@ src/mars777_cop_thief/
   llm/                provider interface, fake + optional Gemini provider, factory, prompts, parser, agent
   reporting/          official report schema, validation, evidence pack writer
   gmail/              Gmail JSON report sender (dry-run + live-gated), MIME, auth
+  run/                run identity/manifest, failure classes, retry, aggregate validation
 results/evidence/     sanitized, deterministic example artifacts (*.example.json)
 tests/unit/           version, config, and SDK smoke tests
 tests/unit/game/      engine TDD suite (models, rules, engine, events, SDK)
@@ -300,6 +327,7 @@ tests/integration/mcp/     real HTTP end-to-end smoke (default-on)
 tests/unit/reporting/      schema validation, official report, evidence tests
 tests/unit/llm/            provider, prompt, parser, cost, agent tests
 tests/unit/gmail/          config, MIME (JSON-only), auth, sender, CLI/SDK tests
+tests/unit/run/            identity/manifest, status/retry, validation/smoke tests
 ```
 
 ## Requirements

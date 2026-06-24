@@ -26,6 +26,17 @@ a measured figure once the relevant stage runs. Track per-run cost in
 - `max_moves` and `num_sub_games` bound per-run cost.
 - Retries are bounded (`retry_max_attempts`) to avoid runaway spend.
 
+## Rate-limit / resource guard (Stage 12)
+
+- A `ResourceGuard` model (`run/rate_limit.py`) reads conservative limits from
+  `config/rate_limits.default.json` (MCP requests/min, max concurrent) and the
+  output cap from `config/runtime.default.json` (`provider_max_output_tokens`),
+  and validates they are positive — making the per-run resource budget explicit
+  and auditable.
+- A validated `RetryPolicy` (`run/retry.py`) sources timeouts/retries from
+  `config/runtime.default.json` instead of hardcoding them; `retry_call` is
+  bounded and uses an injectable sleep so it never blocks tests.
+
 ## Token/cost accounting model (Stage 9, fake_local)
 
 - The LLM layer estimates tokens per prompt/response (`llm/cost.py`, ~4 chars per

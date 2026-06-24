@@ -43,6 +43,9 @@ Strict checklist for the final review. Boxes are checked only when verified.
 - [x] Gmail JSON report sender implemented; dry-run validates + builds JSON-only
       body without sending (`uv run python -m mars777_cop_thief.gmail.send_report`)
 - [x] Email body proven JSON-only (decodes/parses back to the report object)
+- [x] Hardened run smoke passes with a secret-free manifest + aggregate validation
+      (`uv run python -m mars777_cop_thief.run.hardened_smoke` → `status: ok`)
+- [x] Deterministic `run_id`/config fingerprint; failures classified; bounded retries
 - [ ] Real internal report emailed via `RUN_GMAIL_LIVE=1` with external OAuth files
       (optional live send; not run in default validation)
 - [ ] Real inter-group bonus game played and reconciled (later stage)

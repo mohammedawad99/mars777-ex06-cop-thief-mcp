@@ -1,6 +1,6 @@
 # PLAN — Intended Architecture
 
-**Group:** MaRs-777 · **Status:** Stage 11 (Gmail JSON report sender, dry-run + live-gated)
+**Group:** MaRs-777 · **Status:** Stage 12 (hardened run validation & reproducibility)
 
 ## Architecture overview
 
@@ -57,9 +57,9 @@ SDK/shared (Stage 0 ✅) → requirements hardening (Stage 1 ✅) → game engin
 (Stage 2 ✅) → local self-play pipeline (Stage 3 ✅) → local
 partial-observability & dialogue (Stage 4 ✅) → local HTTP MCP servers (Stage 5
 ✅) → local MCP client & HTTP E2E smoke (Stage 6 ✅) → MCP-backed local game orchestration (Stage 7 ✅) → official report schema, validation & evidence (Stage 8 ✅) → prompted MCP agent layer (Stage 9 ✅; offline fake LLM) → optional Gemini
-provider (Stage 10 ✅; live-gated) → **Gmail JSON report sender (Stage 11 —
-current; dry-run + live-gated)** → orchestrator hardening → cloud/self-play →
-bonus inter-group → hardening & audit.
+provider (Stage 10 ✅; live-gated) → Gmail JSON report sender (Stage 11 ✅;
+dry-run + live-gated) → **hardened run validation (Stage 12 — current)** →
+cloud/self-play → bonus inter-group → hardening & audit.
 
 ## Pipeline progress (Stage 3)
 
@@ -256,6 +256,26 @@ safely (`gmail/`):
 
 The report is now both **email-body ready** (Stage 8) and **sendable** (Stage 11).
 Cloud exposure and a real inter-group bonus game remain out of Stage 11.
+
+## Pipeline progress (Stage 12)
+
+Stage 12 wraps the working pipeline in a **reproducibility/audit layer**
+(`run/`):
+
+- **Deterministic identity + manifest** (`identity.py`, `manifest.py`) — `run_id`
+  from group/stage/config-hash/seed (ADR-0039); a JSON manifest of enabled vs
+  not-yet capabilities, gates, and scan status, provably secret-free (ADR-0040).
+- **Classified failures + bounded retries** (`status.py`, `retry.py`,
+  `rate_limit.py`) — 12 categories with redaction, and a validated,
+  config-driven retry/timeout policy + resource guard (ADR-0041).
+- **Aggregate validation + hardened smoke** (`validation.py`,
+  `hardened_smoke.py`) — validates the full report (count/totals/winners/
+  status/tokens/URLs) and gates programmatic quality checks, emitting a JSON
+  summary with the manifest. No secrets, no raw logs.
+
+The pipeline is now reproducible and auditable. The next stages (cloud/public
+URLs, real inter-group bonus, live Gmail send) reuse this manifest and validation
+unchanged.
 
 ## Verification artifacts (core)
 

@@ -15,8 +15,8 @@ Statuses: ✅ done · 🔄 in progress · ⏳ planned
 | 8 | Official report schema/validation + sanitized local evidence pack; bonus schema example | ✅ |
 | 9 | Prompted MCP agent layer: provider interface, offline fake LLM, prompts/parser/cost, prompted game runner | ✅ |
 | 10 | Optional Google Gemini provider adapter (google-genai), env config, provider factory, live-gated smoke | ✅ |
-| 11 | Gmail JSON report sender: dry-run default + live-gated sending, JSON-only body, external OAuth files | 🔄 |
-| 12 | Orchestrator hardening over MCP: seeds, aggregation, rate limits | ⏳ |
+| 11 | Gmail JSON report sender: dry-run default + live-gated sending, JSON-only body, external OAuth files | ✅ |
+| 12 | Hardened run validation: deterministic identity/manifest, failure classes, retry/timeout, aggregate validation | 🔄 |
 | 13 | Cloud/self-play through public, authenticated URLs | ⏳ |
 | 14 | Bonus inter-group play against another group's server (mandatory scope) | ⏳ |
 | 15 | Hardening: cost/measurement tracking, logging, security review | ⏳ |
@@ -290,7 +290,7 @@ Statuses: ✅ done · 🔄 in progress · ⏳ planned
   GUI, or real inter-group remote play. The live Gemini smoke was **not run**
   here (no key); it is available behind `RUN_GEMINI_LIVE=1`.
 
-## Stage 11 checklist (current — Gmail JSON report sender)
+## Stage 11 checklist (completed — Gmail JSON report sender)
 
 - [x] `google-api-python-client`, `google-auth-oauthlib`, `google-auth-httplib2`
       added via uv and pinned (uv.lock exact)
@@ -313,7 +313,7 @@ Statuses: ✅ done · 🔄 in progress · ⏳ planned
       back to the report object (JSON-only proven)
 - [x] Dry-run verified: `uv run python -m mars777_cop_thief.gmail.send_report` →
       `status: dry_run`, `body_json_valid: true`, exit 0
-- [ ] Reviewed and explicitly committed
+- [x] Reviewed and explicitly committed
 
 ### Stage 11 scope notes
 
@@ -325,8 +325,36 @@ Statuses: ✅ done · 🔄 in progress · ⏳ planned
 - **No** `credentials.json`/`token.json`/`.env` committed, cloud deployment,
   public URLs, GUI, or real inter-group remote play.
 
-## Next up (Stage 12 — orchestrator hardening over MCP)
+## Stage 12 checklist (current — hardened run validation)
 
-- [ ] Seeds, aggregation, and rate limits across runs
-- [ ] Measure real Gemini cost / real Gmail send once enabled locally (opt-in)
+- [x] `run/identity.py` — deterministic `run_id` (group/stage/config-hash/seed);
+      injectable timestamp + git commit; config fingerprint; no secrets
+- [x] `run/manifest.py` — JSON manifest (capabilities enabled/disabled, gates,
+      scan status); `scan_manifest_secrets` exempts the scan-status meta keys
+- [x] `run/status.py` — 12 failure categories + exception classifier + redaction
+- [x] `run/retry.py` + `config/runtime.default.json` — validated `RetryPolicy`
+      and injectable `retry_call` (fast, bounded); `run/rate_limit.py` resource guard
+- [x] `run/validation.py` — aggregate `validate_full_report` (count/totals/winners/
+      outcomes/status-fields/token-scan/url-locality + manifest cloud cross-check)
+- [x] `run/hardened_smoke.py` — full prompted run → official report → aggregate
+      validation → manifest → programmatic gates; JSON summary, no secrets/raw logs
+- [x] SDK `build_run_manifest` / `validate_full_report` / `run_hardened_local_smoke`
+- [x] Hardened smoke verified: `uv run python -m mars777_cop_thief.run.hardened_smoke`
+      → `status: ok`, all checks true, exit 0 (totals cop 30 / thief 60)
+- [x] Tests under `tests/unit/run/` (302 total, 100% coverage)
+- [ ] Reviewed and explicitly committed
+
+### Stage 12 scope notes
+
+- Same config + seed → same `run_id` and stable config hash (timestamp/git are
+  injectable for deterministic tests).
+- Failures are **classified**, not hidden; manifests/results carry **no secrets**
+  (the scan exempts only the scan-status meta field names, not content).
+- **No** cloud deployment, public URLs, live Gmail send, GUI, or real inter-group
+  remote play; live Gemini runs only behind the existing `RUN_GEMINI_LIVE` gate.
+
+## Next up (Stage 13 — cloud / public authenticated URLs)
+
+- [ ] Deploy the two MCP servers behind public, authenticated URLs
+- [ ] Keep local-only the default; reuse the hardened validation + manifest
 - [ ] No change to the role-safe observation boundary or the JSON-only body rule

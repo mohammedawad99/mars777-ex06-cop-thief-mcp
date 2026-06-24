@@ -46,6 +46,12 @@ every gate below passes.
     `status: dry_run` and `body_json_valid: true`. It validates the official
     report and builds the JSON-only MIME message **without calling Gmail** and
     without requiring credentials/token.
+14. **Hardened run smoke** —
+    `uv run python -m mars777_cop_thief.run.hardened_smoke` must exit 0 with
+    `status: ok` and all programmatic checks true (report_valid, totals_valid,
+    no_secret_like_content, json_serializable, local_mcp_verified,
+    gmail_body_json_only). It runs the fake-local full game, aggregate-validates
+    the official report, and builds a secret-free run manifest.
 
 ### Optional (not required for default validation)
 

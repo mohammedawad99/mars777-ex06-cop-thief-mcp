@@ -28,6 +28,10 @@ from mars777_cop_thief.orchestration import (
 from mars777_cop_thief.orchestration.results import SubGameResult
 from mars777_cop_thief.reporting import build_official_internal_report, validate_internal_report
 from mars777_cop_thief.reporting.generate_evidence_pack import generate as generate_evidence
+from mars777_cop_thief.run.hardened_smoke import run_hardened_smoke
+from mars777_cop_thief.run.identity import build_run_identity
+from mars777_cop_thief.run.manifest import build_manifest
+from mars777_cop_thief.run.validation import validate_full_report as _validate_full_report
 from mars777_cop_thief.shared.config import load_game_config
 from mars777_cop_thief.shared.version import __version__
 
@@ -116,3 +120,33 @@ class AssignmentSdk:
     def validate_gmail_message_body(self, raw_message: str) -> dict:
         """Parse a built Gmail raw message body back into JSON (raises if invalid)."""
         return extract_json_body(raw_message)
+
+    def build_run_manifest(
+        self,
+        config: dict,
+        *,
+        stage="hardened",
+        mode="mcp-backed-prompted",
+        seed=0,
+        created_at_utc=None,
+        git_commit="__auto__",
+    ) -> dict:
+        """Build a JSON-serializable run manifest for the given config."""
+        identity = build_run_identity(
+            config,
+            stage=stage,
+            mode=mode,
+            seed=seed,
+            created_at_utc=created_at_utc,
+            git_commit=git_commit,
+        )
+        summary = {k: config[k] for k in ("grid_size", "max_moves", "num_sub_games") if k in config}
+        return build_manifest(identity, summary, validation_gates={})
+
+    def validate_full_report(self, report: dict, manifest: dict | None = None) -> list[str]:
+        """Aggregate-validate a full official report (empty list == valid)."""
+        return _validate_full_report(report, manifest)
+
+    def run_hardened_local_smoke(self, num_sub_games: int | None = None) -> dict:
+        """Run the hardened local smoke and return its JSON-serializable summary."""
+        return run_hardened_smoke(num_sub_games=num_sub_games)

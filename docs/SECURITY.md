@@ -70,6 +70,18 @@
   only the role-safe observation (no hidden coordinates). Unit tests mock the SDK
   and make **no network calls**; the live path is gated behind `RUN_GEMINI_LIVE=1`.
 
+### Run manifests and results (Stage 12)
+
+- Run manifests and the hardened-smoke summary contain **no secrets**: identity,
+  config summary, capability flags, gate/scan status, and validation results only.
+  A token-scan (`run/manifest.py:scan_manifest_secrets`) verifies this, exempting
+  only the scan-status meta field names (which contain "secret"/"overclaim" by
+  design, not secret values).
+- Failure messages are **redacted** (`run/status.py`) — known dummy tokens are
+  replaced with `[REDACTED]` — and the classifier maps by exception **type/name**,
+  never by reading a possibly-sensitive message body. Aggregate report validation
+  rejects any token-like content in the report.
+
 ### LLM prompts and responses (Stage 9)
 
 - Prompts are built only from the **role-safe observation** (`llm/prompts.py`).

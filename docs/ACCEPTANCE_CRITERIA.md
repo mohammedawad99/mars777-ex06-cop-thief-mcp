@@ -209,6 +209,25 @@ with no credentials and make no network call; the live send was not run.
 - **AC-QG-6** (R-063): The final gap audit is completed and every open gap is
   either closed or explicitly justified before submission.
 
+## 11. Run hardening (Stage 12)
+
+- **AC-HARD-1** (R-068) — ✅ test-covered: a run has a **deterministic** identity —
+  the same config + seed yields the same `run_id` and config fingerprint; a config
+  change changes the fingerprint (timestamp/git are injectable for tests).
+- **AC-HARD-2** — ✅ test-covered: each run has a **JSON-serializable manifest**
+  listing enabled vs disabled (not-yet) capabilities and gate/scan status, and the
+  manifest contains **no token-like content**.
+- **AC-HARD-3** — ✅ test-covered: **failures are classified** into a fixed set of
+  categories without leaking secrets; **retries/timeouts** are validated and
+  bounded (config-driven, injectable sleep).
+- **AC-HARD-4** — ✅ test-covered: **aggregate validation** rejects wrong sub-game
+  count, totals mismatch, invalid sub-games, missing winner/outcome/status fields,
+  token-like content, and non-local URLs when cloud_status is not local.
+- **AC-HARD-5** — ✅ verified: `run_hardened_smoke` runs the fake-local full game,
+  builds + validates the official report, builds a manifest, and gates the
+  programmatic checks (report_valid, totals_valid, no_secret_like_content,
+  json_serializable, local_mcp_verified, gmail_body_json_only) — exit 0.
+
 ---
 
 ### Pass/fail discipline

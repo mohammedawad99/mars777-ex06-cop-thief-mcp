@@ -373,3 +373,37 @@ returns secret content and `SendResult` carries no secrets. **Consequences:** No
 secret is committed or required for tests; if earlier credentials used a broader
 scope, the token may need regenerating outside the repo; the revoke story in
 `SECURITY.md` applies.
+
+## ADR-0039 — Deterministic run identity and config fingerprint
+**Context:** Runs must be reproducible and auditable, but timestamps and git state
+are inherently variable. **Decision:** Derive `run_id` only from
+`group_slug-stage-config_hash-seed` (no timestamp), where `config_hash` is a
+stable SHA-256 over the canonical (sorted) config; the `created_at_utc` and
+`git_commit` are **separate metadata that are injectable**, so tests are fully
+deterministic while real runs still capture wall-clock/commit. **Consequences:**
+The same config + seed always yields the same `run_id` and fingerprint; a config
+change changes the fingerprint; identity carries no secrets.
+
+## ADR-0040 — Run manifest with capability flags and scan status
+**Context:** A grader/auditor needs to see, per run, exactly what was exercised
+and what was deliberately not. **Decision:** Emit a JSON manifest with the run
+identity, a config summary, **capabilities_enabled** vs **capabilities_disabled**
+(cloud/public URLs, live Gmail, real inter-group all off), the validation gates
+run, artifact paths, and `secret_scan_status`/`overclaim_scan_status`. A
+token-scan (`scan_manifest_secrets`) verifies the manifest is secret-free,
+**exempting only the scan-status meta field names** (which contain the word
+"secret"/"overclaim" by design, not secret values). **Consequences:** Each run is
+self-describing and honest about scope; the manifest cannot carry tokens; the
+no-secret check has no false positive on its own meta fields.
+
+## ADR-0041 — Classified failures and controlled retries/timeouts
+**Context:** Failures must be surfaced (not hidden) without leaking secrets, and
+timeouts/retries must be bounded and configurable. **Decision:** Define 12
+**failure categories** and a classifier that maps exceptions by **type then
+name** (never by inspecting a possibly-sensitive message), with dummy-token
+redaction for any recorded message. Retry/timeout bounds come from
+`config/runtime.default.json` via a validated `RetryPolicy`; `retry_call` takes an
+**injectable sleep** so tests stay fast and a resource-guard model validates
+request/concurrency/output limits. **Consequences:** Runs fail loudly and
+categorically; no secret leaks into a status; retries are bounded and
+config-driven, not hardcoded; tests are fast and deterministic.

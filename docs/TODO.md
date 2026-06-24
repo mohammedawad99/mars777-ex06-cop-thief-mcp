@@ -459,12 +459,32 @@ Statuses: ✅ done · 🔄 in progress · ⏳ planned
       loads them at runtime for the in-memory report + Gmail dry-run.
 - [x] Tracked evidence **redacts** the IDs (`id: REDACTED`) and adds the
       `identity_privacy` flags; English/Hebrew names retained.
-- [x] No history rewrite/force-push (the earlier commit `5aae040` still holds the
-      values in history).
+- [x] Committed and pushed.
+
+### Stage 14B — public-history scrub
+
+- [x] Approved one-time `git filter-repo` rewrite (national-IDs → `REDACTED_STUDENT_ID`)
+      + `git push --force-with-lease`; private pre-scrub backup taken outside the repo.
+- [x] **All reachable history is ID-free** — verified locally and in a fresh clone
+      (0 matches). Repo stayed public. GitHub internal-cache caveat documented.
+
+### Stage 14C — Gmail draft preview (no send)
+
+- [x] Created a Gmail **draft** (not sent) of the official Assignment 6 JSON report,
+      addressed to the **authenticated self account** (not the lecturer); subject
+      `PREVIEW ONLY - MaRs-777 Assignment 6 JSON Report`.
+- [x] Body is the JSON-only official report (real IDs loaded from the local ignored
+      file in memory); `body_json_valid` + `report_schema_valid`, no placeholders.
+- [x] Sanitized evidence `results/evidence/gmail_draft_preview.example.json`
+      (flags only; no IDs, no body, `live_gmail_sent: false`).
 - [ ] Reviewed and explicitly committed
 
-## Next up (Stage 14C+ — bonus inter-group + final live report)
+## Next up (Stage 14D+ — bonus inter-group + final live report)
+
+> The Stage 14C draft is a **preview to the student only** — it is **not** the
+> official submission. Sending the final report to the lecturer is still pending.
 
 - [ ] Play a real inter-group match against another group's deployed URLs
-- [ ] Send the final official report via Gmail (`RUN_GMAIL_LIVE=1`, external OAuth)
+- [ ] Send the final official report **to the lecturer** via Gmail
+      (`RUN_GMAIL_LIVE=1`, external OAuth) — still pending
 - [ ] Close `FINAL_GAP_AUDIT.md` and the submission checklist (students already real)

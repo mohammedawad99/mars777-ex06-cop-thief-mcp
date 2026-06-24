@@ -80,8 +80,13 @@ Strict checklist for the final review. Boxes are checked only when verified.
 - [x] **Git history scrubbed** of student national IDs (`git filter-repo` +
       `--force-with-lease`); all reachable history ID-free, verified in a fresh
       clone (0 matches); repo stayed public (GitHub internal-cache caveat noted)
-- [ ] Real internal report emailed via `RUN_GMAIL_LIVE=1` with external OAuth files
-      (optional live send; not run yet)
+- [x] Gmail **draft preview** of the official JSON report created (to the student's
+      own account, **not** the lecturer); subject `PREVIEW ONLY - …`; JSON-only body,
+      schema-valid, no placeholders; **not sent** (`scripts/gmail_draft_preview.py`,
+      `results/evidence/gmail_draft_preview.example.json`) — this is a preview, **not**
+      the official submission
+- [ ] Real internal report emailed **to the lecturer** via `RUN_GMAIL_LIVE=1` with
+      external OAuth files (optional live send; not run yet)
 - [ ] Real inter-group bonus game played and reconciled (later stage)
 
 ## Documentation & measurement

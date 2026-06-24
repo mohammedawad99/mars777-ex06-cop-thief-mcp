@@ -43,7 +43,8 @@ known open gaps**, deferred to later stages — none is claimed as done:
 | Official report student identities | **runtime-only** — two MaRs-777 students load from a local git-ignored file at runtime; the in-memory report + Gmail dry-run use real IDs | Done (Stage 14A/14B) |
 | Student national-ID privacy in tracked files | **redacted** — no national-ID value in any tracked file; tracked evidence shows `id: REDACTED` + `identity_privacy` flags | Done (Stage 14B hotfix) |
 | Student national-ID privacy in Git history | **scrubbed** — `git filter-repo` rewrote history (IDs → `REDACTED_STUDENT_ID`); `git push --force-with-lease`; **all reachable history is ID-free**, verified in a fresh clone (0 matches). Repo stayed public | Done (Stage 14B history scrub) |
-| Final official report sent via Gmail | **not sent** — only dry-run done; live is opt-in (`RUN_GMAIL_LIVE=1`) with external OAuth files | Deferred (Stage 14C) |
+| Gmail draft preview of official report | **created** — Gmail **draft** (not sent) of the official JSON report to the student's own account (not lecturer); JSON-only, schema-valid, no placeholders; sanitized evidence (no IDs) | Done (Stage 14C) |
+| Final official report sent to lecturer via Gmail | **not sent** — only dry-run + a student-only draft preview done; live send to the lecturer is opt-in (`RUN_GMAIL_LIVE=1`) and still pending | Deferred (Stage 14D) |
 | Live Gemini provider run | **not run** — offline `fake_local` default; live is opt-in (`RUN_GEMINI_LIVE=1`) with a key | Deferred (opt-in local) |
 | Real inter-group bonus game | **not completed** — bonus schema/protocol exist; no real cross-group match played | Deferred (Stage 14) |
 | Final Moodle submission PDF | **not prepared yet** | Deferred (near submission) |

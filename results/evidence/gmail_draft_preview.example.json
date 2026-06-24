@@ -1,0 +1,15 @@
+{
+  "stage": "14C",
+  "artifact": "gmail_draft_preview",
+  "draft_created": true,
+  "draft_subject": "PREVIEW ONLY - MaRs-777 Assignment 6 JSON Report",
+  "body_json_valid": true,
+  "report_schema_valid": true,
+  "live_gmail_sent": false,
+  "lecturer_recipient_used": false,
+  "recipient_category": "authenticated_self_account",
+  "identity_source": "local_ignored_file",
+  "ids_redacted_in_tracked_evidence": true,
+  "token_values_recorded": false,
+  "students_count": 2
+}

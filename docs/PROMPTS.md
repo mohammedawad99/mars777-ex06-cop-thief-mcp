@@ -619,5 +619,24 @@ reachable history is ID-free** — 0 matches across every commit locally and in 
 (ignored). No live Gmail, no bonus. Residual caveat: GitHub may keep unreachable
 internal copies for a time (outside repo control).
 
+## Stage 14C — Gmail draft preview (no send)
+
+**Prompt summary:** Create a Gmail **draft** preview (never send) containing exactly
+the official Assignment 6 JSON body, addressed to the student's **own** account (not
+the lecturer), subject `PREVIEW ONLY - MaRs-777 Assignment 6 JSON Report`. Use the
+public Cloud Run URLs and the local ignored student identities; validate JSON-only,
+schema-valid, no placeholders, 2 students; don't print IDs/secrets; don't commit IDs.
+
+**Outcome:** `scripts/gmail_draft_preview.py` rebuilds the official report from the
+sanitized tracked evidence + real students from `MARS777_STUDENTS_FILE` (in memory),
+validates it, and creates a Gmail draft to the authenticated self account via
+`drafts().create` (loaded with the token's own granted scopes — draft needs
+compose/modify, not just send). Result flags: `draft_created: true`,
+`body_json_valid: true`, `report_schema_valid: true`, `placeholders_remaining:
+false`, `students_count: 2`, `recipient_is_lecturer: false`, `live_gmail_sent:
+false`. Tracked evidence `gmail_draft_preview.example.json` holds flags only (no IDs,
+no body). The draft is a **preview to the student**, **not** the official submission;
+live send to the lecturer and the bonus remain pending.
+
 > Subsequent stages will append their driving prompts here (bonus, final live
 > report, audit).

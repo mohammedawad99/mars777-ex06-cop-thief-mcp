@@ -40,6 +40,12 @@ replacing the IDs with `REDACTED_STUDENT_ID`, then `git push --force-with-lease`
 **all reachable Git history is now ID-free** (verified in a fresh clone). The real
 identities live only in the local git-ignored `.secrets/students.local.json`.
 
+**Gmail draft preview (Stage 14C):** a Gmail **draft** (never sent) of the official
+JSON report was created to the student's **own** account (not the lecturer) — subject
+`PREVIEW ONLY - …`, JSON-only schema-valid body (`scripts/gmail_draft_preview.py`).
+It is a preview, **not** the official submission; the live send to the lecturer and
+the inter-group bonus are still pending.
+
 ## Status — Stage 13C (live Cloud Run deployment)
 
 **Both MCP services are deployed and live on Google Cloud Run** in project

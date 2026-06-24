@@ -72,8 +72,10 @@ Strict checklist for the final review. Boxes are checked only when verified.
 - [x] Final official report **Gmail dry-run** passed with that report (`dry_run`,
       `body_json_valid: true`); **no live email sent**
       (`results/evidence/final_report_dry_run.example.json`)
+- [x] Official report carries the **two real students** (MaRs-777) — no student
+      placeholders remain (`results/evidence/public_cloud_full_game.example.json`)
 - [ ] Real internal report emailed via `RUN_GMAIL_LIVE=1` with external OAuth files
-      (optional live send; not run — also needs the real student `id`)
+      (optional live send; not run yet)
 - [ ] Real inter-group bonus game played and reconciled (later stage)
 
 ## Documentation & measurement

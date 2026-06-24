@@ -447,11 +447,12 @@ Statuses: ✅ done · 🔄 in progress · ⏳ planned
 ### Stage 14A scope notes
 
 - **No live Gmail send** (`RUN_GMAIL_LIVE` never set to 1), **no inter-group bonus
-  run**, and the final submission is **not** complete. Student `id` in the report is
-  still a placeholder pending the real value.
+  run**, and the final submission is **not** complete. The official report now
+  carries the **two real students** (no placeholders remaining); the live email and
+  bonus match are the only items left.
 
 ## Next up (Stage 14B+ — bonus inter-group + final live report)
 
 - [ ] Play a real inter-group match against another group's deployed URLs
 - [ ] Send the final official report via Gmail (`RUN_GMAIL_LIVE=1`, external OAuth)
-- [ ] Fill the real student id; close `FINAL_GAP_AUDIT.md` and the checklist
+- [ ] Close `FINAL_GAP_AUDIT.md` and the submission checklist (students already real)

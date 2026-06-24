@@ -5,8 +5,20 @@
   "group_slug": "mars777",
   "students": [
     {
+      "id": "REDACTED_STUDENT_ID",
       "name": "Mohamed Awad",
-      "id": "REPLACE_WITH_STUDENT_ID"
+      "first_name_en": "Mohamed",
+      "last_name_en": "Awad",
+      "first_name_he": "\u05de\u05d5\u05d7\u05de\u05d3",
+      "last_name_he": "\u05e2\u05d5\u05d0\u05d3"
+    },
+    {
+      "id": "REDACTED_STUDENT_ID",
+      "name": "Rawey Sleiman",
+      "first_name_en": "Rawey",
+      "last_name_en": "Sleiman",
+      "first_name_he": "\u05e8\u05d0\u05d5\u05d5\u05d9",
+      "last_name_he": "\u05e1\u05d5\u05dc\u05d9\u05de\u05d0\u05df"
     }
   ],
   "github_repo": "https://github.com/mohammedawad99/mars777-ex06-cop-thief-mcp",

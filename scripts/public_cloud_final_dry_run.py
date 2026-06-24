@@ -35,7 +35,24 @@ EVID = _ROOT / "results" / "evidence"
 COP_URL = os.environ.get("COP_MCP_URL", "https://mars777-cop-mcp-6lhzzicqha-zf.a.run.app/mcp")
 THIEF_URL = os.environ.get("THIEF_MCP_URL", "https://mars777-thief-mcp-6lhzzicqha-zf.a.run.app/mcp")
 REPO = "https://github.com/mohammedawad99/mars777-ex06-cop-thief-mcp"
-STUDENTS = [{"name": "Mohamed Awad", "id": "REPLACE_WITH_STUDENT_ID"}]
+STUDENTS = [
+    {
+        "id": "REDACTED_STUDENT_ID",
+        "name": "Mohamed Awad",
+        "first_name_en": "Mohamed",
+        "last_name_en": "Awad",
+        "first_name_he": "מוחמד",
+        "last_name_he": "עואד",
+    },
+    {
+        "id": "REDACTED_STUDENT_ID",
+        "name": "Rawey Sleiman",
+        "first_name_en": "Rawey",
+        "last_name_en": "Sleiman",
+        "first_name_he": "ראווי",
+        "last_name_he": "סולימאן",
+    },
+]
 
 
 def _cloud_official_report(config: dict, results) -> dict:

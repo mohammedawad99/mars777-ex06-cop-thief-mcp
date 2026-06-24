@@ -40,7 +40,8 @@ known open gaps**, deferred to later stages — none is claimed as done:
 | Cloud live deployment | **done** — both MCP services deployed to Cloud Run (`api-mars-777`/`me-west1`); public HTTPS smoke `passed: true`; APIs enabled: run/cloudbuild/artifactregistry | Done (Stage 13C) |
 | Real deployed public URLs | **present** — `mars777-cop-mcp` + `mars777-thief-mcp` live; recorded in `results/evidence/cloud_deployment.example.json` and README (no token values) | Done (Stage 13C) |
 | Full public-cloud game + official report | **done** — 6/6 sub-games over the public `/mcp` URLs; official report schema-valid; Gmail **dry-run** passed (no send); token-free evidence | Done (Stage 14A) |
-| Final official report sent via Gmail | **not sent** — only dry-run done; live is opt-in (`RUN_GMAIL_LIVE=1`) with external OAuth files; also needs the real student `id` | Deferred (Stage 14B) |
+| Official report student identities | **real** — two MaRs-777 students (id + EN/HE names) in the report; no student placeholders remain | Done (Stage 14A) |
+| Final official report sent via Gmail | **not sent** — only dry-run done; live is opt-in (`RUN_GMAIL_LIVE=1`) with external OAuth files | Deferred (Stage 14B) |
 | Live Gemini provider run | **not run** — offline `fake_local` default; live is opt-in (`RUN_GEMINI_LIVE=1`) with a key | Deferred (opt-in local) |
 | Real inter-group bonus game | **not completed** — bonus schema/protocol exist; no real cross-group match played | Deferred (Stage 14) |
 | Final Moodle submission PDF | **not prepared yet** | Deferred (near submission) |

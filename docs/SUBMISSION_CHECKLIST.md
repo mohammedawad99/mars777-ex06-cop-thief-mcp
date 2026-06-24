@@ -77,6 +77,9 @@ Strict checklist for the final review. Boxes are checked only when verified.
 - [x] Tracked evidence **redacts** student national IDs (`id: REDACTED` + privacy
       flags); no national-ID value in any tracked file
       (`results/evidence/public_cloud_full_game.example.json`)
+- [x] **Git history scrubbed** of student national IDs (`git filter-repo` +
+      `--force-with-lease`); all reachable history ID-free, verified in a fresh
+      clone (0 matches); repo stayed public (GitHub internal-cache caveat noted)
 - [ ] Real internal report emailed via `RUN_GMAIL_LIVE=1` with external OAuth files
       (optional live send; not run yet)
 - [ ] Real inter-group bonus game played and reconciled (later stage)

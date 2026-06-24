@@ -41,7 +41,8 @@ known open gaps**, deferred to later stages — none is claimed as done:
 | Real deployed public URLs | **present** — `mars777-cop-mcp` + `mars777-thief-mcp` live; recorded in `results/evidence/cloud_deployment.example.json` and README (no token values) | Done (Stage 13C) |
 | Full public-cloud game + official report | **done** — 6/6 sub-games over the public `/mcp` URLs; official report schema-valid; Gmail **dry-run** passed (no send); token-free evidence | Done (Stage 14A) |
 | Official report student identities | **runtime-only** — two MaRs-777 students load from a local git-ignored file at runtime; the in-memory report + Gmail dry-run use real IDs | Done (Stage 14A/14B) |
-| Student national-ID privacy in tracked files | **redacted** — no national-ID value in any tracked file; tracked evidence shows `id: REDACTED` + `identity_privacy` flags. Earlier commit `5aae040` still holds the values in history; **no history rewrite done** | Done (Stage 14B hotfix) |
+| Student national-ID privacy in tracked files | **redacted** — no national-ID value in any tracked file; tracked evidence shows `id: REDACTED` + `identity_privacy` flags | Done (Stage 14B hotfix) |
+| Student national-ID privacy in Git history | **scrubbed** — `git filter-repo` rewrote history (IDs → `REDACTED_STUDENT_ID`); `git push --force-with-lease`; **all reachable history is ID-free**, verified in a fresh clone (0 matches). Repo stayed public | Done (Stage 14B history scrub) |
 | Final official report sent via Gmail | **not sent** — only dry-run done; live is opt-in (`RUN_GMAIL_LIVE=1`) with external OAuth files | Deferred (Stage 14C) |
 | Live Gemini provider run | **not run** — offline `fake_local` default; live is opt-in (`RUN_GEMINI_LIVE=1`) with a key | Deferred (opt-in local) |
 | Real inter-group bonus game | **not completed** — bonus schema/protocol exist; no real cross-group match played | Deferred (Stage 14) |

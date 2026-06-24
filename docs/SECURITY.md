@@ -153,12 +153,20 @@
   `REDACTED`, English/Hebrew names are kept, and an `identity_privacy` block records
   `ids_required_for_official_report` / `ids_loaded_from_local_ignored_file` /
   `ids_redacted_in_tracked_evidence`. No national-ID value reaches a tracked artifact.
-- **History note:** a previous pushed commit (`5aae040`) contained the real IDs in
-  tracked evidence and the script. This hotfix redacts them from the **current
-  tracked tree**; **no history rewrite / force-push was performed**, so the values
-  remain reachable in that earlier commit's history. Rotating national IDs is not
-  possible; if removal from history is required later, it must be done deliberately
-  (e.g. `git filter-repo`) as a separate, coordinated step.
+- **History scrub:** a previous pushed commit briefly contained the real IDs in
+  tracked evidence and the script. As an approved one-time exception, Git history
+  was rewritten with `git filter-repo --replace-text` (each national-ID →
+  `REDACTED_STUDENT_ID`) and published with `git push --force-with-lease` (never
+  plain `--force`). **All reachable Git history is now ID-free**, verified by
+  scanning every commit locally and in a **fresh clone** from GitHub (0 matches for
+  either ID). A private, ignored backup of the pre-scrub history was taken first
+  (outside the repo). The repo visibility was **not** changed (stays public).
+  National IDs cannot be rotated, so the scrub is the mitigation; see the residual
+  caveat below.
+- **Residual caveat:** force-push removes the values from reachable history, but
+  GitHub may retain unreachable objects in internal caches/backups for some time,
+  and any direct old-commit-SHA URL could be cached. This is outside repo control;
+  no further client-side action can purge GitHub's internal copies.
 
 ### Run manifests and results (Stage 12)
 

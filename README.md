@@ -34,8 +34,11 @@ complete** — those remain later steps. Tokens stayed only in git-ignored `.sec
 tracked file. The report script loads the real identities at runtime from a local
 git-ignored file (`MARS777_STUDENTS_FILE`, default `.secrets/students.local.json`)
 for the in-memory report and Gmail dry-run; tracked evidence **redacts** the IDs
-(`id: REDACTED`) and records `identity_privacy` flags. (An earlier commit still
-holds the values in history; no history rewrite was performed.)
+(`id: REDACTED`) and records `identity_privacy` flags. A brief earlier commit had
+exposed the IDs, so a **public-history scrub** was performed (`git filter-repo`
+replacing the IDs with `REDACTED_STUDENT_ID`, then `git push --force-with-lease`);
+**all reachable Git history is now ID-free** (verified in a fresh clone). The real
+identities live only in the local git-ignored `.secrets/students.local.json`.
 
 ## Status — Stage 13C (live Cloud Run deployment)
 

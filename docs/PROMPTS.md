@@ -600,9 +600,24 @@ script to load them at runtime, and redact the tracked evidence (`id: REDACTED` 
 local ignored file into the in-memory report + Gmail dry-run and writes a redacted
 copy to tracked evidence. Re-run via `MARS777_STUDENTS_FILE` passed (schema-valid,
 `dry_run`, `body_json_valid: true`, no send). Privacy grep (excluding `.secrets`)
-finds **no real ID in any tracked file**. The earlier commit `5aae040` still holds
-the values in history — **no history rewrite was performed**. Docs (SECURITY, TODO,
-SUBMISSION_CHECKLIST, FINAL_GAP_AUDIT) updated. 340 tests, 100% coverage.
+finds **no real ID in any tracked file**. Docs (SECURITY, TODO, SUBMISSION_CHECKLIST,
+FINAL_GAP_AUDIT) updated. 340 tests, 100% coverage. (The tracked-tree redaction left
+the IDs reachable in earlier history — addressed next by the history scrub.)
+
+## Stage 14B — public-history scrub
+
+**Prompt summary:** As an approved one-time exception to the no-force-push rule,
+rewrite Git history to remove the student national-IDs that a prior commit had
+exposed, then `git push --force-with-lease` (never plain `--force`); keep the repo
+public; back up first; verify in a fresh clone; don't print ID values.
+
+**Outcome:** private backup (bundle + mirror) taken outside the repo first;
+`git filter-repo --replace-text` mapped each national-ID → `REDACTED_STUDENT_ID`;
+`origin` re-added; `git push --force-with-lease` published the rewrite. **All
+reachable history is ID-free** — 0 matches across every commit locally and in a
+**fresh GitHub clone**. Repo stayed public; `.secrets/students.local.json` retained
+(ignored). No live Gmail, no bonus. Residual caveat: GitHub may keep unreachable
+internal copies for a time (outside repo control).
 
 > Subsequent stages will append their driving prompts here (bonus, final live
 > report, audit).

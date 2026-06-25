@@ -115,7 +115,15 @@ Strict checklist for the final review. Boxes are checked only when verified.
       `scripts/bonus_finalize_agreement.py`): JSON-only bonus_game draft to the lecturer
       created in Gmail (`gmail_draft_created: true`) and **not sent** — `RUN_GMAIL_LIVE`
       unset, `live_gmail_sent: false`, `bonus_email_sent: false`; body is ID-redacted
-- [ ] Final bonus/official report **sent live to the lecturer** (`RUN_GMAIL_LIVE=1`) — not yet
+- [x] **Final `bonus_game` report sent live to the lecturer** (Stage 15F,
+      `scripts/bonus_send_final_email.py`): one Gmail message to `rmisegal+uoh26b@gmail.com`,
+      JSON-only body with the top-level `result_hash` (`a0fdf72d…`), `mutual_agreement: true`,
+      `partner_confirmation_status: confirmed`; partner independently reproduced & matched the
+      hash and is sending their matching report. `live_gmail_sent: true`,
+      `bonus_email_sent: true`, **`internal_game_sent: false`**; idempotency guard prevents a
+      second send. Sanitized evidence `results/evidence/bonus_game_email_sent.example.json`
+      (no tokens/OAuth/IDs)
+- [ ] `internal_game` report sent live to the lecturer (separate; not sent in Stage 15F)
 - [ ] Match-scoped tokens revoked after the match and recorded (pending)
 
 ## Documentation & measurement

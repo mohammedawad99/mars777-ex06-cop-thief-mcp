@@ -1,0 +1,24 @@
+{
+  "stage": "15F",
+  "artifact": "bonus_game_email_sent",
+  "report_type": "bonus_game",
+  "recipient": "rmisegal+uoh26b@gmail.com",
+  "subject": "MaRs-777 Assignment 6 - Inter-Group Bonus Game (bonus_game JSON, mutual_agreement)",
+  "live_gmail_sent": true,
+  "bonus_email_sent": true,
+  "internal_game_sent": false,
+  "mutual_agreement": true,
+  "partner_confirmation_status": "confirmed",
+  "partner_hash_confirmation_received": true,
+  "result_hash": "a0fdf72d1122280c3637d54f0bda5656c6c6c2b257220347d9675b405972ac68",
+  "totals_by_group": {
+    "MaRs-777": 30,
+    "orcai-mj": 90
+  },
+  "sent_at_iso": "2026-06-25T21:01:22.457310+03:00",
+  "gmail_message_id_present": true,
+  "duplicate_send_prevented": false,
+  "token_values_recorded": false,
+  "ids_redacted_in_tracked_evidence": true,
+  "oauth_contents_recorded": false
+}

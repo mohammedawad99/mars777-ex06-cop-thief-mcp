@@ -262,6 +262,14 @@
   repo and their contents are never logged or written. The shipped `hash_method` documents
   the digest recipe but contains no secret — it deliberately lists tokens, OAuth contents,
   identities, timestamps, and Gmail-draft metadata as **excluded** from the hash.
+- The final live send (`scripts/bonus_send_final_email.py`) emails the **ID-redacted**
+  `bonus_game` JSON to the lecturer using OAuth files **outside** the repo with the minimal
+  `gmail.send` scope. Before sending it scans the exact payload and refuses any token-like
+  value, 9-digit national-ID-like value, or `.secrets` path. The sanitized send evidence
+  records only safe flags, the `result_hash`, totals, and a **boolean** `gmail_message_id_present`
+  (never the raw message id, body, recipient token, or OAuth contents):
+  `token_values_recorded: false`, `oauth_contents_recorded: false`,
+  `ids_redacted_in_tracked_evidence: true`. An idempotency guard prevents duplicate sends.
 
 ## Revoke story
 

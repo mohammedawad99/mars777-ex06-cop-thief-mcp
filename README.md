@@ -8,6 +8,31 @@ a natural-language protocol, and the final results are reported via a Google
 (Gmail) report sender. Inter-group play is treated as in-scope (see
 `docs/PRD_bonus_intergroup.md`).
 
+## Status — Stage 15F (final bonus_game report sent live to the lecturer)
+
+**The final agreed `bonus_game` report was emailed to the lecturer.** Partner group
+`orcai-mj` independently recomputed the `result_hash` using the documented method (sha256
+over `official_rules` + `sub_games` + `totals_by_group`, sorted-keys compact JSON) and it
+**matched** `a0fdf72d…72ac68`; both groups agreed to send the same `bonus_game` report.
+
+```bash
+# Send exactly one live bonus_game email to the lecturer (opt-in; idempotent):
+RUN_GMAIL_LIVE=1 \
+GOOGLE_OAUTH_CLIENT_SECRETS=$HOME/private/google-oauth-mars777/credentials.json \
+GOOGLE_OAUTH_TOKEN_PATH=$HOME/private/google-oauth-mars777/token.json \
+uv run python scripts/bonus_send_final_email.py
+```
+
+One Gmail message was sent to `rmisegal+uoh26b@gmail.com` with a **JSON-only** body — the
+agreed `bonus_game` report (`mutual_agreement: true`, `partner_confirmation_status:
+confirmed`) with the top-level `result_hash` attached — and a message id was returned:
+**`live_gmail_sent: true`, `bonus_email_sent: true`, `internal_game_sent: false`**. The body
+is ID-redacted (no national IDs reach Gmail), OAuth files stay outside the repo, and the
+sanitized evidence (`results/evidence/bonus_game_email_sent.example.json`) records only safe
+flags + hash + totals (`token_values_recorded: false`, `oauth_contents_recorded: false`). An
+idempotency guard refuses a second send, so **no duplicate email** is possible. **No
+`internal_game` email was sent in this stage.**
+
 ## Status — Stage 15E (mutual agreement finalized + bonus_game Gmail draft preview)
 
 **The official inter-group bonus game is completed and mutually agreed.** Partner group

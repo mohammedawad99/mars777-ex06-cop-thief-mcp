@@ -616,10 +616,33 @@ Statuses: ✅ done · 🔄 in progress · ⏳ planned
 > and **mutual_agreement finalized**. A **Gmail draft/preview was prepared only — the live
 > email was not sent**. No tokens or student national IDs were printed or committed.
 
-## Next up (Stage 15F+ — final live report + closeout)
+### Stage 15F — send the final agreed bonus_game report to the lecturer (this stage)
 
-- [x] Send the partner the handoff; both confirm → `mutual_agreement: true` (15E)
-- [ ] Send the final official report **to the lecturer** via Gmail
-      (`RUN_GMAIL_LIVE=1`, external OAuth) — still pending
+- [x] **Partner final hash confirmation received**: orcai-mj independently recomputed the
+      `result_hash` with the documented method (sha256 over `official_rules` + `sub_games`
+      + `totals_by_group`, sorted-keys compact JSON) and it **matched**
+      `a0fdf72d…72ac68`; both groups agreed to send the same `bonus_game` report.
+- [x] **One live Gmail sent** (`scripts/bonus_send_final_email.py`): the final agreed
+      `bonus_game` JSON (with the top-level `result_hash` attached) was emailed to the
+      lecturer (`rmisegal+uoh26b@gmail.com`) via the existing Gmail infra + external OAuth.
+      **`live_gmail_sent: true`, `bonus_email_sent: true`, `internal_game_sent: false`** —
+      `mutual_agreement: true`, `partner_confirmation_status: confirmed`; body is JSON-only
+      and ID-redacted; a Gmail message id was returned (`gmail_message_id_present: true`).
+- [x] **No duplicate send**: an idempotency guard refuses a second send once the sanitized
+      send evidence records a successful message — a re-run was demonstrated to send nothing.
+- [x] **No internal_game email** was sent in this stage.
+- [x] Sanitized tracked evidence `results/evidence/bonus_game_email_sent.example.json`
+      (flags + `result_hash` + totals only; no tokens, no OAuth contents, no national IDs).
+- [ ] **Still pending:** revoke the match-scoped partner/cloud tokens and record it; close
+      the audit + submission checklist.
+
+> Stage 15F: the **final `bonus_game` live email was sent to the lecturer**; the partner
+> also confirmed they are sending their matching report; `mutual_agreement` was confirmed
+> and the `result_hash` matched. **No `internal_game` email was sent.** No tokens, OAuth
+> contents, or student national IDs were printed or committed.
+
+## Next up (Stage 15G+ — closeout)
+
+- [x] Final `bonus_game` report sent live to the lecturer (15F)
 - [ ] Revoke the match-scoped partner/cloud tokens and record it
 - [ ] Close `FINAL_GAP_AUDIT.md` and the submission checklist (students already real)

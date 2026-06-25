@@ -762,5 +762,28 @@ follows to reproduce the digest). Final artifacts (token-free, IDs redacted):
 created (`gmail_draft_created: true`) and **not sent** (`RUN_GMAIL_LIVE` unset;
 `live_gmail_sent: false`, `bonus_email_sent: false`). 100% coverage retained.
 
-> Subsequent stages will append their driving prompts here (final live report send, token
-> revocation, audit closeout).
+## Stage 15F — send the final agreed bonus_game report to the lecturer (live Gmail)
+
+**Prompt summary:** After partner group orcai-mj independently recomputed the `result_hash`
+with the documented method and confirmed it matches (`a0fdf72d…72ac68`) and that both groups
+should send the same `bonus_game` report, send **exactly one** live Gmail message of the
+final agreed `bonus_game` JSON to the lecturer (`rmisegal+uoh26b@gmail.com`) using the
+existing Gmail infrastructure and external OAuth — JSON-only body, `report_type` bonus_game,
+no `internal_game`, no duplicate sends — then record sanitized send evidence. Never print or
+commit OAuth contents, tokens, or student national IDs.
+
+**Outcome:** a pure `bonus/email_payload.py` (`pre_send_checks`, `with_result_hash`,
+`payload_is_safe`) and `scripts/bonus_send_final_email.py`. Pre-send gating verified
+`report_type == bonus_game`, `mutual_agreement == true`, `partner_confirmation_status ==
+confirmed`, `validation_status == valid`, totals MaRs-777 30 / orcai-mj 90, 6 sub-games,
+board `[8,8]`, OAuth files outside the repo, and a token/ID/`.secrets`-free JSON-only body;
+the top-level `result_hash` (`a0fdf72d…72ac68`) was attached to the emailed payload without
+changing any winner/rule/total/sub-game/agreement field. With `RUN_GMAIL_LIVE=1` the script
+sent one message via the Gmail API and a message id was returned — **`live_gmail_sent: true`,
+`bonus_email_sent: true`, `internal_game_sent: false`**. An idempotency guard (keyed on the
+recorded send evidence) blocks any second send; a re-run sent nothing. Sanitized evidence:
+`results/evidence/bonus_game_email_sent.example.json` (flags + hash + totals only; no
+tokens/OAuth/IDs). 100% coverage retained.
+
+> Subsequent stages will append their driving prompts here (token revocation, audit
+> closeout, final submission).

@@ -161,6 +161,14 @@ every gate below passes.
   finalize/handoff/`HASH_METHOD` logic **is** unit-tested (`tests/unit/bonus/`, including
   a test that follows the documented recipe to reproduce the hash); the live Gmail-draft
   call is the only live-only part and is skipped without external OAuth files.
+- **Send final bonus_game email (live, one-shot)** —
+  `RUN_GMAIL_LIVE=1 uv run python scripts/bonus_send_final_email.py` sends **exactly one**
+  live Gmail message of the agreed `bonus_game` JSON (with the top-level `result_hash`) to
+  the lecturer. It is **opt-in and live-only** (no send without `RUN_GMAIL_LIVE=1`), refuses
+  to send twice (idempotency guard keyed on the recorded send evidence), sends no
+  `internal_game`, and never writes OAuth contents/tokens/national IDs. The pre-send checks
+  and payload shaping (`bonus/email_payload.py`) **are** unit-tested in the default suite
+  (no network); only the Gmail API call is live-only.
 
 ## Staging discipline
 

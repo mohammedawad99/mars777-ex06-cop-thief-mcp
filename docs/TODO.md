@@ -641,8 +641,30 @@ Statuses: ✅ done · 🔄 in progress · ⏳ planned
 > and the `result_hash` matched. **No `internal_game` email was sent.** No tokens, OAuth
 > contents, or student national IDs were printed or committed.
 
-## Next up (Stage 15G+ — closeout)
+### Stage 15G — final audit & submission closeout (this stage)
 
-- [x] Final `bonus_game` report sent live to the lecturer (15F)
-- [ ] Revoke the match-scoped partner/cloud tokens and record it
-- [ ] Close `FINAL_GAP_AUDIT.md` and the submission checklist (students already real)
+- [x] **Partner send confirmed**: orcai-mj confirmed they also sent their **matching**
+      `bonus_game` report to Dr. Segal; recorded as `partner_email_confirmed_sent: true`.
+- [x] **Submission checklist closed** and `FINAL_GAP_AUDIT.md` finalized for the
+      delivered scope (game engine → MCP over HTTP → cloud → official + bonus reports).
+- [x] **Final status confirmed**: public repo ready; Cloud Run endpoints documented;
+      `bonus_game` sent by us and matched by the partner; `result_hash a0fdf72d…` matched;
+      `mutual_agreement: true`; **no duplicate email**; **no `internal_game` email sent**;
+      all tests/coverage/quality gates pass (401 tests, 100% coverage).
+- [x] Sanitized closeout artifact `results/evidence/final_submission_closeout.example.json`
+      (repo, final commit, flags, `result_hash`, totals, tests/coverage; no tokens/IDs).
+- [x] **No gameplay, no email, no history rewrite** in this stage.
+- [ ] **Post-submission only (not done here):** revoke match-scoped partner/cloud tokens;
+      optionally delete the Cloud Run services after grading; submit the Moodle form/PDF.
+
+> Stage 15G: the assignment deliverables are **complete** — official self-play report
+> (built/validated, dry-run + draft) and the **mutually-agreed inter-group `bonus_game`
+> report sent live to the lecturer and confirmed sent by the partner**. Remaining items are
+> external (Moodle submission form) and post-grading cleanup (token revocation, optional
+> cloud teardown). No tokens or student national IDs are committed.
+
+## Post-submission cleanup (do only after grading; not performed here)
+
+- [ ] Revoke the match-scoped partner/Cloud Run tokens out-of-band and record it
+- [ ] Optionally delete the two Cloud Run services (`mars777-cop-mcp`, `mars777-thief-mcp`)
+- [ ] Keep `.secrets/` local and git-ignored; do not commit

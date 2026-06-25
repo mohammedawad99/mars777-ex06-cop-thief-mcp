@@ -2,33 +2,41 @@
 
 Strict checklist for the final review. Boxes are checked only when verified.
 
+> **Stage 15G closeout:** the in-repo deliverables are **complete**. The official
+> self-play report is built/validated (dry-run + draft), and the mutually-agreed
+> inter-group `bonus_game` report was **sent live to Dr. Segal** and the **partner
+> (orcai-mj) confirmed they sent their matching report**; `result_hash a0fdf72d…`
+> matched, `mutual_agreement: true`. Remaining items are **external** (Moodle form) and
+> **post-grading** (token revocation, optional Cloud Run teardown). 401 tests, 100%
+> coverage; no tokens or student national IDs committed.
+
 ## Repository & packaging
-- [ ] `uv sync` succeeds from a clean checkout
-- [ ] Professional `src/` package layout
-- [ ] Every Python source file < 150 logical lines
-- [ ] `pyproject.toml` configures pytest, coverage, ruff
+- [x] `uv sync` succeeds from a clean checkout (locked deps; all `uv run` gates pass)
+- [x] Professional `src/` package layout
+- [x] Every Python source/test/script file < 150 logical lines (max 149)
+- [x] `pyproject.toml` configures pytest, coverage, ruff
 
 ## Quality gates
-- [ ] `uv run pytest` passes
-- [ ] Coverage ≥ 85% (`fail_under = 85`)
-- [ ] `uv run ruff check .` clean
-- [ ] `uv run ruff format --check .` clean
-- [ ] `git status --short --ignored` shows no stray artifacts
+- [x] `uv run pytest` passes (401 tests)
+- [x] Coverage 100% (`fail_under = 85`)
+- [x] `uv run ruff check .` clean
+- [x] `uv run ruff format --check .` clean
+- [x] `git status --short --ignored` shows no stray artifacts (only ignored caches/`.secrets`)
 
 ## Security
-- [ ] No secrets committed (`.env`, credentials, tokens, keys)
-- [ ] `.gitignore` covers all secret/artifact patterns
-- [ ] `.env-example` contains placeholders only
-- [ ] MCP token auth enabled; OAuth files external; revoke story documented
+- [x] No secrets committed (`.env`, credentials, tokens, keys)
+- [x] `.gitignore` covers all secret/artifact patterns
+- [x] `.env-example` contains placeholders only
+- [x] MCP token auth enabled; OAuth files external; revoke story documented
 
 ## Functionality
-- [ ] Game engine matches assignment rules (grid, movement, capture, scoring)
-- [ ] MCP servers run over HTTP and expose perception/action tools
-- [ ] Natural-language protocol implemented and validated
-- [ ] Cop & Thief agents play through MCP
-- [ ] Orchestrator runs `num_sub_games` and aggregates results
-- [ ] Google report sender emails final results
-- [ ] Bonus inter-group play demonstrated
+- [x] Game engine matches assignment rules (grid, movement, capture, scoring)
+- [x] MCP servers run over HTTP and expose perception/action tools
+- [x] Natural-language protocol implemented and validated
+- [x] Cop & Thief agents play through MCP
+- [x] Orchestrator runs `num_sub_games` and aggregates results
+- [x] Google report sender emails final results (bonus_game sent live to the lecturer)
+- [x] Bonus inter-group play demonstrated (official 6-sub-game match, mutually agreed)
 
 ## Reports & evidence
 - [x] Official internal report schema defined and **validated** (`reporting/`)
@@ -123,15 +131,25 @@ Strict checklist for the final review. Boxes are checked only when verified.
       `bonus_email_sent: true`, **`internal_game_sent: false`**; idempotency guard prevents a
       second send. Sanitized evidence `results/evidence/bonus_game_email_sent.example.json`
       (no tokens/OAuth/IDs)
-- [ ] `internal_game` report sent live to the lecturer (separate; not sent in Stage 15F)
-- [ ] Match-scoped tokens revoked after the match and recorded (pending)
+- [x] **Partner (orcai-mj) confirmed they sent their matching `bonus_game` report** to
+      Dr. Segal (Stage 15G); recorded in `results/evidence/final_submission_closeout.example.json`
+      (`partner_email_confirmed_sent: true`) — no screenshots/raw headers/ids stored
+- [ ] `internal_game` report sent live to the lecturer — **not sent by design**; the
+      submitted email is the mutually-agreed `bonus_game` report (internal report remains
+      built/validated with a dry-run + student-only draft)
+- [ ] Match-scoped tokens revoked after the match and recorded — **post-grading** (deferred)
 
 ## Documentation & measurement
-- [ ] PRDs, PLAN, DECISIONS, PROMPTS complete and current
-- [ ] COSTS includes measured (not just assumed) figures
-- [ ] QUALITY gates documented and reproducible
-- [ ] `FINAL_GAP_AUDIT.md` completed and closed
+- [x] PRDs, PLAN, DECISIONS, PROMPTS complete and current (PROMPTS logged per stage)
+- [ ] COSTS includes measured real-LLM figures — N/A: agents are deterministic
+      (`fake_local`/observed policies), so no real LLM spend; live Gemini stays opt-in
+- [x] QUALITY gates documented and reproducible
+- [x] `FINAL_GAP_AUDIT.md` completed and closed (Stage 15G)
 
 ## Process
-- [ ] No `git add .` used; staging was explicit
-- [ ] Commits made only after review
+- [x] No `git add .` used; staging was explicit
+- [x] Commits made only after review
+
+## Remaining for Moodle / submission form (external to the repo)
+- [ ] Submit the assignment via the Moodle form/PDF (repo URL + summary) — done by a human
+- [ ] (Post-grading) revoke match-scoped tokens; optionally tear down Cloud Run

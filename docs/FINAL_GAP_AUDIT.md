@@ -1,8 +1,9 @@
 # FINAL GAP AUDIT
 
-> **This audit is NOT final yet.** It is a living placeholder maintained through
-> development and **completed near submission**. Do not treat any statement here
-> as a final verdict until this banner is removed.
+> **CLOSED (Stage 15G).** This audit is finalized for the delivered in-repo scope of
+> Assignment 6. Remaining items are **external** (the Moodle submission form) and
+> **post-grading cleanup** (token revocation, optional Cloud Run teardown). All quality
+> gates pass (401 tests, 100% coverage); no tokens or student national IDs are committed.
 
 ## Purpose
 
@@ -10,20 +11,24 @@ A last-mile, adversarial pass that compares the delivered system against the
 PRDs, the assignment rubric, and `SUBMISSION_CHECKLIST.md`, and records every
 remaining gap with a disposition (fixed / accepted / deferred).
 
-## Audit dimensions (to be filled near submission)
+## Audit dimensions (finalized — Stage 15G)
 
 | Dimension | Expected | Actual | Gap | Disposition |
 |-----------|----------|--------|-----|-------------|
-| Game rules correctness | per PRD §5 | — | — | — |
-| MCP over HTTP + token auth | per PLAN §5 | — | — | — |
-| NL protocol conformance | per protocol PRD | — | — | — |
-| Agents play end-to-end | per PRD AC3 | — | — | — |
-| Orchestrator aggregation | per PRD FR6 | — | — | — |
-| Report sender delivery | per PRD FR8 | — | — | — |
-| Bonus inter-group | per bonus PRD | — | — | — |
-| Quality gates green | per QUALITY | — | — | — |
-| Security / secrets | per SECURITY | — | — | — |
-| Costs measured | per COSTS | — | — | — |
+| Game rules correctness | per PRD §5 | grid/8-dir/diagonal/capture/scoring engine, 100% tested | none | ✅ fixed |
+| MCP over HTTP + token auth | per PLAN §5 | two Cloud Run services, app-token auth, public smoke `passed` | none | ✅ fixed |
+| NL protocol conformance | per protocol PRD | free-text messages + role-safe observations; no hidden-state leak | none | ✅ fixed |
+| Agents play end-to-end | per PRD AC3 | prompted/observed agents play full games over MCP | none | ✅ fixed |
+| Orchestrator aggregation | per PRD FR6 | `num_sub_games` runner + totals; bonus referee canonical | none | ✅ fixed |
+| Report sender delivery | per PRD FR8 | JSON-only Gmail sender; **bonus_game sent live** to lecturer | none | ✅ fixed |
+| Bonus inter-group | per bonus PRD | official 6-sub-game match, mutually agreed, hash matched | none | ✅ fixed |
+| Quality gates green | per QUALITY | ruff/format clean, 401 tests, 100% coverage, hardened smoke ok | none | ✅ fixed |
+| Security / secrets | per SECURITY | no tokens/OAuth/IDs committed; OAuth external; redaction enforced | none | ✅ fixed |
+| Costs measured | per COSTS | deterministic agents → no real LLM spend; live Gemini opt-in | real-LLM figures N/A | ➖ accepted |
+| Partner matching send | mutual confirm | orcai-mj confirmed they sent their matching `bonus_game` report | none | ✅ fixed |
+| internal_game live email | optional | built/validated, dry-run + student-only draft; not live-sent (by design) | not sent | ➖ accepted |
+| Moodle submission form | external | repo public + documented | human step | ⏳ deferred (external) |
+| Token revocation / cleanup | post-grading | documented instructions only | not yet done | ⏳ deferred (post-grading) |
 
 ## Current status (through Stage 14A)
 

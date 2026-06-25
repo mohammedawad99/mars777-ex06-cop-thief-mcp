@@ -785,5 +785,24 @@ recorded send evidence) blocks any second send; a re-run sent nothing. Sanitized
 `results/evidence/bonus_game_email_sent.example.json` (flags + hash + totals only; no
 tokens/OAuth/IDs). 100% coverage retained.
 
-> Subsequent stages will append their driving prompts here (token revocation, audit
-> closeout, final submission).
+## Stage 15G — final audit & submission closeout
+
+**Prompt summary:** Partner group orcai-mj confirmed they also sent their matching
+`bonus_game` report to Dr. Segal. Record the partner-send confirmation in sanitized
+docs/evidence, close the submission checklist and final gap audit, confirm the final
+assignment status, and prepare a sanitized closeout artifact. No gameplay, no email, no
+history rewrite; never store screenshots, raw email headers/ids, tokens, or national IDs.
+
+**Outcome:** a sanitized `results/evidence/final_submission_closeout.example.json`
+(`stage: 15G`, repo, final commit = the Stage 15F bonus-send commit, `bonus_email_sent:
+true`, `partner_email_confirmed_sent: true`, `internal_game_email_sent: false`,
+`result_hash a0fdf72d…`, totals MaRs-777 30 / orcai-mj 90, `mutual_agreement: true`,
+`partner_confirmation_status: confirmed`, `tests_passed: 401`, `coverage: 100%`,
+`email_sent_this_stage: false`, `game_rerun_this_stage: false`, `tokens_recorded: false`,
+`ids_redacted_in_tracked_evidence: true`) plus honest doc updates (README, TODO,
+SUBMISSION_CHECKLIST, FINAL_GAP_AUDIT, QUALITY, SECURITY). The final gap audit is closed
+for the delivered scope; remaining items are external (Moodle form) and post-grading
+cleanup (token revocation, optional Cloud Run teardown) — documented, not performed.
+
+> Assignment 6 delivery is complete in-repo; only the external Moodle submission and
+> post-grading cleanup remain.

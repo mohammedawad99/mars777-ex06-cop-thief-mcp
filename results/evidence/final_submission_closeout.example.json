@@ -1,0 +1,59 @@
+{
+  "stage": "15G",
+  "artifact": "final_submission_closeout",
+  "repo": "https://github.com/mohammedawad99/mars777-ex06-cop-thief-mcp",
+  "repo_visibility": "public",
+  "final_commit": "2e85cbd63542f7ce6a5cf179dd34ddc83e318353",
+  "final_commit_note": "final_commit is the Stage 15F bonus-send commit; this closeout commit only adds audit docs/evidence and changes no game/report payload",
+  "cloud_endpoints": {
+    "cop_mcp_url": "https://mars777-cop-mcp-6lhzzicqha-zf.a.run.app/mcp",
+    "thief_mcp_url": "https://mars777-thief-mcp-6lhzzicqha-zf.a.run.app/mcp",
+    "platform": "Google Cloud Run",
+    "project": "api-mars-777",
+    "region": "me-west1",
+    "auth": "app-level token (token values never committed)"
+  },
+  "bonus_email_sent": true,
+  "partner_email_confirmed_sent": true,
+  "internal_game_email_sent": false,
+  "duplicate_email_prevented": true,
+  "report_type": "bonus_game",
+  "result_hash": "a0fdf72d1122280c3637d54f0bda5656c6c6c2b257220347d9675b405972ac68",
+  "partner_independently_reproduced_hash": true,
+  "totals_by_group": {
+    "MaRs-777": 30,
+    "orcai-mj": 90
+  },
+  "official_rules": {
+    "board_size": [8, 8],
+    "num_sub_games": 6,
+    "max_moves": 25,
+    "max_barriers": 5,
+    "barriers_role": "cop",
+    "diagonal_movement": true,
+    "turn_order": ["thief", "cop"],
+    "origin": 0
+  },
+  "mutual_agreement": true,
+  "partner_confirmation_status": "confirmed",
+  "tests_passed": 401,
+  "coverage": "100%",
+  "quality_gates": {
+    "ruff_check": "pass",
+    "ruff_format": "pass",
+    "hardened_smoke": "ok",
+    "live_readiness": "ok",
+    "max_python_logical_lines_per_file": 149
+  },
+  "email_sent_this_stage": false,
+  "game_rerun_this_stage": false,
+  "tokens_recorded": false,
+  "oauth_contents_recorded": false,
+  "ids_redacted_in_tracked_evidence": true,
+  "secrets_committed": false,
+  "post_submission_cleanup_pending": [
+    "revoke match-scoped partner/cloud tokens (out-of-band) after grading",
+    "optionally delete the two Cloud Run services after grading",
+    "keep .secrets/ local and git-ignored"
+  ]
+}

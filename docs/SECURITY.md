@@ -271,6 +271,18 @@
   `token_values_recorded: false`, `oauth_contents_recorded: false`,
   `ids_redacted_in_tracked_evidence: true`. An idempotency guard prevents duplicate sends.
 
+## Submission closeout & post-grading cleanup (Stage 15G)
+
+At submission, **no tokens, OAuth contents, or student national IDs are committed** in any
+tracked file or reachable history (verified: real student IDs absent from tracked files and
+history; secret grep clean). Match-scoped partner/Cloud Run tokens remain only in the local
+git-ignored `.secrets/`. The sanitized `results/evidence/final_submission_closeout.example.json`
+stores flags/hash/totals only (no message ids, headers, screenshots, tokens, or IDs).
+
+**Post-grading cleanup (instructions only — not performed here):** revoke the match-scoped
+partner and Cloud Run tokens out-of-band; optionally delete the two Cloud Run services
+(`mars777-cop-mcp`, `mars777-thief-mcp`); keep `.secrets/` local and never commit it.
+
 ## Revoke story
 
 If a credential is ever exposed:

@@ -3,6 +3,12 @@
 All gates run locally via uv before any commit. A change is "green" only when
 every gate below passes.
 
+> **Submission closeout (Stage 15G):** all gates pass — `ruff check`/`ruff format --check`
+> clean, **401 tests**, **100% coverage** (gate 85%), hardened smoke `ok`, every
+> Python source/test/script file ≤149 logical lines. The mutually-agreed `bonus_game`
+> report was sent live to the lecturer and the partner confirmed their matching send;
+> final status is captured in `results/evidence/final_submission_closeout.example.json`.
+
 ## Gates
 
 1. **Dependency sync** — `uv sync`

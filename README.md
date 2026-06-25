@@ -8,6 +8,24 @@ a natural-language protocol, and the final results are reported via a Google
 (Gmail) report sender. Inter-group play is treated as in-scope (see
 `docs/PRD_bonus_intergroup.md`).
 
+## Status — Stage 15G (final audit & submission closeout)
+
+**Assignment 6 is complete in-repo.** The mutually-agreed `bonus_game` report was sent
+live to Dr. Segal (Stage 15F), and partner group `orcai-mj` has now **confirmed they sent
+their matching `bonus_game` report** as well — `result_hash a0fdf72d…72ac68` matched both
+ways, `mutual_agreement: true`, `partner_confirmation_status: confirmed`, **no duplicate
+email**, and **no `internal_game` email** was sent. No game was re-run and no email was sent
+in this stage.
+
+Final status (sanitized): public repo ready; Cloud Run endpoints documented; official
+self-play report built/validated; inter-group `bonus_game` sent by us and matched by the
+partner; **401 tests, 100% coverage**, all quality gates green; no tokens, OAuth contents,
+or student national IDs committed. The closeout summary lives in
+`results/evidence/final_submission_closeout.example.json`.
+
+**Remaining (external / post-grading):** submit via the Moodle form (human step); after
+grading, revoke the match-scoped tokens and optionally tear down the Cloud Run services.
+
 ## Status — Stage 15F (final bonus_game report sent live to the lecturer)
 
 **The final agreed `bonus_game` report was emailed to the lecturer.** Partner group

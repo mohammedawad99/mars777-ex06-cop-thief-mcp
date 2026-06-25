@@ -130,10 +130,14 @@ submission** yet.
   both group names, both repos, four public URLs, students (IDs redacted in tracked
   evidence), pairing-labelled `sub_games`, `totals_by_group` (MaRs-777 30 / orcai-mj 90),
   `bonus_claim`, `mutual_agreement`, and a `result_hash`; `validation_status: valid`.
-- **AC-BONUS-4** (R-035) — ✅ mechanism done: `mutual_agreement` is `false` and
-  `partner_confirmation_status` is `pending` until the partner confirms the canonical
-  result matches; `validate_bonus_game_report` rejects a premature `mutual_agreement=true`
-  (unit-tested). The token-free handoff with `result_hash` is the cross-check artifact.
+- **AC-BONUS-4** (R-035) — ✅ done (Stage 15E): partner orcai-mj confirmed the canonical
+  result and rules in writing, so `mutual_agreement: true` and
+  `partner_confirmation_status: confirmed` are finalized (`bonus/finalize.py`) **without
+  changing any result field**; `result_hash` is unchanged (`a0fdf72d…`) and the final
+  handoff/evidence ship a derived `hash_method` (sha256, canonical JSON, included/excluded
+  fields, 3-step recipe) the partner can reproduce. The validator still rejects a premature
+  `mutual_agreement=true` (unit-tested). Final artifacts: `bonus_game_report_final_agreed`,
+  `bonus_game_partner_handoff_final`, `bonus_game_mutual_agreement`.
 - **AC-BONUS-5** (R-070) — ⏳ open: match-scoped tokens are revoked after play and the
   revocation recorded (post-confirmation step; tokens stay in the git-ignored file only).
 

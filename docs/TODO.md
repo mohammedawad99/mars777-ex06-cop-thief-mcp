@@ -586,14 +586,40 @@ Statuses: ✅ done · 🔄 in progress · ⏳ planned
 > **not** send the bonus report, and did **not** set mutual_agreement (partner
 > confirmation pending). No tokens or student IDs were printed or committed.
 
-## Next up (Stage 15E+ — partner confirmation + final live report)
+### Stage 15E — finalize mutual agreement + bonus_game Gmail draft preview (this stage)
 
-- [x] Receive partner `/mcp` URLs + tokens; fill `.secrets/bonus_partner.local.json` (15C)
-- [x] Pass the live partner compatibility smoke (unauthorized + authorized + warm-ups) (15C)
-- [x] Freeze official board size (8x8) by mutual written agreement (15D)
-- [x] Play the real inter-group match (6 sub-games) and produce a `bonus_game` report (15D)
-- [ ] Send the partner the handoff; once both `result_hash`es match, set
-      `mutual_agreement: true` / `partner_confirmation_status: confirmed`
+- [x] **Partner confirmation received**: orcai-mj reviewed the canonical result and
+      confirmed in writing it is identical and correct (totals orcai-mj 90 / MaRs-777 30;
+      Set A thief survived 25 moves ×3; Set B cop captured at move 14 ×3) and that the
+      official rules and their agent transcript matched; they explicitly approved
+      `mutual_agreement=true`.
+- [x] **Mutual agreement finalized**: `finalize_agreement` flips `mutual_agreement: true`,
+      `partner_confirmation_status: confirmed`, `bonus_claim: true`, and records the
+      agreement notes — **without touching any winner/move/total/rule/transcript field**
+      (`src/.../bonus/finalize.py`, fully unit-tested).
+- [x] **result_hash unchanged**: `a0fdf72d…72ac68` before and after (the digest covers
+      outcome fields only). The handoff/evidence ship a **derived** `hash_method` (sha256,
+      sorted-keys compact JSON, exact included/excluded fields, 3-step recompute recipe)
+      so the partner can reproduce it independently.
+- [x] Final token-free, ID-redacted tracked artifacts:
+      `bonus_game_report_final_agreed.example.json`,
+      `bonus_game_partner_handoff_final.example.json`,
+      `bonus_game_mutual_agreement.example.json` (`validation_status: valid`).
+- [x] **Gmail DRAFT prepared only** (`scripts/bonus_finalize_agreement.py`): a JSON-only
+      bonus_game draft to the lecturer (`rmisegal+uoh26b@…`) was created in Gmail —
+      `gmail_draft_created: true` — and **never sent**; `RUN_GMAIL_LIVE` not set,
+      `live_gmail_sent: false`, `bonus_email_sent: false`.
+- [ ] **Still pending:** send the final official report **to the lecturer** via Gmail
+      (`RUN_GMAIL_LIVE=1`, external OAuth); revoke match-scoped tokens; close the audit.
+
+> Stage 15E: the **official bonus game is completed**, **partner confirmation received**,
+> and **mutual_agreement finalized**. A **Gmail draft/preview was prepared only — the live
+> email was not sent**. No tokens or student national IDs were printed or committed.
+
+## Next up (Stage 15F+ — final live report + closeout)
+
+- [x] Send the partner the handoff; both confirm → `mutual_agreement: true` (15E)
 - [ ] Send the final official report **to the lecturer** via Gmail
       (`RUN_GMAIL_LIVE=1`, external OAuth) — still pending
+- [ ] Revoke the match-scoped partner/cloud tokens and record it
 - [ ] Close `FINAL_GAP_AUDIT.md` and the submission checklist (students already real)

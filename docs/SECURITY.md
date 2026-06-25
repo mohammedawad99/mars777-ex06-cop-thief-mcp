@@ -255,6 +255,13 @@
   carry only public URLs and **redact every student national ID** for **both** groups
   (`id: REDACTED`); the `result_hash` is computed over outcome fields only, so it is
   identical with or without identities.
+- Finalizing the agreement (`scripts/bonus_finalize_agreement.py`) creates a Gmail **draft
+  only** (never sent; `RUN_GMAIL_LIVE` never set) of the JSON-only bonus_game report to the
+  lecturer. The draft body is the **ID-redacted** report (the bonus schema requires no
+  national IDs), so no identity reaches Gmail; OAuth credential/token files stay outside the
+  repo and their contents are never logged or written. The shipped `hash_method` documents
+  the digest recipe but contains no secret — it deliberately lists tokens, OAuth contents,
+  identities, timestamps, and Gmail-draft metadata as **excluded** from the hash.
 
 ## Revoke story
 

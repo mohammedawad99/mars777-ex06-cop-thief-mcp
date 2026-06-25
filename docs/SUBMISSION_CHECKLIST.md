@@ -105,9 +105,18 @@ Strict checklist for the final review. Boxes are checked only when verified.
       totals_by_group **MaRs-777 30 / orcai-mj 90**; canonical `bonus_game` JSON +
       token-free handoff with `result_hash`; sanitized evidence (`bonus_game_*`, IDs
       redacted, no tokens); `validation_status: valid`
-- [ ] Partner confirms the canonical result (`result_hash` match) → then set
-      `mutual_agreement: true` / `partner_confirmation_status: confirmed` (pending)
-- [ ] Match-scoped tokens revoked after the match and recorded (pending confirmation)
+- [x] **Partner confirmation received & mutual agreement finalized** (Stage 15E): orcai-mj
+      confirmed the canonical result and rules in writing; `mutual_agreement: true`,
+      `partner_confirmation_status: confirmed`, `bonus_claim: true` — result fields
+      untouched, `result_hash` unchanged (`a0fdf72d…`). Final artifacts:
+      `bonus_game_report_final_agreed`, `bonus_game_partner_handoff_final` (with a derived
+      `hash_method` the partner can reproduce), `bonus_game_mutual_agreement`
+- [x] **Bonus_game Gmail draft/preview prepared only** (Stage 15E,
+      `scripts/bonus_finalize_agreement.py`): JSON-only bonus_game draft to the lecturer
+      created in Gmail (`gmail_draft_created: true`) and **not sent** — `RUN_GMAIL_LIVE`
+      unset, `live_gmail_sent: false`, `bonus_email_sent: false`; body is ID-redacted
+- [ ] Final bonus/official report **sent live to the lecturer** (`RUN_GMAIL_LIVE=1`) — not yet
+- [ ] Match-scoped tokens revoked after the match and recorded (pending)
 
 ## Documentation & measurement
 - [ ] PRDs, PLAN, DECISIONS, PROMPTS complete and current

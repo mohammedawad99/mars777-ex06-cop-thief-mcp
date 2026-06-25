@@ -14,7 +14,13 @@ import hashlib
 import json
 
 REDACTED = "REDACTED"
-_HASH_SUBGAME_KEYS = (
+
+# The single source of truth for how result_hash is computed (also documented to the
+# partner via finalize.HASH_METHOD, which is derived from these constants).
+HASH_ALGORITHM = "sha256"
+HASH_JSON_SEPARATORS = (",", ":")
+HASH_TOPLEVEL_FIELDS = ("official_rules", "sub_games", "totals_by_group")
+HASH_SUBGAME_FIELDS = (
     "sub_game_index",
     "pairing",
     "cop_group",
@@ -33,14 +39,18 @@ _HASH_SUBGAME_KEYS = (
 )
 
 
-def result_hash(report: dict) -> str:
-    """Deterministic SHA-256 of the canonical outcome (excludes time/identity)."""
-    core = {
+def hash_core(report: dict) -> dict:
+    """The exact object that is canonical-JSON-serialized and hashed (outcome only)."""
+    return {
         "official_rules": report["official_rules"],
-        "sub_games": [{k: s[k] for k in _HASH_SUBGAME_KEYS} for s in report["sub_games"]],
+        "sub_games": [{k: s[k] for k in HASH_SUBGAME_FIELDS} for s in report["sub_games"]],
         "totals_by_group": report["totals_by_group"],
     }
-    blob = json.dumps(core, sort_keys=True, separators=(",", ":"))
+
+
+def result_hash(report: dict) -> str:
+    """Deterministic SHA-256 of the canonical outcome (excludes time/identity)."""
+    blob = json.dumps(hash_core(report), sort_keys=True, separators=HASH_JSON_SEPARATORS)
     return hashlib.sha256(blob.encode("utf-8")).hexdigest()
 
 

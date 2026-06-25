@@ -736,5 +736,31 @@ fallback) — the real autonomous result, not faked. Evidence:
 `mutual_agreement: false`, `partner_confirmation_status: pending`. **No Gmail sent, bonus
 report not sent.** 100% coverage retained.
 
-> Subsequent stages will append their driving prompts here (partner confirmation +
-> mutual_agreement, final live report, audit).
+## Stage 15E — finalize mutual agreement + bonus_game Gmail draft preview
+
+**Prompt summary:** After partner group orcai-mj confirmed the canonical result and rules
+in writing (totals orcai-mj 90 / MaRs-777 30; Set A thief survived 25 moves ×3; Set B cop
+captured at move 14 ×3) and explicitly approved `mutual_agreement=true`, finalize the
+canonical `bonus_game` report (`mutual_agreement: true`, `partner_confirmation_status:
+confirmed`, agreement notes) **without modifying any winner/move/total/rule/transcript**,
+recompute/verify the `result_hash`, emit final token-free tracked artifacts, document the
+exact hash method so the partner can reproduce it, and create a **Gmail draft/preview
+only** (never send) of the bonus_game email to the lecturer.
+
+**Outcome:** a pure `bonus/finalize.py` (`finalize_agreement`, `final_handoff`,
+`agreement_evidence`, `HASH_METHOD`) plus `scripts/bonus_finalize_agreement.py`. The
+`result_hash` is **unchanged** (`a0fdf72d…72ac68`) — the digest covers outcome fields
+only — and `validation_status` is `valid` (`validate_bonus_game_report` also blocks a
+premature `mutual_agreement=true`). The hashing recipe was refactored into shared
+constants in `bonus_handoff.py` (`HASH_TOPLEVEL_FIELDS`, `HASH_SUBGAME_FIELDS`,
+`HASH_JSON_SEPARATORS`, `hash_core`) so `HASH_METHOD` is **derived from the
+implementation** (sha256, sorted-keys compact JSON `(",", ":")`, ensure_ascii, exact
+included/excluded fields incl. Gmail-draft metadata, and a 3-step recompute recipe a test
+follows to reproduce the digest). Final artifacts (token-free, IDs redacted):
+`bonus_game_report_final_agreed.example.json`, `bonus_game_partner_handoff_final.example.json`,
+`bonus_game_mutual_agreement.example.json`. A JSON-only Gmail **draft** to the lecturer was
+created (`gmail_draft_created: true`) and **not sent** (`RUN_GMAIL_LIVE` unset;
+`live_gmail_sent: false`, `bonus_email_sent: false`). 100% coverage retained.
+
+> Subsequent stages will append their driving prompts here (final live report send, token
+> revocation, audit closeout).

@@ -1,0 +1,88 @@
+{
+  "stage": "15E",
+  "artifact": "bonus_game_mutual_agreement",
+  "official_bonus_game_run": true,
+  "partner_confirmation_received": true,
+  "mutual_agreement": true,
+  "partner_confirmation_status": "confirmed",
+  "bonus_claim": true,
+  "board_size": [
+    8,
+    8
+  ],
+  "num_sub_games": 6,
+  "totals_by_group": {
+    "MaRs-777": {
+      "score": 30,
+      "wins": 0,
+      "as_cop_score": 15,
+      "as_thief_score": 15
+    },
+    "orcai-mj": {
+      "score": 90,
+      "wins": 6,
+      "as_cop_score": 60,
+      "as_thief_score": 30
+    }
+  },
+  "result_hash": "a0fdf72d1122280c3637d54f0bda5656c6c6c2b257220347d9675b405972ac68",
+  "hash_method": {
+    "algorithm": "sha256",
+    "encoding": "utf-8",
+    "canonical_json": {
+      "library": "python json.dumps",
+      "sort_keys": true,
+      "separators": [
+        ",",
+        ":"
+      ],
+      "ensure_ascii": true
+    },
+    "included_top_level_fields": [
+      "official_rules",
+      "sub_games",
+      "totals_by_group"
+    ],
+    "included_sub_game_fields": [
+      "sub_game_index",
+      "pairing",
+      "cop_group",
+      "thief_group",
+      "board_size",
+      "max_moves",
+      "start_positions",
+      "final_positions",
+      "winner_role",
+      "winner_group",
+      "move_count",
+      "cop_score",
+      "thief_score",
+      "barriers",
+      "outcome_reason"
+    ],
+    "excluded_fields": [
+      "generated_at_iso and all timestamps",
+      "student identities / national IDs",
+      "tokens",
+      "OAuth credential/token contents",
+      "Gmail draft metadata (subject, recipient, draft id, draft flags)",
+      "mutual_agreement / partner_confirmation_status / bonus_claim",
+      "agreement_notes",
+      "per-sub-game scores_by_group / transcript_summary / event_count / error"
+    ],
+    "recompute_recipe": [
+      "1. core = {'official_rules': r['official_rules'], 'sub_games': [{k: s[k] for k in included_sub_game_fields} for s in r['sub_games']], 'totals_by_group': r['totals_by_group']}",
+      "2. blob = json.dumps(core, sort_keys=True, separators=(',', ':'))  # ensure_ascii=True",
+      "3. result_hash = hashlib.sha256(blob.encode('utf-8')).hexdigest()"
+    ],
+    "note": "Outcome-only digest: confirmation, identity, timestamp, draft changes never alter it."
+  },
+  "validation_status": "valid",
+  "gmail_draft_created": true,
+  "draft_subject": "MaRs-777 x orcai-mj - Assignment 6 Bonus Game (bonus_game JSON, mutual_agreement)",
+  "draft_recipient_category": "lecturer",
+  "bonus_email_sent": false,
+  "live_gmail_sent": false,
+  "token_values_recorded": false,
+  "ids_redacted_in_tracked_evidence": true
+}

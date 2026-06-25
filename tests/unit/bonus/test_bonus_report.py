@@ -19,7 +19,7 @@ URLS = {
     "group_b_thief": "https://b-thief/mcp",
 }
 REPOS = {"ours": "https://github.com/ours", "partner": "https://github.com/partner"}
-STUDENTS = {"group_a": [{"name": "Alice", "id": "123456789"}], "group_b": [{"name": "Bob"}]}
+STUDENTS = {"group_a": [{"name": "Alice", "id": "FAKE-NATIONAL-ID"}], "group_b": [{"name": "Bob"}]}
 
 
 def _sg(index, winner, scores, move_count, barriers=()):
@@ -92,7 +92,7 @@ def test_redact_students_and_handoff_are_token_and_id_free():
     assert handoff["for_partner_group"] == "orcai-mj"
     assert handoff["result_hash"] == result_hash(report)
     assert handoff["tokens_recorded"] is False
-    assert "123456789" not in str(handoff)
+    assert "FAKE-NATIONAL-ID" not in str(handoff)
 
 
 def test_run_evidence_flags():

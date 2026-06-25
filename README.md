@@ -8,6 +8,36 @@ a natural-language protocol, and the final results are reported via a Google
 (Gmail) report sender. Inter-group play is treated as in-scope (see
 `docs/PRD_bonus_intergroup.md`).
 
+## Status — Stage 15E (mutual agreement finalized + bonus_game Gmail draft preview)
+
+**The official inter-group bonus game is completed and mutually agreed.** Partner group
+`orcai-mj` reviewed the canonical result and **confirmed in writing** that it is identical
+and correct (totals orcai-mj 90 / MaRs-777 30; Set A thief survived 25 moves ×3; Set B cop
+captured at move 14 ×3) and that the official rules and their agent transcript matched,
+explicitly approving `mutual_agreement=true`. The canonical `bonus_game` report is finalized
+to `mutual_agreement: true`, `partner_confirmation_status: confirmed`, `bonus_claim: true` —
+**without changing any winner, move count, total, rule, or transcript**.
+
+```bash
+# Finalize agreement + create a Gmail DRAFT preview (never sends):
+GOOGLE_OAUTH_CLIENT_SECRETS=$HOME/private/google-oauth-mars777/credentials.json \
+GOOGLE_OAUTH_TOKEN_PATH=$HOME/private/google-oauth-mars777/token.json \
+uv run python scripts/bonus_finalize_agreement.py
+```
+
+The `result_hash` is **unchanged** (`a0fdf72d…72ac68`) — it is computed over outcome fields
+only — and the final handoff/evidence ship a **derived** `hash_method` (sha256; canonical
+`json.dumps(core, sort_keys=True, separators=(",", ":"))`; exact included/excluded fields;
+a 3-step recompute recipe) so the partner can reproduce the digest independently. Final
+token-free, ID-redacted artifacts: `results/evidence/bonus_game_report_final_agreed.example.json`,
+`bonus_game_partner_handoff_final.example.json`, `bonus_game_mutual_agreement.example.json`.
+
+A **Gmail draft/preview was prepared only**: a JSON-only bonus_game draft to the lecturer
+(`rmisegal+uoh26b@…`) was created in Gmail (`gmail_draft_created: true`) and **never sent**
+(`RUN_GMAIL_LIVE` unset; `live_gmail_sent: false`, `bonus_email_sent: false`). The draft body
+is the ID-redacted report, so no national ID reaches Gmail. **The live email has not been
+sent yet.**
+
 ## Status — Stage 15D (official inter-group bonus game played)
 
 **The official inter-group bonus game against partner group `orcai-mj` was played**

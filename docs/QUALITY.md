@@ -152,6 +152,15 @@ every gate below passes.
   are redacted in all tracked evidence. The referee/report/hash/handoff logic **is**
   fully unit-tested with fake sessions (`tests/unit/bonus/`, no network); only the
   thin network orchestrator in the script is live-only.
+- **Finalize bonus agreement + Gmail draft preview** —
+  `uv run python scripts/bonus_finalize_agreement.py` finalizes `mutual_agreement` after
+  the partner's written confirmation (result fields untouched; `result_hash` unchanged)
+  and best-effort creates a Gmail **DRAFT** (never sent) of the JSON-only bonus_game
+  report to the lecturer. It **never sends Gmail**, never sets `RUN_GMAIL_LIVE`, and never
+  writes tokens or student national IDs (the draft body is the ID-redacted report). The
+  finalize/handoff/`HASH_METHOD` logic **is** unit-tested (`tests/unit/bonus/`, including
+  a test that follows the documented recipe to reproduce the hash); the live Gmail-draft
+  call is the only live-only part and is skipped without external OAuth files.
 
 ## Staging discipline
 

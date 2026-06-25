@@ -97,9 +97,17 @@ Strict checklist for the final review. Boxes are checked only when verified.
       pass. Adapter reconciled to the partner's confirmed contract; sanitized evidence
       (`results/evidence/bonus_partner_live_smoke.example.json`,
       `partner_smoke_passed: true`, no tokens/IDs) — **compatibility only, not the game**
-- [ ] Official board size frozen by mutual written agreement (recommendation: **5x5**)
-- [ ] Real inter-group bonus game (6 sub-games) played and reconciled; `bonus_game`
-      report produced (not run in Stage 15C)
+- [x] Official rules frozen by mutual written agreement (Stage 15D): **8x8**, 6 sub-games,
+      ≤25 moves, ≤5 cop-only barriers, diagonal, thief-first, 0-based `[row, col]`
+- [x] **Official inter-group bonus game played** (Stage 15D, `scripts/run_bonus_game.py`):
+      automated referee, **no human moves**; both directions (Set A MaRs-777 Cop vs
+      orcai-mj Thief ×3, Set B orcai-mj Cop vs MaRs-777 Thief ×3); **6/6 decided on 8x8**;
+      totals_by_group **MaRs-777 30 / orcai-mj 90**; canonical `bonus_game` JSON +
+      token-free handoff with `result_hash`; sanitized evidence (`bonus_game_*`, IDs
+      redacted, no tokens); `validation_status: valid`
+- [ ] Partner confirms the canonical result (`result_hash` match) → then set
+      `mutual_agreement: true` / `partner_confirmation_status: confirmed` (pending)
+- [ ] Match-scoped tokens revoked after the match and recorded (pending confirmation)
 
 ## Documentation & measurement
 - [ ] PRDs, PLAN, DECISIONS, PROMPTS complete and current

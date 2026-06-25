@@ -1,0 +1,39 @@
+{
+  "stage": "15D",
+  "artifact": "bonus_game_official_run",
+  "official_bonus_game_run": true,
+  "board_size": [
+    8,
+    8
+  ],
+  "num_sub_games": 6,
+  "pairing": {
+    "set_a": "MaRs-777 Cop vs orcai-mj Thief",
+    "set_b": "orcai-mj Cop vs MaRs-777 Thief"
+  },
+  "both_directions_played": true,
+  "sub_game_errors": [],
+  "totals_by_group": {
+    "MaRs-777": {
+      "score": 30,
+      "wins": 0,
+      "as_cop_score": 15,
+      "as_thief_score": 15
+    },
+    "orcai-mj": {
+      "score": 90,
+      "wins": 6,
+      "as_cop_score": 60,
+      "as_thief_score": 30
+    }
+  },
+  "result_hash": "a0fdf72d1122280c3637d54f0bda5656c6c6c2b257220347d9675b405972ac68",
+  "validation_status": "valid",
+  "bonus_claim": false,
+  "mutual_agreement": false,
+  "partner_confirmation_status": "pending",
+  "bonus_email_sent": false,
+  "live_gmail_sent": false,
+  "token_values_recorded": false,
+  "ids_redacted_in_tracked_evidence": true
+}

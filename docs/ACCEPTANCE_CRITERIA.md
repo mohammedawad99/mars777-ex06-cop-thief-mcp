@@ -119,17 +119,23 @@ submission** yet.
   unit-tested (`tests/unit/bonus/`). Evidence is token-free and ID-free
   (`results/evidence/bonus_readiness.example.json`). **Readiness is prepared, not the
   bonus game itself.**
-- **AC-BONUS-1** (R-007) — ⏳ open: A match completes against another group's MCP
-  server using the local partner URLs and exchanged tokens.
-- **AC-BONUS-2** (R-070): Both groups run 3 sub-games one way and 3 with roles
-  swapped, per `INTERGROUP_BONUS_PROTOCOL.md`.
-- **AC-BONUS-3** (R-034): A bonus report is produced containing both group names,
-  both repos, four URLs, students, sub_games, totals_by_group, bonus_claim, and
-  mutual_agreement.
-- **AC-BONUS-4** (R-035): When the two groups' reports disagree, `mutual_agreement`
-  is `false` and `bonus_claim` is not asserted as accepted.
-- **AC-BONUS-5** (R-070): Tokens used for the match are revoked after play, and the
-  revocation is recorded.
+- **AC-BONUS-1** (R-007) — ✅ done (Stage 15D): the official match completed against
+  orcai-mj's live MCP servers using the local partner URLs/tokens — an automated
+  referee drove all moves (no human), our `GameEngine` canonical on 8x8; 6/6 sub-games
+  decided (`scripts/run_bonus_game.py`, `results/evidence/bonus_game_official_run.example.json`).
+- **AC-BONUS-2** (R-070) — ✅ done (Stage 15D): both pairing directions ran — Set A (3)
+  MaRs-777 Cop vs orcai-mj Thief and Set B (3) orcai-mj Cop vs MaRs-777 Thief, per
+  `INTERGROUP_BONUS_PROTOCOL.md`. The orchestration supports both; neither was faked.
+- **AC-BONUS-3** (R-034) — ✅ done (Stage 15D): the canonical `bonus_game` report carries
+  both group names, both repos, four public URLs, students (IDs redacted in tracked
+  evidence), pairing-labelled `sub_games`, `totals_by_group` (MaRs-777 30 / orcai-mj 90),
+  `bonus_claim`, `mutual_agreement`, and a `result_hash`; `validation_status: valid`.
+- **AC-BONUS-4** (R-035) — ✅ mechanism done: `mutual_agreement` is `false` and
+  `partner_confirmation_status` is `pending` until the partner confirms the canonical
+  result matches; `validate_bonus_game_report` rejects a premature `mutual_agreement=true`
+  (unit-tested). The token-free handoff with `result_hash` is the cross-check artifact.
+- **AC-BONUS-5** (R-070) — ⏳ open: match-scoped tokens are revoked after play and the
+  revocation recorded (post-confirmation step; tokens stay in the git-ignored file only).
 
 ## 5. Natural-language protocol
 

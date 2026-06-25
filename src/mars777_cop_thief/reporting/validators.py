@@ -8,6 +8,8 @@ structure so no auth/secret material can hide in a nested key or value.
 from __future__ import annotations
 
 from mars777_cop_thief.reporting.schemas import (
+    BONUS_GAME_REQUIRED_SUBGAME,
+    BONUS_GAME_REQUIRED_TOP,
     BONUS_REPORT_TYPE,
     BONUS_REQUIRED_TOP,
     DUMMY_TOKEN_HINTS,
@@ -77,5 +79,27 @@ def validate_bonus_report(report: dict) -> list[str]:
     if report.get("report_type") != BONUS_REPORT_TYPE:
         errors.append("report_type must be bonus_game")
     errors += [f"missing top field: {k}" for k in BONUS_REQUIRED_TOP if k not in report]
+    errors += find_token_like(report)
+    return errors
+
+
+def validate_bonus_game_report(report: dict) -> list[str]:
+    """Return validation errors for a played bonus_game report (empty == valid)."""
+    errors: list[str] = []
+    if report.get("report_type") != BONUS_REPORT_TYPE:
+        errors.append("report_type must be bonus_game")
+    errors += [f"missing top field: {k}" for k in BONUS_GAME_REQUIRED_TOP if k not in report]
+    for index, sub_game in enumerate(report.get("sub_games", [])):
+        errors += [
+            f"sub_game[{index}] missing: {k}"
+            for k in BONUS_GAME_REQUIRED_SUBGAME
+            if k not in sub_game
+        ]
+    if report.get("mutual_agreement") is True and report.get("partner_confirmation_status") != (
+        "confirmed"
+    ):
+        errors.append(
+            "mutual_agreement must stay false until partner_confirmation_status=confirmed"
+        )
     errors += find_token_like(report)
     return errors

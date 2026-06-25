@@ -555,12 +555,45 @@ Statuses: ✅ done · 🔄 in progress · ⏳ planned
 > Stage 15C is **compatibility only** — the official 6-sub-game bonus game was **not**
 > run, no Gmail was sent, and no tokens/IDs were printed or committed.
 
-## Next up (Stage 15D+ — run the bonus game + final live report)
+### Stage 15D — official inter-group bonus game run + canonical bonus_game JSON (this stage)
+
+- [x] Partner **confirmed the official rules in writing**: 8x8, 6 sub-games, ≤25 moves,
+      ≤5 cop-only barriers, diagonal, thief-first, 0-based `[row, col]`, assignment scoring.
+- [x] Automated cross-group **referee** (`src/.../bonus/referee.py` + `sessions.py` +
+      `cross_engine.py`): our `GameEngine` is the single canonical authority (8x8,
+      thief-first, ≤25 plies, ≤5 cop barriers). One role is our deployed Cloud Run MCP
+      (our contract), the other the partner's MCP (orcai-mj `setup`/`observe`/`my_move`/
+      `state`). **A human chooses no moves.** Our moves are mirrored to the partner via
+      `observe`; the partner's own moves come from `my_move`.
+- [x] **Both directions played** (the orchestration supports both — not stopped/faked):
+      Set A (3) MaRs-777 Cop vs orcai-mj Thief; Set B (3) orcai-mj Cop vs MaRs-777 Thief.
+- [x] Result (deterministic; `scripts/run_bonus_game.py`): **6/6 sub-games decided, 8x8**.
+      Set A → orcai-mj thief survived 25 moves ×3; Set B → orcai-mj cop captured at move
+      14 ×3. **totals_by_group: MaRs-777 30, orcai-mj 90 (orcai-mj 6 wins / 0)**.
+      `result_hash a0fdf72d…72ac68`; `validation_status: valid`.
+- [x] **Honest limitation noted:** our deployed servers were provisioned for the 5x5
+      visibility config, so on the 8x8 board our agents play weaker (patrol stays near the
+      5x5 centre; far-edge moves defer to the engine's documented legal fallback). The
+      partner's agents were stronger. This is the real, autonomous outcome — not faked.
+- [x] Canonical `bonus_game` JSON + token-free partner handoff (with `result_hash`) +
+      sanitized run evidence written; **all student national IDs redacted** (both groups).
+- [x] `mutual_agreement: false`, `partner_confirmation_status: pending` — set only after
+      the partner confirms the canonical result matches. **No Gmail sent; bonus report not
+      sent.**
+
+> Stage 15D **ran the official bonus game** (6/6, both directions, autonomously) and
+> produced the canonical `bonus_game` JSON + handoff. It did **not** send Gmail, did
+> **not** send the bonus report, and did **not** set mutual_agreement (partner
+> confirmation pending). No tokens or student IDs were printed or committed.
+
+## Next up (Stage 15E+ — partner confirmation + final live report)
 
 - [x] Receive partner `/mcp` URLs + tokens; fill `.secrets/bonus_partner.local.json` (15C)
 - [x] Pass the live partner compatibility smoke (unauthorized + authorized + warm-ups) (15C)
-- [ ] Freeze official board size by mutual written agreement (recommendation: 5x5)
-- [ ] Play the real inter-group match (6 sub-games) and produce a `bonus_game` report
+- [x] Freeze official board size (8x8) by mutual written agreement (15D)
+- [x] Play the real inter-group match (6 sub-games) and produce a `bonus_game` report (15D)
+- [ ] Send the partner the handoff; once both `result_hash`es match, set
+      `mutual_agreement: true` / `partner_confirmation_status: confirmed`
 - [ ] Send the final official report **to the lecturer** via Gmail
       (`RUN_GMAIL_LIVE=1`, external OAuth) — still pending
 - [ ] Close `FINAL_GAP_AUDIT.md` and the submission checklist (students already real)

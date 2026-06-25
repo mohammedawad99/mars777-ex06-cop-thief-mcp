@@ -249,6 +249,12 @@
   (`partner_urls_present`, `partner_tokens_present`, `tokens_recorded: false`).
 - Match-scoped partner tokens should be exchanged out-of-band and revoked after the
   match (see `config/bonus_strategy.default.json`).
+- The played bonus game (`scripts/run_bonus_game.py`) reads our Cloud Run tokens and the
+  partner tokens from local files, passes them opaquely, and writes **no** token to any
+  artifact. The canonical `bonus_game` report, the partner handoff, and the run evidence
+  carry only public URLs and **redact every student national ID** for **both** groups
+  (`id: REDACTED`); the `result_hash` is computed over outcome fields only, so it is
+  identical with or without identities.
 
 ## Revoke story
 

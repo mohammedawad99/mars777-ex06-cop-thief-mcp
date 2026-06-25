@@ -75,6 +75,44 @@ BONUS_REQUIRED_TOP = (
     "validation_status",
 )
 
+# Required top-level keys for a real played bonus_game report (Stage 15D).
+BONUS_GAME_REQUIRED_TOP = (
+    "report_type",
+    "schema_version",
+    "group_a",
+    "group_b",
+    "github_repos",
+    "mcp_urls",
+    "timezone",
+    "official_rules",
+    "pairing",
+    "sub_games",
+    "totals_by_group",
+    "bonus_claim",
+    "mutual_agreement",
+    "partner_confirmation_status",
+    "agreement_notes",
+    "generated_at_iso",
+    "validation_status",
+)
+
+# Required keys per played bonus sub-game (pairing-labelled).
+BONUS_GAME_REQUIRED_SUBGAME = (
+    "sub_game_index",
+    "pairing",
+    "cop_group",
+    "thief_group",
+    "board_size",
+    "start_positions",
+    "final_positions",
+    "winner_role",
+    "winner_group",
+    "move_count",
+    "cop_score",
+    "thief_score",
+    "outcome_reason",
+)
+
 # Patterns that must never appear as a report key or string value.
 FORBIDDEN_PATTERNS = (
     "auth_token",

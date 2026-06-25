@@ -143,6 +143,15 @@ every gate below passes.
   official bonus game, sends Gmail, or prints/writes tokens; evidence is sanitized
   (`results/evidence/bonus_partner_live_smoke.example.json`). The pure verdict reducer
   **is** unit-tested in the default suite (`tests/unit/bonus/`, no network).
+- **Official inter-group bonus game** —
+  `uv run python scripts/run_bonus_game.py` plays the agreed 6-sub-game match against
+  the partner over the live MCP endpoints (8x8, thief-first); the referee, not a human,
+  chooses every move. It needs the local partner/cloud token files and both groups'
+  servers up, so it is **not part of default validation**. It **never sends Gmail** and
+  **never sets `mutual_agreement`**; tokens are never printed/written and student IDs
+  are redacted in all tracked evidence. The referee/report/hash/handoff logic **is**
+  fully unit-tested with fake sessions (`tests/unit/bonus/`, no network); only the
+  thin network orchestrator in the script is live-only.
 
 ## Staging discipline
 

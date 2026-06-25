@@ -705,5 +705,36 @@ accepted, role identity consistent (cop→`cop`, thief→`thief`), thief-first a
 `results/evidence/bonus_partner_live_smoke.example.json`. 100% coverage retained.
 **No official bonus game run, no Gmail sent, no tokens/IDs printed or committed.**
 
-> Subsequent stages will append their driving prompts here (freeze board size, run the
-> bonus game, final live report, audit).
+## Stage 15D — official inter-group bonus game run + canonical bonus_game JSON
+
+**Prompt summary:** With the partner's official rules confirmed in writing (8x8, 6
+sub-games, ≤25 moves, ≤5 cop-only barriers, diagonal, thief-first, 0-based `[row,col]`,
+assignment scoring), run the official inter-group bonus game **through the systems/
+agents (a human chooses no moves)** and produce a canonical `bonus_game` JSON plus a
+token-free partner handoff with a `result_hash`. Required fair pairing: Set A (3)
+MaRs-777 Cop vs orcai-mj Thief; Set B (3) orcai-mj Cop vs MaRs-777 Thief — if only one
+direction is supported, stop and report (do not fake the second). Do not send Gmail,
+do not set `mutual_agreement` until the partner confirms, and never print/commit tokens
+or student national IDs.
+
+**Outcome:** an automated cross-group **referee** keeps our `GameEngine` canonical and
+drives both contracts — our deployed Cloud Run servers (our `compose_message`/
+`propose_action`) and the partner's `setup`/`observe`/`my_move`/`state` — mirroring our
+moves to the partner via `observe` and pulling theirs via `my_move`. New pure modules
+`bonus/cross_engine.py`, `bonus/sessions.py`, `bonus/referee.py`, `bonus/bonus_report.py`,
+`bonus/bonus_handoff.py` (+ `validate_bonus_game_report`) and the orchestrator
+`scripts/run_bonus_game.py` (per-sub-game reconnect; a transient network drop replays
+the whole sub-game from setup — a fresh real game, never fabricated). **Both directions
+ran; 6/6 sub-games decided on 8x8.** Set A → orcai-mj thief survived 25 moves ×3; Set B
+→ orcai-mj cop captured at move 14 ×3. **totals_by_group: MaRs-777 30, orcai-mj 90**
+(orcai-mj 6 wins). `result_hash a0fdf72d…72ac68`; `validation_status: valid`. Honest
+limitation recorded: our deployed servers were provisioned for the 5x5 visibility config,
+so our agents play weaker on 8x8 (far-edge moves defer to the engine's documented legal
+fallback) — the real autonomous result, not faked. Evidence:
+`bonus_game_report.example.json`, `bonus_game_partner_handoff.example.json`,
+`bonus_game_official_run.example.json` — token-free, all student IDs redacted.
+`mutual_agreement: false`, `partner_confirmation_status: pending`. **No Gmail sent, bonus
+report not sent.** 100% coverage retained.
+
+> Subsequent stages will append their driving prompts here (partner confirmation +
+> mutual_agreement, final live report, audit).

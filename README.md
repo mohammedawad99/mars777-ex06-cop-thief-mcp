@@ -8,6 +8,37 @@ a natural-language protocol, and the final results are reported via a Google
 (Gmail) report sender. Inter-group play is treated as in-scope (see
 `docs/PRD_bonus_intergroup.md`).
 
+## Status — Stage 15D (official inter-group bonus game played)
+
+**The official inter-group bonus game against partner group `orcai-mj` was played**
+over the live MCP endpoints, fully autonomously — an automated **referee** (not a human)
+chooses every move. Our `GameEngine` stays the single canonical authority for the agreed
+rules (8x8, thief-first, 6 sub-games, ≤25 moves, ≤5 cop-only barriers, diagonal, 0-based
+`[row, col]`). One role is our deployed Cloud Run server (our contract); the other is the
+partner's server (their `setup`/`observe`/`my_move`/`state` contract) — our moves are
+mirrored to the partner via `observe`, theirs come from `my_move`.
+
+```bash
+# Official bonus game (tokens from the git-ignored files; no Gmail, no human moves):
+set -a; . .secrets/cloud-run.local.env; set +a
+uv run python scripts/run_bonus_game.py
+```
+
+Both pairing directions ran — Set A (3) MaRs-777 Cop vs orcai-mj Thief, Set B (3)
+orcai-mj Cop vs MaRs-777 Thief. Result (deterministic, **6/6 decided on 8x8**): Set A →
+orcai-mj thief survived 25 moves ×3; Set B → orcai-mj cop captured at move 14 ×3.
+**totals_by_group: MaRs-777 30 / orcai-mj 90** (orcai-mj 6 wins). Canonical `bonus_game`
+JSON, a token-free partner handoff with `result_hash a0fdf72d…72ac68`, and sanitized run
+evidence are written under `results/evidence/bonus_game_*` (no tokens; **all student
+national IDs redacted for both groups**); `validation_status: valid`.
+
+**Honest note:** our deployed servers were provisioned for the 5x5 visibility config, so
+our agents play weaker on the official 8x8 board (far-edge moves defer to the engine's
+documented legal fallback). This is the real, autonomous outcome — not faked. **No Gmail
+was sent, the bonus report was not sent, and `mutual_agreement` stays `false`
+(`partner_confirmation_status: pending`)** until the partner confirms the `result_hash`
+matches.
+
 ## Status — Stage 15C (live partner compatibility smoke + adapter reconciliation)
 
 **Live compatibility against the partner group (`orcai-mj`) was verified and passed**,

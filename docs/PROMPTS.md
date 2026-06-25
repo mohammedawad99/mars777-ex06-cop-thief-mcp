@@ -678,5 +678,32 @@ agreed contract and must be confirmed on the live endpoints. Readiness run:
 `partner_smoke_status: unknown`, exit 0 with blockers. 352 tests, 100% coverage.
 **No bonus game run, no Gmail sent, no board size frozen.**
 
-> Subsequent stages will append their driving prompts here (run the bonus game,
-> final live report, audit).
+## Stage 15C — live partner compatibility smoke + adapter reconciliation
+
+**Prompt summary:** With the local partner file populated (partner group orcai-mj's
+live Cop/Thief `/mcp` URLs + tokens), run live compatibility checks and fix any
+adapter argument/payload mismatches the smoke reveals. Verify unauthorized rejection,
+authorized acceptance, setup/observe/my_move/state, role identity per server, 0-based
+`[row,col]`, thief-first, and 5x5/8x8 warm-ups. Do **not** run the official 6-sub-game
+bonus, send Gmail, or print/commit tokens/IDs. Produce sanitized evidence and update
+docs honestly.
+
+**Outcome:** the partner's INTEROP doc was still not public, so the live tool schemas
+were inspected directly. The Stage 15B provisional payloads were **wrong on every
+tool** and the adapter was reconciled to the confirmed contract: token key `token`
+(not `auth_token`); `setup` carries 0-based `cop`/`thief` **start positions** +
+`rows`/`cols`/`origin` (int)/`max_moves`/`max_barriers`/`diagonal`/`token` and returns
+`{role, snapshot}`; `observe(message, mover, token)` notifies of an opponent move
+(destination parsed from the message); `my_move(token)` makes the partner's **own**
+move (no move arg); `state(token)` returns the snapshot. Adapter rewritten
+(`bonus/partner_adapter.py`) with updated tests; new live smoke
+`scripts/bonus_partner_live_smoke.py` plus a unit-tested pure verdict reducer.
+Live result: `partner_smoke_passed: true` — unauthorized rejected, authorized
+accepted, role identity consistent (cop→`cop`, thief→`thief`), thief-first accepted,
+0-based accepted, **5x5 and 8x8 both supported**;
+`official_board_size_recommendation: 5x5` (baseline; not frozen). Sanitized evidence
+`results/evidence/bonus_partner_live_smoke.example.json`. 100% coverage retained.
+**No official bonus game run, no Gmail sent, no tokens/IDs printed or committed.**
+
+> Subsequent stages will append their driving prompts here (freeze board size, run the
+> bonus game, final live report, audit).

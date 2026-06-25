@@ -512,17 +512,54 @@ Statuses: ✅ done · 🔄 in progress · ⏳ planned
       authorized + role/tool + 5x5/8x8 warm-up smokes once the local partner file
       is populated — never printing secrets.
 - [x] Sanitized evidence `results/evidence/bonus_interop_readiness.example.json`.
-- [ ] **Pending:** partner INTEROP doc is **not publicly reachable** — confirm exact
-      tool arg schemas against live endpoints; freeze official board size.
+- [x] **Resolved in Stage 15C:** tool arg schemas confirmed against the live
+      endpoints; the adapter was reconciled to the real contract (see below).
 
 > The partner repo `akariya-mohammed/orcai-mj-hw6` / its INTEROP doc could not be
-> fetched (404 / not public yet), so the adapter payload keys follow the agreed
-> contract and must be confirmed on the live endpoints before the official run.
+> fetched (404 / not public yet), so the Stage 15B adapter payload keys were
+> **provisional** and had to be confirmed on the live endpoints (done in 15C).
 
-## Next up (Stage 15C+ — run the bonus game + final live report)
+### Stage 15C — live partner compatibility smoke + adapter reconciliation (this stage)
 
-- [ ] Receive partner ngrok `/mcp` URLs + tokens; fill `.secrets/bonus_partner.local.json`
-- [ ] Pass `bonus_interop_smoke` (unauthorized + authorized + warm-ups); freeze board size
+- [x] Both partner endpoints reachable (Cloudflare tunnel `/mcp` URLs from the local
+      git-ignored partner file); tokens present. **No tokens printed or committed.**
+- [x] Confirmed the partner's **real** contract live (their INTEROP doc was still not
+      public) and **reconciled the adapter** — the Stage 15B provisional keys were
+      wrong on every payload:
+  - token key is `token` (not `auth_token`); a missing/invalid token is rejected.
+  - `setup(cop, thief, rows, cols, origin, max_moves, max_barriers, diagonal, token)`
+    — `cop`/`thief` are 0-based `[row,col]` **start positions** (required);
+    `origin` is an integer (`0`); `diagonal` is a bool. Returns `{role, snapshot}`.
+  - `observe(message, mover, token)` — opponent-move notification (destination
+    parsed from `message`); `my_move(token)` — the partner picks **its own** move
+    (no move arg); `state(token)` — snapshot.
+- [x] Adapter rewritten (`bonus/partner_adapter.py`) + tests updated for the discovered
+      contract (`test_partner_adapter.py`); pure verdict reducer tested
+      (`test_partner_live_smoke_verdict.py`). 100% coverage retained.
+- [x] New live smoke `scripts/bonus_partner_live_smoke.py`: unauthorized rejected,
+      authorized accepted, setup/observe/my_move/state OK, **role identity** consistent
+      per server (cop→`cop`, thief→`thief`), 0-based `[row,col]` accepted, **thief-first**
+      accepted, **5x5 and 8x8** warm-ups both pass → `partner_smoke_passed: true`.
+- [x] `bonus_interop_smoke.py` `_live` + `bonus_partner_readiness.py` `_partner_smoke`
+      updated to the confirmed contract; both now report `partner_smoke_status/passed:
+      passed` against the live endpoints.
+- [x] Sanitized evidence `results/evidence/bonus_partner_live_smoke.example.json`
+      (`partner_smoke_run: true`, `partner_smoke_passed: true`,
+      `official_board_size_recommendation: 5x5`, `official_bonus_game_run: false`,
+      `live_gmail_sent: false`, `tokens_recorded: false`).
+- [x] Official board size **recommendation: 5x5** (our baseline; both 5x5/8x8 work) —
+      **not frozen** here; mutual agreement still pending.
+- [ ] **Still pending:** freeze board size by mutual written agreement; play the real
+      6-sub-game match; send the final live report. **No official bonus game was run.**
+
+> Stage 15C is **compatibility only** — the official 6-sub-game bonus game was **not**
+> run, no Gmail was sent, and no tokens/IDs were printed or committed.
+
+## Next up (Stage 15D+ — run the bonus game + final live report)
+
+- [x] Receive partner `/mcp` URLs + tokens; fill `.secrets/bonus_partner.local.json` (15C)
+- [x] Pass the live partner compatibility smoke (unauthorized + authorized + warm-ups) (15C)
+- [ ] Freeze official board size by mutual written agreement (recommendation: 5x5)
 - [ ] Play the real inter-group match (6 sub-games) and produce a `bonus_game` report
 - [ ] Send the final official report **to the lecturer** via Gmail
       (`RUN_GMAIL_LIVE=1`, external OAuth) — still pending

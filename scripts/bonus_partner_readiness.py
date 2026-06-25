@@ -69,21 +69,39 @@ def _ensure_partner() -> bool:
 
 
 def _partner_smoke(info: dict, data: dict) -> str:
+    """Lightweight live compatibility check against the partner's CONFIRMED contract.
+
+    The partner uses setup/observe/my_move/state (NOT our own tool names), so this
+    verifies their tool set, per-server role identity, and thief-first turn order via
+    the adapter. The deep per-tool warm-up smoke lives in bonus_partner_live_smoke.py.
+    """
     cop_url, thief_url = info["partner_cop_mcp_url"], info["partner_thief_mcp_url"]
     cop_tok, thief_tok = data.get("partner_cop_token"), data.get("partner_thief_token")
     if not (
         cop_url and thief_url and not is_placeholder(cop_tok) and not is_placeholder(thief_tok)
     ):
         return "unknown"
+    from fastmcp import Client
+
+    from mars777_cop_thief.bonus.partner_adapter import setup_args, supported_contract
     from mars777_cop_thief.mcp_client.client import wait_ready
-    from mars777_cop_thief.mcp_client.e2e_flow import run_flow
 
     async def _go() -> bool:
         if not (await wait_ready(cop_url) and await wait_ready(thief_url)):
             return False
-        flow = await run_flow(cop_url, thief_url, cop_tok, thief_tok)
-        c = flow["checks"]
-        return bool(flow["passed"] and c["cop_role_info"] and c["thief_role_info"])
+        async with Client(cop_url) as cop, Client(thief_url) as thief:
+            if not (
+                supported_contract([t.name for t in await cop.list_tools()])
+                and supported_contract([t.name for t in await thief.list_tools()])
+            ):
+                return False
+            cop_setup = (await cop.call_tool("setup", setup_args("5x5", token=cop_tok))).data
+            thief_setup = (await thief.call_tool("setup", setup_args("5x5", token=thief_tok))).data
+            return bool(
+                cop_setup.get("role") == "cop"
+                and thief_setup.get("role") == "thief"
+                and cop_setup.get("snapshot", {}).get("turn") == "thief"
+            )
 
     try:
         return "passed" if asyncio.run(_go()) else "failed"

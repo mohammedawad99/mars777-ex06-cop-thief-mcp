@@ -15,18 +15,21 @@
     "8x8"
   ],
   "official_board_size_selected": false,
-  "partner_urls_present": false,
-  "partner_tokens_present": false,
-  "partner_smoke_status": "unknown",
-  "live_checks": {},
+  "partner_urls_present": true,
+  "partner_tokens_present": true,
+  "partner_smoke_status": "passed",
+  "live_checks": {
+    "reachable": true,
+    "tools_ok": true,
+    "unauthorized": "rejected",
+    "warmup_5x5": "passed",
+    "warmup_8x8": "passed"
+  },
   "bonus_game_run": false,
   "live_gmail_sent": false,
   "token_values_recorded": false,
   "ids_redacted_in_tracked_evidence": true,
   "blockers": [
-    "partner public Cop/Thief /mcp URLs not yet provided",
-    "partner tokens not yet provided",
-    "partner INTEROP doc not publicly reachable; confirm tool arg schemas on live endpoints",
     "official board size (5x5 vs 8x8) not frozen"
   ]
 }

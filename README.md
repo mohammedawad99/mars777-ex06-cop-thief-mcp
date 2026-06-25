@@ -8,6 +8,31 @@ a natural-language protocol, and the final results are reported via a Google
 (Gmail) report sender. Inter-group play is treated as in-scope (see
 `docs/PRD_bonus_intergroup.md`).
 
+## Status — Stage 15C (live partner compatibility smoke + adapter reconciliation)
+
+**Live compatibility against the partner group (`orcai-mj`) was verified and passed**,
+and our partner adapter was reconciled to their **real** MCP contract. The partner's
+INTEROP doc was still not public, so the live tool schemas were inspected directly —
+the Stage 15B provisional payloads were wrong on every tool. Confirmed contract: token
+key `token`; `setup(cop, thief, rows, cols, origin, max_moves, max_barriers, diagonal,
+token)` with 0-based `cop`/`thief` **start positions** → `{role, snapshot}`;
+`observe(message, mover, token)` (opponent-move notice); `my_move(token)` (the partner
+makes **its own** move); `state(token)`.
+
+```bash
+# Live partner compatibility smoke (partner URLs/tokens from the git-ignored file):
+uv run python scripts/bonus_partner_live_smoke.py
+```
+
+Result (`results/evidence/bonus_partner_live_smoke.example.json`):
+`partner_smoke_passed: true` — unauthorized rejected, authorized accepted,
+setup/observe/my_move/state OK, **role identity** consistent per server (cop→`cop`,
+thief→`thief`), 0-based `[row,col]` accepted, **thief-first** accepted, and **both 5x5
+and 8x8** warm-ups pass. Official board size **recommendation: 5x5** (our baseline) —
+**not frozen** (mutual agreement pending). **No official bonus game was run, no Gmail
+was sent, and no partner token/student ID was printed or committed** (evidence carries
+presence booleans only; `tokens_recorded: false`).
+
 ## Status — Stage 14A (public-cloud full game + final report dry-run)
 
 **A complete 6-sub-game game was played over the deployed public Cloud Run URLs**,

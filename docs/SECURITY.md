@@ -236,6 +236,20 @@
   earlier token was created with a broader scope, regenerate it **outside the
   repo**; the revoke story below applies.
 
+## Inter-group bonus (partner) secrets
+
+- The **partner group's** Cop/Thief `/mcp` URLs and match tokens live only in the
+  local git-ignored `.secrets/bonus_partner.local.json` (created from the tracked
+  placeholder `config/bonus_partner.template.json`). They are **never committed**.
+- The live compatibility smokes (`scripts/bonus_partner_live_smoke.py`,
+  `bonus_interop_smoke.py`, `bonus_partner_readiness.py`) read those tokens, pass
+  them opaquely to the partner tools as the `token` argument, and **never print,
+  log, or write** a token value. Any token-like string is redacted before output,
+  and the sanitized evidence carries **presence booleans only**
+  (`partner_urls_present`, `partner_tokens_present`, `tokens_recorded: false`).
+- Match-scoped partner tokens should be exchanged out-of-band and revoked after the
+  match (see `config/bonus_strategy.default.json`).
+
 ## Revoke story
 
 If a credential is ever exposed:

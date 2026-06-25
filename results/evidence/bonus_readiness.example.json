@@ -2,24 +2,24 @@
   "stage": "15A",
   "artifact": "bonus_readiness",
   "bonus_ready": false,
-  "self_cloud_ready": true,
+  "self_cloud_ready": false,
   "self_checks": {
     "our_urls_ok": true,
     "cloud_tokens_present": true,
     "students_present": true,
-    "gmail_oauth_ready": true
+    "gmail_oauth_ready": false
   },
-  "partner_intake_present": false,
-  "partner_urls_present": false,
-  "partner_smoke_passed": "unknown",
+  "partner_intake_present": true,
+  "partner_urls_present": true,
+  "partner_smoke_passed": "passed",
   "partner": {
-    "partner_group_code": null,
-    "partner_github_repo": null,
-    "partner_cop_mcp_url": null,
-    "partner_thief_mcp_url": null,
-    "partner_students_count": 1,
-    "partner_cop_token_present": false,
-    "partner_thief_token_present": false
+    "partner_group_code": "orcai-mj",
+    "partner_github_repo": "https://github.com/akariya-mohammed/orcai-mj-hw6",
+    "partner_cop_mcp_url": "https://protected-soft-origins-correctly.trycloudflare.com/mcp",
+    "partner_thief_mcp_url": "https://colon-constantly-nelson-visible.trycloudflare.com/mcp",
+    "partner_students_count": 2,
+    "partner_cop_token_present": true,
+    "partner_thief_token_present": true
   },
   "our_cop_mcp_url": "https://mars777-cop-mcp-6lhzzicqha-zf.a.run.app/mcp",
   "our_thief_mcp_url": "https://mars777-thief-mcp-6lhzzicqha-zf.a.run.app/mcp",
@@ -56,8 +56,7 @@
     "no_guarantee": "Maximizes expected score and avoids invalid games; does NOT guarantee victory."
   },
   "blockers": [
-    "partner intake incomplete (placeholders): partner_group_code, partner_group_slug, partner_github_repo, partner_cop_mcp_url, partner_thief_mcp_url, agreement_channel",
-    "partner compatibility smoke not passed (status: unknown)"
+    "Gmail OAuth not ready"
   ],
   "mutual_agreement_pending": true,
   "live_gmail_sent": false,

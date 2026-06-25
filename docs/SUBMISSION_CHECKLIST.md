@@ -89,8 +89,17 @@ Strict checklist for the final review. Boxes are checked only when verified.
       external OAuth files (optional live send; not run yet)
 - [x] Inter-group bonus **readiness gate** prepared (`bonus_partner_readiness.py`):
       self cloud ready, local partner intake + strategy, sanitized evidence
-      (`bonus_ready: false` pending partner; no tokens/IDs) — **prepared, not the game**
-- [ ] Real inter-group bonus game played and reconciled (Stage 15B)
+      (no tokens/IDs) — **prepared, not the game**
+- [x] **Live partner compatibility smoke passed** (Stage 15C,
+      `bonus_partner_live_smoke.py`): partner endpoints reachable; unauthorized
+      rejected; authorized accepted; setup/observe/my_move/state OK; role identity
+      consistent per server; 0-based `[row,col]`; thief-first; **5x5 and 8x8** warm-ups
+      pass. Adapter reconciled to the partner's confirmed contract; sanitized evidence
+      (`results/evidence/bonus_partner_live_smoke.example.json`,
+      `partner_smoke_passed: true`, no tokens/IDs) — **compatibility only, not the game**
+- [ ] Official board size frozen by mutual written agreement (recommendation: **5x5**)
+- [ ] Real inter-group bonus game (6 sub-games) played and reconciled; `bonus_game`
+      report produced (not run in Stage 15C)
 
 ## Documentation & measurement
 - [ ] PRDs, PLAN, DECISIONS, PROMPTS complete and current

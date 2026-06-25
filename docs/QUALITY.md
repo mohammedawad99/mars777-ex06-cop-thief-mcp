@@ -132,6 +132,17 @@ every gate below passes.
   part of default validation**: it runs a real Gemini sub-game only when
   `RUN_GEMINI_LIVE=1` and an API key are set in the local environment. Normal
   `pytest`/coverage never require a key and never call the network.
+- **Live partner compatibility smoke** —
+  `uv run python scripts/bonus_partner_live_smoke.py` connects to the **partner
+  group's** live Cop/Thief `/mcp` endpoints and exercises the confirmed
+  `setup`/`observe`/`my_move`/`state` contract (unauthorized rejected, authorized
+  accepted, role identity per server, 0-based `[row,col]`, thief-first, 5x5/8x8
+  warm-ups). It needs the local git-ignored `.secrets/bonus_partner.local.json`
+  (partner URLs + tokens) and the partner's servers to be up, so it is **not part of
+  default validation** and is skipped when those are absent. It **never** runs the
+  official bonus game, sends Gmail, or prints/writes tokens; evidence is sanitized
+  (`results/evidence/bonus_partner_live_smoke.example.json`). The pure verdict reducer
+  **is** unit-tested in the default suite (`tests/unit/bonus/`, no network).
 
 ## Staging discipline
 

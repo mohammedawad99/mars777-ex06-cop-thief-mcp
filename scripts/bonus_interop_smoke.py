@@ -22,6 +22,8 @@ from mars777_cop_thief.bonus.intake import validate_partner
 from mars777_cop_thief.bonus.partner_adapter import (
     BOARD_SIZES,
     PARTNER_TOOLS,
+    is_unauthorized,
+    state_args,
     supported_contract,
     warmup_plan,
 )
@@ -51,10 +53,11 @@ async def _live(cop_url, thief_url, cop_tok, thief_tok) -> dict:
     out["reachable"] = True
     async with Client(cop_url) as cop:
         out["tools_ok"] = supported_contract([t.name for t in await cop.list_tools()])
-        denied = (await cop.call_tool("observe", {"auth_token": "wrong-token"})).data
-        out["unauthorized"] = (
-            "rejected" if isinstance(denied, dict) and denied.get("error") else "open"
-        )
+        try:
+            denied = (await cop.call_tool("state", state_args("wrong-token"))).data
+            out["unauthorized"] = "rejected" if is_unauthorized(denied) else "open"
+        except Exception as exc:  # partner raises a tool error on a bad token
+            out["unauthorized"] = "rejected" if is_unauthorized(str(exc)) else "open"
         for key, size in (("warmup_5x5", "5x5"), ("warmup_8x8", "8x8")):
             try:
                 for tool, args in warmup_plan(size, role="cop", token=cop_tok):
@@ -74,9 +77,6 @@ def main() -> int:
         blockers.append("partner public Cop/Thief /mcp URLs not yet provided")
     if not tokens_present:
         blockers.append("partner tokens not yet provided")
-    blockers.append(
-        "partner INTEROP doc not publicly reachable; confirm tool arg schemas on live endpoints"
-    )
     blockers.append("official board size (5x5 vs 8x8) not frozen")
     if urls_present and tokens_present:
         live = asyncio.run(
@@ -88,8 +88,13 @@ def main() -> int:
             )
         )
         status = "passed" if live["tools_ok"] and live["warmup_5x5"] == "passed" else "failed"
+        if status != "passed":
+            blockers.append("partner arg schemas unconfirmed; live interop smoke did not pass")
     else:
         live, status = {}, "unknown"
+        blockers.append(
+            "partner INTEROP doc not publicly reachable; confirm arg schemas on live endpoints"
+        )
     evid = {
         "stage": "15B",
         "artifact": "bonus_interop_readiness",
